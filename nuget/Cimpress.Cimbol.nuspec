@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Cimpress.Cimbol</id>
+    <version>$version$</version>
+    <title>Cimpress.Cimbol</title>
+    <owners>Pricing Squad</owners>
+    <authors>Pricing Squad</authors>
+    <description>Cimbol applications</description>
+    <tags>Squad:PricingSquad,BU:Cimpress Technology,CostCenter:103380,OwnerEmail:PricingSquad@cimpress.com</tags>
+    <dependencies></dependencies>
+  </metadata>
+  <files>
+    <file src='src\Cimpress.Cimbol\bin\Release\netstandard2.0\**' target='lib\netstandard2.0'/>
+  </files>
+</package>

@@ -1,0 +1,48 @@
+stages:
+  - build
+  - test
+  - version
+  - release
+
+variables:
+  PACKAGE_NAME: Cimpress.Cimbol
+
+.tags: &tags-common
+  tags:
+    - docker
+    - dotnetcore
+    - linux
+
+build:fea:
+  <<: *tags-common
+  image: mcr.microsoft.com/dotnet/core/sdk:2.1
+  stage: build
+  only:
+    - merge_requests
+  script:
+    - dotnet build -c Release -o $(pwd)/build
+
+build:prd:
+  <<: *tags-common
+  image: mcr.microsoft.com/dotnet/core/sdk:2.1
+  stage: build
+  only:
+    - master
+  script:
+    - dotnet build -c Release -o $(pwd)/build
+
+test:fea:
+  image: mcr.microsoft.com/dotnet/core/sdk:2.1
+  stage: test
+  only:
+    - merge_requests
+  script:
+    - dotnet test -c Release
+
+test:prd:
+  image: mcr.microsoft.com/dotnet/core/sdk:2.1
+  stage: test
+  only:
+    - master
+  script:
+    - dotnet test -c Release
