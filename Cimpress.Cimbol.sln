@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28917.181
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F7BB401B-D532-4292-8050-4C6F98ED1CEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cimpress.Cimbol.Engine", "src\Cimpress.Cimbol.Engine\Cimpress.Cimbol.Engine.csproj", "{AAA369EF-30E9-4F6A-848F-F4D100625431}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cimpress.Cimbol.Compiler", "src\Cimpress.Cimbol.Engine\Cimpress.Cimbol.Compiler.csproj", "{AAA369EF-30E9-4F6A-848F-F4D100625431}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{80C45264-7EF1-413C-9C1B-6C8BD70C7FA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cimpress.Cimbol.IntegrationTests", "test\Cimpress.Cimbol.IntegrationTests\Cimpress.Cimbol.IntegrationTests.csproj", "{2AC8C390-D679-4212-8EBA-AAF262729510}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cimpress.Cimbol.IntegrationTests", "test\Cimpress.Cimbol.IntegrationTests\Cimpress.Cimbol.IntegrationTests.csproj", "{2AC8C390-D679-4212-8EBA-AAF262729510}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cimpress.Cimbol.UnitTests", "test\Cimpress.Cimbol.UnitTests\Cimpress.Cimbol.UnitTests.csproj", "{0D3262A2-B3F1-45FE-9AC7-F19987C47D9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cimpress.Cimbol.UnitTests", "test\Cimpress.Cimbol.UnitTests\Cimpress.Cimbol.UnitTests.csproj", "{0D3262A2-B3F1-45FE-9AC7-F19987C47D9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AAA369EF-30E9-4F6A-848F-F4D100625431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -63,9 +60,15 @@ Global
 		{0D3262A2-B3F1-45FE-9AC7-F19987C47D9D}.Release|x86.ActiveCfg = Release|Any CPU
 		{0D3262A2-B3F1-45FE-9AC7-F19987C47D9D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AAA369EF-30E9-4F6A-848F-F4D100625431} = {F7BB401B-D532-4292-8050-4C6F98ED1CEA}
 		{2AC8C390-D679-4212-8EBA-AAF262729510} = {80C45264-7EF1-413C-9C1B-6C8BD70C7FA3}
 		{0D3262A2-B3F1-45FE-9AC7-F19987C47D9D} = {80C45264-7EF1-413C-9C1B-6C8BD70C7FA3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0A5C18BB-C453-47FE-A6E5-87F4E742C6B7}
 	EndGlobalSection
 EndGlobal
