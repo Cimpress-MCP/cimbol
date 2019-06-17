@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28917.181
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F7BB401B-D532-4292-8050-4C6F98ED1CEA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cimpress.Cimbol.Compiler", "src\Cimpress.Cimbol.Engine\Cimpress.Cimbol.Compiler.csproj", "{AAA369EF-30E9-4F6A-848F-F4D100625431}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cimpress.Cimbol.Compiler", "src\Cimpress.Cimbol.Compiler\Cimpress.Cimbol.Compiler.csproj", "{AAA369EF-30E9-4F6A-848F-F4D100625431}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{80C45264-7EF1-413C-9C1B-6C8BD70C7FA3}"
 EndProject
