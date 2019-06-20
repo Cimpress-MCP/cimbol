@@ -23,7 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Cimpress.Cimbol.Engine\Cimpress.Cimbol.Compiler.csproj" />
+    <ProjectReference Include="..\..\src\Cimpress.Cimbol.Compiler\Cimpress.Cimbol.Compiler.csproj" />
+    <ProjectReference Include="..\..\src\Cimpress.Cimbol.Runtime\Cimpress.Cimbol.Runtime.csproj" />
   </ItemGroup>
 
 </Project>
