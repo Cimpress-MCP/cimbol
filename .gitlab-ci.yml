@@ -31,6 +31,17 @@ build:prd:
   script:
     - dotnet build -c Release -o $(pwd)/build
 
+benchmark:fea:
+  image: mcr.microsoft.com/dotnet/core/sdk:2.1
+  stage: test
+  only:
+    - merge_requests
+  script:
+    - export PATH="$PATH:/root/.dotnet/tools"
+    - dotnet tool install -g BenchmarkDotNet.Tool
+    - dotnet build test/Cimpress.Cimbol.PerformanceTests/Cimpress.Cimbol.PerformanceTests.csproj -c Release -o $(pwd)/build
+    - dotnet benchmark build/Cimpress.Cimbol.PerformanceTests.dll -f Cimpress.Cimbol.PerformanceTests*
+
 test:fea:
   image: mcr.microsoft.com/dotnet/core/sdk:2.1
   stage: test
@@ -38,6 +49,22 @@ test:fea:
     - merge_requests
   script:
     - dotnet test -c Release
+
+benchmark:prd:
+  image: mcr.microsoft.com/dotnet/core/sdk:2.1
+  stage: test
+  artifacts:
+    paths:
+      - artifacts/benchmark-report*
+  only:
+    - master
+  script:
+    - export PATH="$PATH:/root/.dotnet/tools"
+    - dotnet tool install -g BenchmarkDotNet.Tool
+    - dotnet build test/Cimpress.Cimbol.PerformanceTests/Cimpress.Cimbol.PerformanceTests.csproj -c Release -o $(pwd)/build
+    - mkdir artifacts
+    - dotnet benchmark build/Cimpress.Cimbol.PerformanceTests.dll -f Cimpress.Cimbol.PerformanceTests* -a artifacts -e briefjson -j medium --join
+    - cp ./artifacts/results/*.json artifacts/benchmark-report-$(date +%s).json
 
 test:prd:
   image: mcr.microsoft.com/dotnet/core/sdk:2.1

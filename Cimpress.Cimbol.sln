@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cimpress.Cimbol.Integration
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cimpress.Cimbol.UnitTests", "test\Cimpress.Cimbol.UnitTests\Cimpress.Cimbol.UnitTests.csproj", "{0D3262A2-B3F1-45FE-9AC7-F19987C47D9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cimpress.Cimbol.Runtime", "src\Cimpress.Cimbol.Runtime\Cimpress.Cimbol.Runtime.csproj", "{26A17A91-1E36-427D-BE92-79D6EFCC7BD5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cimpress.Cimbol.Runtime", "src\Cimpress.Cimbol.Runtime\Cimpress.Cimbol.Runtime.csproj", "{26A17A91-1E36-427D-BE92-79D6EFCC7BD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cimpress.Cimbol.PerformanceTests", "test\Cimpress.Cimbol.PerformanceTests\Cimpress.Cimbol.PerformanceTests.csproj", "{530AE438-2B22-449D-ABF9-88A75C4129EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,18 @@ Global
 		{26A17A91-1E36-427D-BE92-79D6EFCC7BD5}.Release|x64.Build.0 = Release|Any CPU
 		{26A17A91-1E36-427D-BE92-79D6EFCC7BD5}.Release|x86.ActiveCfg = Release|Any CPU
 		{26A17A91-1E36-427D-BE92-79D6EFCC7BD5}.Release|x86.Build.0 = Release|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Debug|x64.Build.0 = Debug|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Debug|x86.Build.0 = Debug|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Release|x64.ActiveCfg = Release|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Release|x64.Build.0 = Release|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Release|x86.ActiveCfg = Release|Any CPU
+		{530AE438-2B22-449D-ABF9-88A75C4129EC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +96,7 @@ Global
 		{2AC8C390-D679-4212-8EBA-AAF262729510} = {80C45264-7EF1-413C-9C1B-6C8BD70C7FA3}
 		{0D3262A2-B3F1-45FE-9AC7-F19987C47D9D} = {80C45264-7EF1-413C-9C1B-6C8BD70C7FA3}
 		{26A17A91-1E36-427D-BE92-79D6EFCC7BD5} = {F7BB401B-D532-4292-8050-4C6F98ED1CEA}
+		{530AE438-2B22-449D-ABF9-88A75C4129EC} = {80C45264-7EF1-413C-9C1B-6C8BD70C7FA3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0A5C18BB-C453-47FE-A6E5-87F4E742C6B7}
