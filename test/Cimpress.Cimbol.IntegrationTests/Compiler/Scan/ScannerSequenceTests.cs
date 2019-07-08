@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Cimpress.Cimbol.Compiler.Scan;
-using Cimpress.Cimbol.Compiler.Utilities;
+using Cimpress.Cimbol.Compiler.Source;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace Cimpress.Cimbol.IntegrationTests.Compiler.Scan
 {

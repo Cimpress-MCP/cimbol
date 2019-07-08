@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Cimpress.Cimbol.Compiler.Utilities
+namespace Cimpress.Cimbol.Compiler.Source
 {
     /// <summary>
     /// The source text for a snippet of Cimbol code.
@@ -15,7 +15,7 @@ namespace Cimpress.Cimbol.Compiler.Utilities
         private int _index;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextWindow"/> class.
+        /// Initializes a new instance of the <see cref="SourceText"/> class.
         /// </summary>
         /// <param name="source">The source string.</param>
         public SourceText(string source)

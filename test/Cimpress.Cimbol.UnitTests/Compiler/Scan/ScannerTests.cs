@@ -1,6 +1,6 @@
 ﻿using System;
 using Cimpress.Cimbol.Compiler.Scan;
-using Cimpress.Cimbol.Compiler.Utilities;
+using Cimpress.Cimbol.Compiler.Source;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Scan

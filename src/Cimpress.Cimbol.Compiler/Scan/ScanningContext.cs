@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Cimpress.Cimbol.Compiler.Source;
 using Cimpress.Cimbol.Compiler.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Scan

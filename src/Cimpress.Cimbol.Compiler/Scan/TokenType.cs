@@ -51,12 +51,12 @@
         NotEqual,
 
         /// <summary>
-        /// The token type for the "<" operator.
+        /// The token type for the "&lt;" operator.
         /// </summary>
         LessThan,
 
         /// <summary>
-        /// The token type for the "<=" operator.
+        /// The token type for the "&lt;=" operator.
         /// </summary>
         LessThanEqual,
 
