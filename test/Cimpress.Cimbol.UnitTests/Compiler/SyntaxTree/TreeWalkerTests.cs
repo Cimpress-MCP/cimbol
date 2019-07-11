@@ -30,13 +30,13 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         public void Should_TraversePreOrder_When_GivenSingleLevel()
         {
             var node1 = new IdentifierNode("x");
-            var node2 = new ConstantNode(1);
-            var node3 = new ConstantNode(2);
-            var node4 = new ConstantNode(3);
-            var node5 = new InvokeNode(node1, new[] { node2, node3, node4 });
-            var traversal = new TreeWalker(node5);
+            var argument1 = new PositionalArgument(new ConstantNode(1));
+            var argument2 = new PositionalArgument(new ConstantNode(2));
+            var argument3 = new PositionalArgument(new ConstantNode(3));
+            var node2 = new CallNode(node1, new[] { argument1, argument2, argument3 });
+            var traversal = new TreeWalker(node2);
 
-            var expected = new INode[] { node5, node1, node2, node3, node4 };
+            var expected = new[] { node2, node1, argument1.Value, argument2.Value, argument3.Value };
             CollectionAssert.AreEqual(expected, traversal.TraversePreOrder());
         }
 
@@ -44,13 +44,13 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         public void Should_TraversePostOrder_When_GivenSingleLevel()
         {
             var node1 = new IdentifierNode("x");
-            var node2 = new ConstantNode(1);
-            var node3 = new ConstantNode(2);
-            var node4 = new ConstantNode(3);
-            var node5 = new InvokeNode(node1, new[] { node2, node3, node4 });
-            var traversal = new TreeWalker(node5);
+            var argument1 = new PositionalArgument(new ConstantNode(1));
+            var argument2 = new PositionalArgument(new ConstantNode(2));
+            var argument3 = new PositionalArgument(new ConstantNode(3));
+            var node2 = new CallNode(node1, new[] { argument1, argument2, argument3 });
+            var traversal = new TreeWalker(node2);
 
-            var expected = new INode[] { node1, node2, node3, node4, node5 };
+            var expected = new[] { node1, argument1.Value, argument2.Value, argument3.Value, node2 };
             CollectionAssert.AreEqual(expected, traversal.TraversePostOrder());
         }
 

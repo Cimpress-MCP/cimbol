@@ -34,7 +34,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
                     return "<";
                 case BinaryOpType.LessThanOrEqual:
                     return "<=";
-                case BinaryOpType.Modulo:
+                case BinaryOpType.Remainder:
                     return "%";
                 case BinaryOpType.Multiply:
                     return "*";

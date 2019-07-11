@@ -21,9 +21,8 @@ namespace Cimpress.Cimbol.Compiler.Utilities
         /// Given a string, return the escaped version of that string.
         /// </summary>
         /// <param name="source">The string to escape.</param>
-        /// <param name="delimiter">What type of quotes to surround the escaped string with.</param>
         /// <returns>An escaped string.</returns>
-        public static string EscapeString(string source, string delimiter)
+        public static string EscapeString(string source)
         {
             var escaped = EscapeRegex.Replace(
                 source,
@@ -50,13 +49,11 @@ namespace Cimpress.Cimbol.Compiler.Utilities
                             return "\\t";
 
                         default:
-                            var codePoint = Convert.ToInt32(m.Value.ToCharArray(0, 1)[0]);
-                            var fmtString = codePoint > 0xFFFF ? "\\U{0:D8}" : "\\u{0:D4}";
-                            return string.Format(CultureInfo.InvariantCulture, fmtString, codePoint);
+                            return UnicodeToEscapeSequence(char.ConvertToUtf32(m.Value, 0));
                     }
                 });
 
-            return $"{delimiter}{escaped}{delimiter}";
+            return escaped;
         }
 
         /// <summary>
@@ -71,10 +68,8 @@ namespace Cimpress.Cimbol.Compiler.Utilities
                 throw new ArgumentNullException(nameof(source));
             }
 
-            var unquoted = source.Substring(1, source.Length - 2);
-
             var unescaped = UnescapeRegex.Replace(
-                unquoted,
+                source,
                 m =>
                 {
                     switch (m.Value.Substring(1, 1))
@@ -115,6 +110,12 @@ namespace Cimpress.Cimbol.Compiler.Utilities
         {
             var code = int.Parse(escapeSequence, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
             return Convert.ToChar(code).ToString(CultureInfo.InvariantCulture);
+        }
+
+        private static string UnicodeToEscapeSequence(int codepoint)
+        {
+            var fmtString = codepoint > 0xFFFF ? "\\U{0:D8}" : "\\u{0:D4}";
+            return string.Format(CultureInfo.InvariantCulture, fmtString, codepoint);
         }
     }
 }

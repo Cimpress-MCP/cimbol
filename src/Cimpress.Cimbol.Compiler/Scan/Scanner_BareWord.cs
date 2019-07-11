@@ -31,7 +31,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return _context.Consume(TokenType.AwaitKeyword);
 
                 case "FALSE":
-                    return _context.Consume(TokenType.BooleanLiteral);
+                    return _context.Consume(TokenType.FalseKeyword);
 
                 case "IF":
                     return _context.Consume(TokenType.IfKeyword);
@@ -49,7 +49,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return _context.Consume(TokenType.Or);
 
                 case "TRUE":
-                    return _context.Consume(TokenType.BooleanLiteral);
+                    return _context.Consume(TokenType.TrueKeyword);
 
                 case "WHERE":
                     return _context.Consume(TokenType.WhereKeyword);

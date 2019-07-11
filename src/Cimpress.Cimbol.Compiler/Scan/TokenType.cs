@@ -126,6 +126,11 @@
         AwaitKeyword,
 
         /// <summary>
+        /// The token type for the "false" keyword.
+        /// </summary>
+        FalseKeyword,
+
+        /// <summary>
         /// The token type for the "if" keyword.
         /// </summary>
         IfKeyword,
@@ -141,14 +146,14 @@
         ObjectKeyword,
 
         /// <summary>
+        /// The token type for the "true" keyword.
+        /// </summary>
+        TrueKeyword,
+
+        /// <summary>
         /// The token type for the "where" keyword.
         /// </summary>
         WhereKeyword,
-
-        /// <summary>
-        /// The token type for a boolean literal.
-        /// </summary>
-        BooleanLiteral,
 
         /// <summary>
         /// The token type for a number literal.

@@ -8,14 +8,14 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
     /// <summary>
     /// A syntax tree node representing a function invocation.
     /// </summary>
-    public sealed class InvokeNode : INode, IEquatable<InvokeNode>
+    public sealed class CallNode : INode, IEquatable<CallNode>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvokeNode"/> class.
+        /// Initializes a new instance of the <see cref="CallNode"/> class.
         /// </summary>
-        /// <param name="function">The function to invoke.</param>
-        /// <param name="arguments">The arguments to invoke the function with.</param>
-        public InvokeNode(INode function, IEnumerable<INode> arguments)
+        /// <param name="function">The function to call.</param>
+        /// <param name="arguments">The arguments to call the function with.</param>
+        public CallNode(INode function, IEnumerable<PositionalArgument> arguments)
         {
             Arguments = arguments.ToImmutableArray();
 
@@ -23,12 +23,12 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         }
 
         /// <summary>
-        /// The arguments to invoke the function with.
+        /// The arguments to call the function with.
         /// </summary>
-        public ImmutableArray<INode> Arguments { get; }
+        public ImmutableArray<PositionalArgument> Arguments { get; }
 
         /// <summary>
-        /// The function to invoke.
+        /// The function to call.
         /// </summary>
         public INode Function { get; }
 
@@ -39,7 +39,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
 
             foreach (var argument in Arguments)
             {
-                yield return argument;
+                yield return argument.Value;
             }
         }
 
@@ -48,14 +48,14 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         {
             foreach (var argument in Arguments.Reverse())
             {
-                yield return argument;
+                yield return argument.Value;
             }
 
             yield return Function;
         }
 
         /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
-        public bool Equals(InvokeNode other)
+        public bool Equals(CallNode other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -73,7 +73,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <inheritdoc cref="object.Equals(object)"/>
         public override bool Equals(object obj)
         {
-            return Equals(obj as InvokeNode);
+            return Equals(obj as CallNode);
         }
 
         /// <inheritdoc cref="object.GetHashCode"/>
@@ -88,7 +88,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {
-            return $"{{{nameof(InvokeNode)}}}";
+            return $"{{{nameof(CallNode)}}}";
         }
     }
 }

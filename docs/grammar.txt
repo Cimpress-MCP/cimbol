@@ -1,0 +1,35 @@
+<root> ::= <expression> <eof>
+
+<expression> ::= <logical-and>
+
+<logical-and> ::= <logical-or> ( "and" <logical-or> )*
+
+<logical-or> ::= <logical-not> ( "or" <logical-not> )*
+
+<logical-not> ::= ( "not" )* <comparison>
+
+<comparison> ::= <concatenate> ( ( "==" | "!=" | ">" | ">= | "<" | "<=" ) <concatenate> )*
+
+<concatenate> ::= <add-term> ( "++" <add-term> )*
+
+<add-term> ::= <multiply-term> ( ( "+" | "-" ) <multiply-term> )*
+
+<multiply-term> ::= <factor> ( ( "*" | "/" | "%" ) <factor> )*
+
+<factor> ::= ( "+" | "-" )* <power-term>
+
+<power-term> ::= <call> ( "^" <call> )*
+
+<call> ::= <macro> <argument-list> ( <call-part> )*
+<call> ::= <parentheses> ( <call-part> )*
+
+<call-part> ::= <argument-list>
+<call-part> ::= "." <identifier>
+
+<terminal> ::= "(" <expression ")"
+<terminal> ::= <boolean-literal> | <number-literal> | <string-literal> | <identifier>
+
+<macro> ::= <if-keyword> | <where-keyword> | <list-keyword> | <object-keyword>
+
+<argument-list> ::= "(" ")"
+<argument-list> ::= "(" <expression> ( "," <expression> )* ")"

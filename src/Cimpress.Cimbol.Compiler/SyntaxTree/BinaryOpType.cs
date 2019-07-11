@@ -51,11 +51,6 @@
         LessThanOrEqual,
 
         /// <summary>
-        /// Represents the modulo arithmetic binary operation.
-        /// </summary>
-        Modulo,
-
-        /// <summary>
         /// Represents the multiply arithmetic binary operation.
         /// </summary>
         Multiply,
@@ -74,6 +69,11 @@
         /// Represents the power arithmetic operation.
         /// </summary>
         Power,
+
+        /// <summary>
+        /// Represents the modulo arithmetic binary operation.
+        /// </summary>
+        Remainder,
 
         /// <summary>
         /// Represents the subtract arithmetic operation.
