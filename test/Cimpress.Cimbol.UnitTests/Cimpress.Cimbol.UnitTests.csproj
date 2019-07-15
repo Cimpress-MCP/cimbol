@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Cimpress.Cimbol.Compiler\Cimpress.Cimbol.Compiler.csproj" />
     <ProjectReference Include="..\..\src\Cimpress.Cimbol.Runtime\Cimpress.Cimbol.Runtime.csproj" />
+    <ProjectReference Include="..\..\src\Cimpress.Cimbol\Cimpress.Cimbol.csproj" />
   </ItemGroup>
 
 </Project>
