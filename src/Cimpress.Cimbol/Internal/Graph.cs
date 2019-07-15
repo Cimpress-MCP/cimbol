@@ -1,0 +1,310 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+
+namespace Cimpress.Cimbol.Internal
+{
+    /// <summary>
+    /// A directed graph.
+    /// </summary>
+    /// <typeparam name="T">The type of node in the graph.</typeparam>
+    public class Graph<T>
+        where T : IEquatable<T>
+    {
+        private readonly IEqualityComparer<T> _comparer;
+
+        private readonly ImmutableArray<Tuple<T, T>> _edges;
+
+        private readonly ImmutableDictionary<T, ImmutableHashSet<T>> _edgesIn;
+
+        private readonly ImmutableDictionary<T, ImmutableHashSet<T>> _edgesOut;
+
+        private readonly ImmutableHashSet<T> _vertices;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Graph"/> class from an adjacency list.
+        /// </summary>
+        /// <param name="vertices">The vertices in the graph.</param>
+        /// <param name="edges">The edges in the graph.</param>
+        public Graph(IEnumerable<T> vertices, ICollection<Tuple<T, T>> edges)
+            : this(vertices, edges, EqualityComparer<T>.Default)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Graph"/> class from an adjacency list.
+        /// </summary>
+        /// <param name="vertices">The vertices in the graph.</param>
+        /// <param name="edges">The edges in the graph.</param>
+        /// <param name="comparer">How to compare the vertices in the graph.</param>
+        public Graph(IEnumerable<T> vertices, IEnumerable<Tuple<T, T>> edges, IEqualityComparer<T> comparer)
+        {
+            _comparer = comparer;
+
+            _vertices = vertices.ToImmutableHashSet(_comparer);
+
+            _edges = edges.ToImmutableArray();
+
+            foreach (var edge in _edges)
+            {
+                if (!_vertices.Contains(edge.Item1) || !_vertices.Contains(edge.Item2))
+                {
+                    // All edges must reference vertices in the vertex set.
+                    throw new NotSupportedException();
+                }
+            }
+
+            var edgesInIndex = _edges
+                .GroupBy(edge => edge.Item2)
+                .ToImmutableDictionary(
+                    edgeGroup => edgeGroup.Key,
+                    edgeGroup => edgeGroup.Select(edge => edge.Item1).ToImmutableHashSet(_comparer),
+                    comparer);
+
+            var edgesOutIndex = _edges
+                .GroupBy(edge => edge.Item1)
+                .ToImmutableDictionary(
+                    edgeGroup => edgeGroup.Key,
+                    edgeGroup => edgeGroup.Select(edge => edge.Item2).ToImmutableHashSet(_comparer),
+                    comparer);
+
+            _edgesIn = _vertices.ToImmutableDictionary(
+                vertex => vertex,
+                vertex => edgesInIndex.TryGetValue(vertex, out var adjacents) ? adjacents : ImmutableHashSet<T>.Empty,
+                comparer);
+
+            _edgesOut = _vertices.ToImmutableDictionary(
+                vertex => vertex,
+                vertex => edgesOutIndex.TryGetValue(vertex, out var adjacents) ? adjacents : ImmutableHashSet<T>.Empty,
+                comparer);
+        }
+
+        private Graph(
+            ImmutableHashSet<T> vertices,
+            ImmutableArray<Tuple<T, T>> edges,
+            ImmutableDictionary<T, ImmutableHashSet<T>> edgesIn,
+            ImmutableDictionary<T, ImmutableHashSet<T>> edgesOut,
+            IEqualityComparer<T> comparer)
+        {
+            _comparer = comparer;
+
+            _edges = edges;
+
+            _edgesIn = edgesIn;
+
+            _edgesOut = edgesOut;
+
+            _vertices = vertices;
+        }
+
+        private enum VertexAction
+        {
+            Enter,
+
+            Exit,
+        }
+
+        private enum VertexColor
+        {
+            White,
+
+            Gray,
+
+            Black,
+        }
+
+        /// <summary>
+        /// The list of edges in the graph.
+        /// </summary>
+        public IReadOnlyCollection<Tuple<T, T>> Edges => _edges;
+
+        /// <summary>
+        /// The list of vertices in the graph.
+        /// </summary>
+        public IReadOnlyCollection<T> Vertices => _vertices;
+
+        /// <summary>
+        /// Return the list of adjacent vertices in to a given vertex.
+        /// </summary>
+        /// <param name="vertex">The vertex with which to retrieve the adjacent vertices.</param>
+        /// <returns>The list of adjacent vertices in to the given vertex.</returns>
+        public IReadOnlyCollection<T> AdjacentsIn(T vertex)
+        {
+            if (_edgesIn.TryGetValue(vertex, out var adjacents))
+            {
+                return adjacents;
+            }
+
+            return ImmutableHashSet.Create<T>();
+        }
+
+        /// <summary>
+        /// Return the list of adjacent vertices out of a given vertex.
+        /// </summary>
+        /// <param name="vertex">The vertex with which to retrieve the adjacent vertices.</param>
+        /// <returns>The list of adjacent vertices out of the given vertex.</returns>
+        public IReadOnlyCollection<T> AdjacentsOut(T vertex)
+        {
+            if (_edgesOut.TryGetValue(vertex, out var adjacents))
+            {
+                return adjacents;
+            }
+
+            return ImmutableHashSet.Create<T>();
+        }
+
+        /// <summary>
+        /// Check if the graph contains any cycles.
+        /// </summary>
+        /// <returns>True if the graph is cyclical, false otherwise.</returns>
+        public bool IsCyclical()
+        {
+            var visited = _vertices.ToDictionary(vertex => vertex, vertex => VertexColor.White, _comparer);
+
+            foreach (var rootVertex in _vertices)
+            {
+                if (visited[rootVertex] == VertexColor.Black)
+                {
+                    continue;
+                }
+
+                var frontier = new Stack<Tuple<T, VertexAction>>();
+                frontier.Push(Tuple.Create(rootVertex, VertexAction.Enter));
+
+                while (frontier.Count > 0)
+                {
+                    var next = frontier.Pop();
+                    var vertex = next.Item1;
+                    var vertexAction = next.Item2;
+
+                    if (vertexAction == VertexAction.Exit)
+                    {
+                        visited[vertex] = VertexColor.Black;
+                    }
+                    else
+                    {
+                        visited[vertex] = VertexColor.Gray;
+
+                        var adjacents = _edgesOut[vertex];
+
+                        frontier.Push(Tuple.Create(vertex, VertexAction.Exit));
+
+                        foreach (var adjacent in adjacents)
+                        {
+                            if (visited[adjacent] == VertexColor.Gray)
+                            {
+                                return true;
+                            }
+
+                            frontier.Push(Tuple.Create(adjacent, VertexAction.Enter));
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines the partial ordering of the given graph such that there are as few partial orderings as
+        ///   possible. For example, given the graph:
+        /// A   B   C   D
+        ///  ╲ ╱     ╲ ╱
+        ///   E       F
+        ///    ╲     ╱
+        ///     ╲   ╱
+        ///      ╲ ╱
+        ///       G
+        /// Three partial orderings should be computed, containing (A, B, C, D), (E, F), and (G).
+        /// </summary>
+        /// <returns>
+        /// A list of sets of nodes, where each set has elements less than the elements after it.
+        /// </returns>
+        public IReadOnlyCollection<ISet<T>> MinimalPartialOrder()
+        {
+            var depths = MeasureDepths();
+
+            var minimalPartialOrder = depths
+                .GroupBy(vertex => vertex.Item2)
+                .Select(vertexGroup => vertexGroup.Select(vertexOrder => vertexOrder.Item1).ToImmutableHashSet())
+                .ToImmutableArray();
+
+            return minimalPartialOrder;
+        }
+
+        /// <summary>
+        /// Perform a topological sort on the graph, returning a list of nodes such that all nodes less than a
+        /// given node come before that node, and all nodes greater than the current node come after a given node.
+        /// </summary>
+        /// <returns>
+        /// A list of nodes that have been sorted based on a partial ordering.
+        /// </returns>
+        public IReadOnlyCollection<T> TopologicalSort()
+        {
+            var depths = MeasureDepths();
+
+            var topologicalSort = depths
+                .OrderBy(vertexOrder => vertexOrder.Item2)
+                .Select(vertexOrder => vertexOrder.Item1)
+                .ToImmutableArray();
+
+            return topologicalSort;
+        }
+
+        /// <summary>
+        /// Return the transpose of the directed graph.
+        /// </summary>
+        /// <returns>The transpose of the directed graph.</returns>
+        public Graph<T> Transpose()
+        {
+            return new Graph<T>(_vertices, _edges, _edgesOut, _edgesIn, _comparer);
+        }
+
+        private List<Tuple<T, int>> MeasureDepths()
+        {
+            var visited = new HashSet<T>(_comparer);
+
+            // Find all vertices that have no inbound edges. These make up the first set in the partial order.
+            var ordering = new List<Tuple<T, int>>(_vertices.Count);
+            foreach (var vertex in _vertices)
+            {
+                var hasVertex = _edgesIn.TryGetValue(vertex, out var adjacentVertices);
+
+                if (!hasVertex || adjacentVertices == null || adjacentVertices.Count == 0)
+                {
+                    ordering.Add(Tuple.Create(vertex, 0));
+                }
+            }
+
+            // Perform a breadth-first traversal of the graph, where the first breadth is every node at a depth of 0.
+            var orderingIndex = 0;
+            while (orderingIndex < ordering.Count)
+            {
+                var vertexOrder = ordering[orderingIndex];
+                orderingIndex += 1;
+
+                var vertex = vertexOrder.Item1;
+                var order = vertexOrder.Item2;
+                visited.Add(vertex);
+
+                var adjacentVertices = _edgesOut[vertex];
+                foreach (var adjacentVertex in adjacentVertices)
+                {
+                    if (!visited.Contains(adjacentVertex))
+                    {
+                        ordering.Add(Tuple.Create(adjacentVertex, order + 1));
+                    }
+                }
+            }
+
+            if (!visited.SetEquals(_vertices))
+            {
+                // The graph contains cycles.
+                throw new NotSupportedException();
+            }
+
+            return ordering;
+        }
+    }
+}
