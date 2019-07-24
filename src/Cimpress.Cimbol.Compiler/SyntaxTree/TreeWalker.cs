@@ -12,7 +12,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// Initializes a new instance of the <see cref="TreeWalker"/> class.
         /// </summary>
         /// <param name="rootNode">The node to start the traversal at.</param>
-        public TreeWalker(INode rootNode)
+        public TreeWalker(ISyntaxNode rootNode)
         {
             RootNode = rootNode;
         }
@@ -20,16 +20,16 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <summary>
         /// The node to start the traversal at.
         /// </summary>
-        public INode RootNode { get; }
+        public ISyntaxNode RootNode { get; }
 
         /// <summary>
         /// Perform a pre-order walk of the tree, starting at the root node.
         /// A pre-order walk will return the parent node, and then each child node in forward order.
         /// </summary>
         /// <returns>A collection of nodes.</returns>
-        public IEnumerable<INode> TraversePreOrder()
+        public IEnumerable<ISyntaxNode> TraversePreOrder()
         {
-            var nodeStack = new Stack<INode>();
+            var nodeStack = new Stack<ISyntaxNode>();
 
             nodeStack.Push(RootNode);
 
@@ -51,11 +51,11 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// A post-order walk will return each child node in forward order, and then the parent node.
         /// </summary>
         /// <returns>A collection of nodes.</returns>
-        public IEnumerable<INode> TraversePostOrder()
+        public IEnumerable<ISyntaxNode> TraversePostOrder()
         {
-            var nodeStack = new Stack<INode>();
+            var nodeStack = new Stack<ISyntaxNode>();
 
-            var outStack = new Stack<INode>();
+            var outStack = new Stack<ISyntaxNode>();
 
             nodeStack.Push(RootNode);
 

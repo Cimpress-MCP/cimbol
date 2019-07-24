@@ -8,17 +8,17 @@ using NUnit.Framework;
 namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 {
     [TestFixture]
-    public class CallParserTests
+    public class InvokeParserTests
     {
         [Test]
-        public void Should_PassThrough_When_NotCallOrAccess()
+        public void Should_PassThrough_When_NotInvokeOrAccess()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Call();
+            var result = parser.Invoke();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<IdentifierNode>(result);
         }
@@ -38,7 +38,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Call();
+            var result = parser.Invoke();
             Assert.IsInstanceOf<MacroNode>(result);
             var macroResult = result as MacroNode;
             Assert.IsNotNull(macroResult);
@@ -63,7 +63,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Call();
+            var result = parser.Invoke();
             Assert.IsInstanceOf<MacroNode>(result);
             var macroResult = result as MacroNode;
             Assert.IsNotNull(macroResult);
@@ -81,7 +81,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Call() as AccessNode;
+            var result = parser.Invoke() as AccessNode;
             Assert.IsNotNull(result);
             Assert.AreEqual("y", result.Member);
 
@@ -101,7 +101,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Call() as AccessNode;
+            var result = parser.Invoke() as AccessNode;
             Assert.IsNotNull(result);
             Assert.AreEqual("z", result.Member);
 
@@ -114,7 +114,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseCallNode_When_GivenSingleFunctionCall()
+        public void Should_ParseInvokeNode_When_GivenSingleFunctionInvocation()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
@@ -124,18 +124,18 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Call();
-            Assert.IsInstanceOf<CallNode>(result);
-            var callResult = result as CallNode;
-            Assert.IsNotNull(callResult);
-            Assert.That(callResult.Arguments, Has.Length.EqualTo(1));
+            var result = parser.Invoke();
+            Assert.IsInstanceOf<InvokeNode>(result);
+            var invokeResult = result as InvokeNode;
+            Assert.IsNotNull(invokeResult);
+            Assert.That(invokeResult.Arguments, Has.Length.EqualTo(1));
 
-            var innerResult1 = callResult.Function as IdentifierNode;
+            var innerResult1 = invokeResult.Function as IdentifierNode;
             Assert.IsNotNull(innerResult1);
         }
 
         [Test]
-        public void Should_ParseCallNode_When_GivenDoubleFunctionCall()
+        public void Should_ParseInvokeNode_When_GivenDoubleFunctionInvocation()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
@@ -148,24 +148,24 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Call();
-            Assert.IsInstanceOf<CallNode>(result);
-            var callResult = result as CallNode;
-            Assert.IsNotNull(callResult);
-            Assert.That(callResult.Arguments, Has.Length.EqualTo(1));
+            var result = parser.Invoke();
+            Assert.IsInstanceOf<InvokeNode>(result);
+            var invokeResult = result as InvokeNode;
+            Assert.IsNotNull(invokeResult);
+            Assert.That(invokeResult.Arguments, Has.Length.EqualTo(1));
 
-            var innerResult1 = callResult.Function;
-            Assert.IsInstanceOf<CallNode>(innerResult1);
-            var callInnerResult1 = innerResult1 as CallNode;
-            Assert.IsNotNull(callInnerResult1);
-            Assert.That(callInnerResult1.Arguments, Has.Length.EqualTo(1));
+            var innerResult1 = invokeResult.Function;
+            Assert.IsInstanceOf<InvokeNode>(innerResult1);
+            var invokeInnerResult1 = innerResult1 as InvokeNode;
+            Assert.IsNotNull(invokeInnerResult1);
+            Assert.That(invokeInnerResult1.Arguments, Has.Length.EqualTo(1));
 
-            var innerResult2 = callInnerResult1.Function as IdentifierNode;
+            var innerResult2 = invokeInnerResult1.Function as IdentifierNode;
             Assert.IsNotNull(innerResult2);
         }
 
         [Test]
-        public void Should_ParseCallAndAccessNodes_When_GivenAccessFollowedByFunctionCall()
+        public void Should_ParseInvokeAndAccessNodes_When_GivenAccessFollowedByFunctionInvocation()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
@@ -177,13 +177,13 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Call();
-            Assert.IsInstanceOf<CallNode>(result);
-            var callResult = result as CallNode;
-            Assert.IsNotNull(callResult);
-            Assert.That(callResult.Arguments, Has.Length.EqualTo(1));
+            var result = parser.Invoke();
+            Assert.IsInstanceOf<InvokeNode>(result);
+            var invokeResult = result as InvokeNode;
+            Assert.IsNotNull(invokeResult);
+            Assert.That(invokeResult.Arguments, Has.Length.EqualTo(1));
 
-            var innerResult1 = callResult.Function;
+            var innerResult1 = invokeResult.Function;
             Assert.IsInstanceOf<AccessNode>(innerResult1);
             var accessInnerResult1 = innerResult1 as AccessNode;
             Assert.IsNotNull(accessInnerResult1);
@@ -195,7 +195,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseCallAndAccessNodes_When_GivenFunctionCallFollowedByAccess()
+        public void Should_ParseInvokeAndAccessNodes_When_GivenFunctionInvocationFollowedByAccess()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
@@ -207,19 +207,19 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Call();
+            var result = parser.Invoke();
             Assert.IsInstanceOf<AccessNode>(result);
             var accessResult = result as AccessNode;
             Assert.IsNotNull(accessResult);
             Assert.AreEqual("z", accessResult.Member);
 
             var innerResult1 = accessResult.Value;
-            Assert.IsInstanceOf<CallNode>(innerResult1);
-            var callInnerResult1 = innerResult1 as CallNode;
-            Assert.IsNotNull(callInnerResult1);
-            Assert.That(callInnerResult1.Arguments, Has.Length.EqualTo(1));
+            Assert.IsInstanceOf<InvokeNode>(innerResult1);
+            var invokeInnerResult1 = innerResult1 as InvokeNode;
+            Assert.IsNotNull(invokeInnerResult1);
+            Assert.That(invokeInnerResult1.Arguments, Has.Length.EqualTo(1));
 
-            var innerResult2 = callInnerResult1.Function;
+            var innerResult2 = invokeInnerResult1.Function;
             var identifierInnerResult2 = innerResult2 as IdentifierNode;
             Assert.IsNotNull(identifierInnerResult2);
         }
@@ -233,7 +233,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.Call());
+            Assert.Throws<NotSupportedException>(() => parser.Invoke());
         }
 
         [Test]
@@ -247,11 +247,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.Call());
+            Assert.Throws<NotSupportedException>(() => parser.Invoke());
         }
 
         [Test]
-        public void ShouldNot_ParseCallNode_When_MissingRightParenthesis()
+        public void ShouldNot_ParseInvokeNode_When_MissingRightParenthesis()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
@@ -260,7 +260,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.Call());
+            Assert.Throws<NotSupportedException>(() => parser.Invoke());
         }
     }
 }

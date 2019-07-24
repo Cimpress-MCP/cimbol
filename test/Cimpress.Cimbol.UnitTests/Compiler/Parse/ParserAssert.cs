@@ -6,11 +6,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 {
     public static class ParserAssert
     {
-        public static TNode Parses<TNode>(Func<INode> parserCallback)
+        internal static TNode Parses<TNode>(Func<ISyntaxNode> parserCallback)
         {
             Assert.That(parserCallback, Is.Not.Null);
 
-            INode parseResult = null;
+            ISyntaxNode parseResult = null;
             Assert.That(() => parseResult = parserCallback(), Throws.Nothing);
             Assert.That(parseResult, Is.Not.Null);
             Assert.That(parseResult, Is.TypeOf<TNode>());
@@ -18,7 +18,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             return (TNode)parseResult;
         }
 
-        public static TProperty HasProperty<TProperty>(INode node, string propertyName)
+        internal static TProperty HasProperty<TProperty>(ISyntaxNode node, string propertyName)
         {
             Assert.That(node, Is.Not.Null);
 

@@ -5,27 +5,27 @@ using NUnit.Framework;
 namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
 {
     [TestFixture]
-    public class IdentifierNodeTests
+    public class ExportStatementNodeTests
     {
         [Test]
         public void Should_SerializeToString_When_Valid()
         {
-            var node = new IdentifierNode("x");
-            Assert.AreEqual("{IdentifierNode \"x\"}", node.ToString());
+            var node = new ExportStatementNode("a");
+            Assert.That(node.ToString(), Is.EqualTo("{ExportStatementNode a}"));
         }
 
         [Test]
         public void Should_ReturnEmptyEnumerable_When_IteratingChildren()
         {
-            var node = new IdentifierNode("x");
-            CollectionAssert.AreEqual(Enumerable.Empty<IExpressionNode>(), node.Children());
+            var node = new ExportStatementNode("a");
+            Assert.That(node.Children(), Is.EqualTo(Enumerable.Empty<ISyntaxNode>()));
         }
 
         [Test]
         public void Should_ReturnEmptyEnumerable_When_IteratingChildrenReverse()
         {
-            var node = new IdentifierNode("x");
-            CollectionAssert.AreEqual(Enumerable.Empty<IExpressionNode>(), node.ChildrenReverse());
+            var node = new ExportStatementNode("a");
+            Assert.That(node.ChildrenReverse(), Is.EqualTo(Enumerable.Empty<ISyntaxNode>()));
         }
     }
 }

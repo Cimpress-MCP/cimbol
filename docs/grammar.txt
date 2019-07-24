@@ -18,13 +18,13 @@
 
 <factor> ::= ( "+" | "-" )* <power-term>
 
-<power-term> ::= <call> ( "^" <call> )*
+<power-term> ::= <invoke> ( "^" <invoke> )*
 
-<call> ::= <macro> <argument-list> ( <call-part> )*
-<call> ::= <parentheses> ( <call-part> )*
+<invoke> ::= <macro> <argument-list> ( <invoke-part> )*
+<invoke> ::= <parentheses> ( <invoke-part> )*
 
-<call-part> ::= <argument-list>
-<call-part> ::= "." <identifier>
+<invoke-part> ::= <argument-list>
+<invoke-part> ::= "." <identifier>
 
 <terminal> ::= "(" <expression ")"
 <terminal> ::= <boolean-literal> | <number-literal> | <string-literal> | <identifier>

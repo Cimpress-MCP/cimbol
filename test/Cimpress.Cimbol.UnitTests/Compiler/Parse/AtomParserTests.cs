@@ -11,14 +11,14 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
     public class AtomParserTests
     {
         [Test]
-        public void Should_ParseConstantNodeWithBoolean_When_GivenTrueKeyword()
+        public void Should_ParseLiteralNodeWithBoolean_When_GivenTrueKeyword()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token(string.Empty, TokenType.TrueKeyword, new Position(0, 0), new Position(0, 0)));
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Atom() as ConstantNode;
+            var result = parser.Atom() as LiteralNode;
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<bool>(result.Value);
@@ -26,7 +26,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseConstantNodeWithBoolean_When_GivenParenthesizedTrueKeyword()
+        public void Should_ParseLiteralNodeWithBoolean_When_GivenParenthesizedTrueKeyword()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
@@ -35,7 +35,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Atom() as ConstantNode;
+            var result = parser.Atom() as LiteralNode;
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<bool>(result.Value);
@@ -43,14 +43,14 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseConstantNodeWithBoolean_When_GivenFalseKeyword()
+        public void Should_ParseLiteralNodeWithBoolean_When_GivenFalseKeyword()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token(string.Empty, TokenType.FalseKeyword, new Position(0, 0), new Position(0, 0)));
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Atom() as ConstantNode;
+            var result = parser.Atom() as LiteralNode;
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<bool>(result.Value);
@@ -58,7 +58,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseConstantNodeWithBoolean_When_GivenParenthesizedFalseKeyword()
+        public void Should_ParseLiteralNodeWithBoolean_When_GivenParenthesizedFalseKeyword()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
@@ -67,7 +67,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Atom() as ConstantNode;
+            var result = parser.Atom() as LiteralNode;
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<bool>(result.Value);
@@ -75,14 +75,14 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseConstantNodeWithNumber_When_GivenNumberLiteral()
+        public void Should_ParseLiteralNodeWithNumber_When_GivenNumberLiteral()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("123", TokenType.NumberLiteral, new Position(0, 0), new Position(0, 0)));
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Atom() as ConstantNode;
+            var result = parser.Atom() as LiteralNode;
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<decimal>(result.Value);
@@ -90,7 +90,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseConstantNodeWithNumber_When_GivenParenthesizedNumberLiteral()
+        public void Should_ParseLiteralNodeWithNumber_When_GivenParenthesizedNumberLiteral()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
@@ -99,7 +99,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Atom() as ConstantNode;
+            var result = parser.Atom() as LiteralNode;
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<decimal>(result.Value);
@@ -107,14 +107,14 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseConstantNodeWithString_When_GivenStringLiteral()
+        public void Should_ParseLiteralNodeWithString_When_GivenStringLiteral()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("\"hat\"", TokenType.StringLiteral, new Position(0, 0), new Position(0, 0)));
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Atom() as ConstantNode;
+            var result = parser.Atom() as LiteralNode;
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<string>(result.Value);
@@ -122,7 +122,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseConstantNodeWithString_When_GivenParenthesizedStringLiteral()
+        public void Should_ParseLiteralNodeWithString_When_GivenParenthesizedStringLiteral()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
@@ -131,7 +131,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Parser(tokenStream);
 
-            var result = parser.Atom() as ConstantNode;
+            var result = parser.Atom() as LiteralNode;
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<string>(result.Value);

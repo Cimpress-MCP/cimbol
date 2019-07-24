@@ -13,8 +13,8 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// <summary>
         /// Parse a series of <see cref="Token"/> objects into a terminal syntax tree node.
         /// </summary>
-        /// <returns>Either a <see cref="ConstantNode"/> or <see cref="IdentifierNode"/>.</returns>
-        public INode Atom()
+        /// <returns>Either a <see cref="LiteralNode"/> or <see cref="IdentifierNode"/>.</returns>
+        public IExpressionNode Atom()
         {
             var current = Lookahead(0);
             switch (current)
@@ -24,7 +24,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 case TokenType.TrueKeyword:
                 {
                     Match(TokenType.TrueKeyword);
-                    return new ConstantNode(true);
+                    return new LiteralNode(true);
                 }
 
                 // Production rule for a false keyword.
@@ -32,7 +32,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 case TokenType.FalseKeyword:
                 {
                     Match(TokenType.FalseKeyword);
-                    return new ConstantNode(false);
+                    return new LiteralNode(false);
                 }
 
                 // Production rule for a number literal.
@@ -40,7 +40,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 case TokenType.NumberLiteral:
                 {
                     var match = Match(TokenType.NumberLiteral);
-                    return new ConstantNode(NumberSerializer.DeserializeNumber(match.Value));
+                    return new LiteralNode(NumberSerializer.DeserializeNumber(match.Value));
                 }
 
                 // Production rule for a string literal.
@@ -48,7 +48,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 case TokenType.StringLiteral:
                 {
                     var match = Match(TokenType.StringLiteral);
-                    return new ConstantNode(StringSerializer.DeserializeString(match.Value));
+                    return new LiteralNode(StringSerializer.DeserializeString(match.Value));
                 }
 
                 // Production rule for an identifier.

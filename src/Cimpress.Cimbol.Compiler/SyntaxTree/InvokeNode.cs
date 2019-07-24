@@ -5,35 +5,37 @@ using System.Linq;
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
     /// <summary>
-    /// A syntax tree node representing a macro invocation.
+    /// A syntax tree node representing a function invocation.
     /// </summary>
-    public class MacroNode : IExpressionNode
+    public sealed class InvokeNode : IExpressionNode
     {
         /// <summary>
-        /// Initialize a new instance of the <see cref="MacroNode"/> class.
+        /// Initializes a new instance of the <see cref="InvokeNode"/> class.
         /// </summary>
-        /// <param name="macro">The macro to invoke.</param>
-        /// <param name="arguments">The arguments to invoke the macro with.</param>
-        public MacroNode(string macro, IEnumerable<IArgument> arguments)
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arguments">The arguments to invoke the function with.</param>
+        public InvokeNode(IExpressionNode function, IEnumerable<PositionalArgument> arguments)
         {
             Arguments = arguments.ToImmutableArray();
 
-            Macro = macro;
+            Function = function;
         }
 
         /// <summary>
-        /// The arguments to invoke the macro with.
+        /// The arguments to invoke the function with.
         /// </summary>
-        public ImmutableArray<IArgument> Arguments { get; }
+        public ImmutableArray<PositionalArgument> Arguments { get; }
 
         /// <summary>
-        /// The macro to invoke.
+        /// The function to invoke.
         /// </summary>
-        public string Macro { get; }
+        public IExpressionNode Function { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>
         public IEnumerable<ISyntaxNode> Children()
         {
+            yield return Function;
+
             foreach (var argument in Arguments)
             {
                 yield return argument.Value;
@@ -47,12 +49,14 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
             {
                 yield return argument.Value;
             }
+
+            yield return Function;
         }
 
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {
-            return $"{{{nameof(MacroNode)} {Macro}}}";
+            return $"{{{nameof(InvokeNode)}}}";
         }
     }
 }

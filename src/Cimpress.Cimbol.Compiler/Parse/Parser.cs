@@ -5,7 +5,7 @@ using Cimpress.Cimbol.Compiler.SyntaxTree;
 namespace Cimpress.Cimbol.Compiler.Parse
 {
     /// <summary>
-    /// The parser responsible for converting a stream of <see cref="Token"/> objects into a tree of <see cref="INode"/> objects.
+    /// The parser responsible for converting a stream of <see cref="Token"/> objects into a tree of <see cref="ISyntaxNode"/> objects.
     /// </summary>
     public partial class Parser
     {
@@ -29,7 +29,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parse a series of <see cref="Token"/> objects into an expression.
         /// </summary>
         /// <returns>A syntax tree node representing an expression.</returns>
-        public INode Expression()
+        public IExpressionNode Expression()
         {
             var expression = LogicalAnd();
 
@@ -40,7 +40,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parse of a series of <see cref="Token"/> objects into an expression tree.
         /// </summary>
         /// <returns>A syntax tree node representing an expression.</returns>
-        public INode Root()
+        public IExpressionNode Root()
         {
             var expression = Expression();
 

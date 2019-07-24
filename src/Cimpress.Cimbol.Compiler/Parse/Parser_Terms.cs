@@ -14,7 +14,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parse a series of <see cref="Token"/> objects into a series of addition and subtraction operations.
         /// </summary>
         /// <returns>The result of parsing the addition and subtraction operations.</returns>
-        public INode Add()
+        public IExpressionNode Add()
         {
             var head = Multiply();
 
@@ -46,7 +46,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parse a series of <see cref="Token"/> objects into a series of concatenation operations.
         /// </summary>
         /// <returns>The result of parsing the concatenation operations.</returns>
-        public INode Concatenate()
+        public IExpressionNode Concatenate()
         {
             var head = Add();
 
@@ -72,7 +72,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// A factor is an expression with a leading unary arithmetic operator like "+" or "-".
         /// </summary>
         /// <returns>The result of parsing the factor.</returns>
-        public INode Factor()
+        public IExpressionNode Factor()
         {
             var operationStack = new Stack<UnaryOpType>();
 
@@ -109,7 +109,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parse a series of <see cref="Token"/> objects into a series of multiplication and division operations.
         /// </summary>
         /// <returns>The result of parsing the multiplication and division operations.</returns>
-        public INode Multiply()
+        public IExpressionNode Multiply()
         {
             var head = Factor();
 
@@ -148,23 +148,23 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parse a series of <see cref="Token"/> objects into a series of power operations.
         /// </summary>
         /// <returns>The result of parsing the power operations.</returns>
-        public INode Power()
+        public IExpressionNode Power()
         {
             // The exponentiation operation is right-associative.
             // That means that x ^ y ^ z is equivalent to x ^ (y ^ z) instead of (x ^ y) ^ z.
             // Iteration, however, occurs in a left-to-right fashion.
             // This means that the syntax tree nodes can't be built until the entire power term is parsed.
-            var expressionStack = new Stack<INode>();
-            expressionStack.Push(Call());
+            var expressionStack = new Stack<IExpressionNode>();
+            expressionStack.Push(Invoke());
 
             // Production rule for get the remainder between two expressions.
-            // Power -> Call ( "%" Call )*
+            // Power -> Invoke ( "%" Invoke )*
             while (true)
             {
                 if (Lookahead(0) == TokenType.Power)
                 {
                     Match(TokenType.Power);
-                    expressionStack.Push(Call());
+                    expressionStack.Push(Invoke());
                 }
                 else
                 {
@@ -172,7 +172,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 }
             }
 
-            INode head = null;
+            IExpressionNode head = null;
 
             while (expressionStack.Any())
             {

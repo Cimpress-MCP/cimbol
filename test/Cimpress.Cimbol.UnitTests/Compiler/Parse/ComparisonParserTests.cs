@@ -175,7 +175,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
-        public void Should_ParseUnaryOpNodes_When_GivenMultipleLogicalNotOperations()
+        public void Should_ParseUnaryOpNodees_When_GivenMultipleLogicalNotOperations()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("not", TokenType.Not, new Position(0, 0), new Position(0, 0)),

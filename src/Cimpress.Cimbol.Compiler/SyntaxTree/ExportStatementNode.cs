@@ -3,21 +3,21 @@
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
     /// <summary>
-    /// A syntax tree node that references a named variable with an identifier.
+    /// A syntax node representing the exporting of a result from another module.
     /// </summary>
-    public sealed class IdentifierNode : IExpressionNode
+    public class ExportStatementNode : IStatementNode
     {
         /// <summary>
-        /// Initializes a new instance of the new <see cref="IdentifierNode"/> class.
+        /// Initializes a new instance of the <see cref="ExportStatementNode"/> class.
         /// </summary>
-        /// <param name="identifier">The identifier that this node references.</param>
-        public IdentifierNode(string identifier)
+        /// <param name="identifier">The identifier that this node exports from a module.</param>
+        public ExportStatementNode(string identifier)
         {
             Identifier = identifier;
         }
 
         /// <summary>
-        /// The identifier that this node references.
+        /// The identifier that this node exports from a module.
         /// </summary>
         public string Identifier { get; }
 
@@ -36,7 +36,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {
-            return $"{{{nameof(IdentifierNode)} \"{Identifier}\"}}";
+            return $"{{{nameof(ExportStatementNode)} {Identifier}}}";
         }
     }
 }

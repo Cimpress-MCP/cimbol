@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
@@ -7,7 +6,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
     /// A syntax tree node representing a binary operation.
     /// Binary operations include operations like add, greater than, and logical and.
     /// </summary>
-    public sealed class BinaryOpNode : INode, IEquatable<BinaryOpNode>
+    public sealed class BinaryOpNode : IExpressionNode
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BinaryOpNode"/> class.
@@ -15,7 +14,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <param name="opType">The type of binary operation.</param>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        public BinaryOpNode(BinaryOpType opType, INode left, INode right)
+        public BinaryOpNode(BinaryOpType opType, IExpressionNode left, IExpressionNode right)
         {
             OpType = opType;
 
@@ -32,61 +31,27 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <summary>
         /// The left operand.
         /// </summary>
-        public INode Left { get; }
+        public IExpressionNode Left { get; }
 
         /// <summary>
         /// The right operand.
         /// </summary>
-        public INode Right { get; }
+        public IExpressionNode Right { get; }
 
-        /// <inheritdoc cref="INode.Children"/>
-        public IEnumerable<INode> Children()
+        /// <inheritdoc cref="ISyntaxNode.Children"/>
+        public IEnumerable<ISyntaxNode> Children()
         {
             yield return Left;
 
             yield return Right;
         }
 
-        /// <inheritdoc cref="INode.ChildrenReverse"/>
-        public IEnumerable<INode> ChildrenReverse()
+        /// <inheritdoc cref="ISyntaxNode.ChildrenReverse"/>
+        public IEnumerable<ISyntaxNode> ChildrenReverse()
         {
             yield return Right;
 
             yield return Left;
-        }
-
-        /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
-        public bool Equals(BinaryOpNode other)
-        {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return OpType == other.OpType && Equals(Left, other.Left) && Equals(Right, other.Right);
-        }
-
-        /// <inheritdoc cref="object.Equals(object)"/>
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as BinaryOpNode);
-        }
-
-        /// <inheritdoc cref="object.GetHashCode"/>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = (int)OpType;
-                hashCode = (hashCode * 397) ^ (Left != null ? Left.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Right != null ? Right.GetHashCode() : 0);
-                return hashCode;
-            }
         }
 
         /// <inheritdoc cref="object.ToString"/>

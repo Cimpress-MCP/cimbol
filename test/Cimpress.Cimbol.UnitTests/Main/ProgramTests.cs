@@ -46,9 +46,9 @@ namespace Cimpress.Cimbol.UnitTests.Main
             program.AddConstant("argument", new NumberValue(1));
 
             Argument argument = null;
-            Assert.DoesNotThrow(() => argument = program.AddArgument("argument"));
+            Assert.DoesNotThrow(() => argument = program.AddArgument(resourceName));
             Assert.That(argument, Is.Not.Null);
-            Assert.That(argument.Name, Is.EqualTo("argument"));
+            Assert.That(argument.Name, Is.EqualTo(resourceName));
             Assert.That(argument.Program, Is.SameAs(program));
         }
 
@@ -62,9 +62,9 @@ namespace Cimpress.Cimbol.UnitTests.Main
             program.AddModule("argument");
 
             Argument argument = null;
-            Assert.DoesNotThrow(() => argument = program.AddArgument("argument"));
+            Assert.DoesNotThrow(() => argument = program.AddArgument(resourceName));
             Assert.That(argument, Is.Not.Null);
-            Assert.That(argument.Name, Is.EqualTo("argument"));
+            Assert.That(argument.Name, Is.EqualTo(resourceName));
             Assert.That(argument.Program, Is.SameAs(program));
         }
 
@@ -119,9 +119,9 @@ namespace Cimpress.Cimbol.UnitTests.Main
             program.AddArgument("constant");
 
             Constant constant = null;
-            Assert.DoesNotThrow(() => constant = program.AddConstant("constant", new NumberValue(1)));
+            Assert.DoesNotThrow(() => constant = program.AddConstant(resourceName, new NumberValue(1)));
             Assert.That(constant, Is.Not.Null);
-            Assert.That(constant.Name, Is.EqualTo("constant"));
+            Assert.That(constant.Name, Is.EqualTo(resourceName));
             Assert.That(constant.Program, Is.SameAs(program));
             Assert.That(constant.Value, Is.InstanceOf<NumberValue>());
         }
@@ -136,9 +136,9 @@ namespace Cimpress.Cimbol.UnitTests.Main
             program.AddModule("constant");
 
             Constant constant = null;
-            Assert.DoesNotThrow(() => constant = program.AddConstant("constant", new NumberValue(1)));
+            Assert.DoesNotThrow(() => constant = program.AddConstant(resourceName, new NumberValue(1)));
             Assert.That(constant, Is.Not.Null);
-            Assert.That(constant.Name, Is.EqualTo("constant"));
+            Assert.That(constant.Name, Is.EqualTo(resourceName));
             Assert.That(constant.Program, Is.SameAs(program));
             Assert.That(constant.Value, Is.InstanceOf<NumberValue>());
         }
@@ -185,9 +185,9 @@ namespace Cimpress.Cimbol.UnitTests.Main
             program.AddArgument("module");
 
             Module module = null;
-            Assert.DoesNotThrow(() => module = program.AddModule("module"));
+            Assert.DoesNotThrow(() => module = program.AddModule(resourceName));
             Assert.That(module, Is.Not.Null);
-            Assert.That(module.Name, Is.EqualTo("module"));
+            Assert.That(module.Name, Is.EqualTo(resourceName));
             Assert.That(module.Program, Is.SameAs(program));
         }
 
@@ -201,9 +201,9 @@ namespace Cimpress.Cimbol.UnitTests.Main
             program.AddConstant("module", new NumberValue(1));
 
             Module module = null;
-            Assert.DoesNotThrow(() => module = program.AddModule("module"));
+            Assert.DoesNotThrow(() => module = program.AddModule(resourceName));
             Assert.That(module, Is.Not.Null);
-            Assert.That(module.Name, Is.EqualTo("module"));
+            Assert.That(module.Name, Is.EqualTo(resourceName));
             Assert.That(module.Program, Is.SameAs(program));
         }
 

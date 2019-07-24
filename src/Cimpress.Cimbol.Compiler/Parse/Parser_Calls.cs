@@ -4,22 +4,23 @@ using Cimpress.Cimbol.Compiler.SyntaxTree;
 namespace Cimpress.Cimbol.Compiler.Parse
 {
     /// <summary>
-    /// The set of methods to use with the <see cref="Parser"/> for parsing calls.
+    /// The set of methods to use with the <see cref="Parser"/> for parsing invocations.
+    /// Note that member accesses as well as macro invocations also fall under this set of productions.
     /// </summary>
     public partial class Parser
     {
         /// <summary>
-        /// Parse a series of <see cref="Token"/> objects into either a function call or member access.
+        /// Parse a series of <see cref="Token"/> objects into either a function invocation or member access.
         /// </summary>
-        /// <returns>Either a <see cref="AccessNode"/>, <see cref="CallNode"/>, or <see cref="MacroNode"/>.</returns>
-        public INode Call()
+        /// <returns>Either a <see cref="AccessNode"/>, <see cref="InvokeNode"/>, or <see cref="MacroNode"/>.</returns>
+        public IExpressionNode Invoke()
         {
-            INode head;
+            IExpressionNode head;
 
             switch (Lookahead(0))
             {
                 // Production rule for an if expression.
-                // Call -> "if" KeyArgumentList CallPart+
+                // Invoke -> "if" KeyArgumentList InvokePart*
                 case TokenType.IfKeyword:
                 {
                     Match(TokenType.IfKeyword);
@@ -29,7 +30,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 }
 
                 // Production rule for a list constructor.
-                // Call -> "list" KeyArgumentList CallPart+
+                // Invoke -> "list" KeyArgumentList InvokePart*
                 case TokenType.ListKeyword:
                 {
                     Match(TokenType.ListKeyword);
@@ -39,7 +40,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 }
 
                 // Production rule for an object constructor.
-                // Call -> "object" KeyArgumentList CallPart+
+                // Invoke -> "object" KeyArgumentList InvokePart*
                 case TokenType.ObjectKeyword:
                 {
                     Match(TokenType.ObjectKeyword);
@@ -49,7 +50,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 }
 
                 // Production rule for a where expression.
-                // Call -> "where" KeyArgumentList CallPart+
+                // Invoke -> "where" KeyArgumentList InvokePart*
                 case TokenType.WhereKeyword:
                 {
                     Match(TokenType.WhereKeyword);
@@ -58,8 +59,8 @@ namespace Cimpress.Cimbol.Compiler.Parse
                     break;
                 }
 
-                // Production rule for any generic call or member access.
-                // Call -> Atom CallPart+
+                // Production rule for any generic function invocation or member access.
+                // Invoke -> Atom InvokePart*
                 default:
                 {
                     head = Atom();
@@ -67,38 +68,38 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 }
             }
 
-            // Production rule for trailing member accesses and function calls.
-            // Call -> Macro ArgumentList ( CallPart )*
-            // Call -> Parentheses ( CallPart )*
+            // Production rule for trailing member accesses and function invocations.
+            // Invoke -> Macro ArgumentList InvokePart*
+            // Invoke -> Parentheses InvokePart*
             while (true)
             {
-                var callPart = CallPart(head);
+                var invokePart = InvokePart(head);
 
-                if (callPart == null)
+                if (invokePart == null)
                 {
                     break;
                 }
 
-                head = callPart;
+                head = invokePart;
             }
 
             return head;
         }
 
-        private INode CallPart(INode inner)
+        private IExpressionNode InvokePart(IExpressionNode inner)
         {
             switch (Lookahead(0))
             {
                 // Production rule for argument lists.
-                // CallPart -> ArgumentList
+                // InvokePart -> ArgumentList
                 case TokenType.LeftParenthesis:
                 {
                     var argumentList = ArgumentList();
-                    return new CallNode(inner, argumentList);
+                    return new InvokeNode(inner, argumentList);
                 }
 
                 // Production rule for member accesses.
-                // CallPart -> "." Identifier
+                // InvokePart -> "." Identifier
                 case TokenType.Period:
                 {
                     Match(TokenType.Period);

@@ -15,7 +15,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parses a series of comparison operations.
         /// </summary>
         /// <returns>A tree of comparison operations.</returns>
-        public INode Comparison()
+        public IExpressionNode Comparison()
         {
             var head = Concatenate();
 
@@ -52,7 +52,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parses a series of logical and expressions.
         /// </summary>
         /// <returns>A tree of logical and expressions.</returns>
-        public INode LogicalAnd()
+        public IExpressionNode LogicalAnd()
         {
             var head = LogicalOr();
 
@@ -77,7 +77,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parses a series of logical not expressions.
         /// </summary>
         /// <returns>A tree of logical not expressions.</returns>
-        public INode LogicalNot()
+        public IExpressionNode LogicalNot()
         {
             var operationStack = new Stack<UnaryOpType>();
 
@@ -111,7 +111,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// Parses a series of logical or expressions.
         /// </summary>
         /// <returns>A tree of logical or expressions.</returns>
-        public INode LogicalOr()
+        public IExpressionNode LogicalOr()
         {
             var head = LogicalNot();
 

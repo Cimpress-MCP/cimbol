@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
@@ -7,14 +6,14 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
     /// A syntax tree node representing a unary operation.
     /// Unary operations include operations like not and negate.
     /// </summary>
-    public sealed class UnaryOpNode : INode, IEquatable<UnaryOpNode>
+    public sealed class UnaryOpNode : IExpressionNode
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UnaryOpNode"/> class.
         /// </summary>
         /// <param name="opType">The type of unary operation.</param>
         /// <param name="operand">The operand.</param>
-        public UnaryOpNode(UnaryOpType opType, INode operand)
+        public UnaryOpNode(UnaryOpType opType, IExpressionNode operand)
         {
             OpType = opType;
 
@@ -29,49 +28,18 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <summary>
         /// The operand.
         /// </summary>
-        public INode Operand { get; }
+        public IExpressionNode Operand { get; }
 
-        /// <inheritdoc cref="INode.Children"/>
-        public IEnumerable<INode> Children()
+        /// <inheritdoc cref="ISyntaxNode.Children"/>
+        public IEnumerable<ISyntaxNode> Children()
         {
             yield return Operand;
         }
 
-        /// <inheritdoc cref="INode.ChildrenReverse"/>
-        public IEnumerable<INode> ChildrenReverse()
+        /// <inheritdoc cref="ISyntaxNode.ChildrenReverse"/>
+        public IEnumerable<ISyntaxNode> ChildrenReverse()
         {
             yield return Operand;
-        }
-
-        /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
-        public bool Equals(UnaryOpNode other)
-        {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return OpType == other.OpType && Equals(Operand, other.Operand);
-        }
-
-        /// <inheritdoc cref="object.Equals(object)"/>
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as UnaryOpNode);
-        }
-
-        /// <inheritdoc cref="object.GetHashCode"/>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((int)OpType * 397) ^ (Operand != null ? Operand.GetHashCode() : 0);
-            }
         }
 
         /// <inheritdoc cref="object.ToString"/>

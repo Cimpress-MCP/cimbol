@@ -8,6 +8,6 @@
         /// <summary>
         /// The value of the argument.
         /// </summary>
-        INode Value { get; }
+        IExpressionNode Value { get; }
     }
 }

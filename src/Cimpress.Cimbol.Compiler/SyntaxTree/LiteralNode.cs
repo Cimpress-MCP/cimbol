@@ -3,23 +3,23 @@
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
     /// <summary>
-    /// A syntax tree node that references a named variable with an identifier.
+    /// A syntax tree node representing a literal value.
     /// </summary>
-    public sealed class IdentifierNode : IExpressionNode
+    public sealed class LiteralNode : IExpressionNode
     {
         /// <summary>
-        /// Initializes a new instance of the new <see cref="IdentifierNode"/> class.
+        /// Initializes a new instance of the <see cref="LiteralNode"/> class.
         /// </summary>
-        /// <param name="identifier">The identifier that this node references.</param>
-        public IdentifierNode(string identifier)
+        /// <param name="value">The value of the node.</param>
+        public LiteralNode(object value)
         {
-            Identifier = identifier;
+            Value = value;
         }
 
         /// <summary>
-        /// The identifier that this node references.
+        /// The value of the node.
         /// </summary>
-        public string Identifier { get; }
+        public object Value { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>
         public IEnumerable<ISyntaxNode> Children()
@@ -36,7 +36,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {
-            return $"{{{nameof(IdentifierNode)} \"{Identifier}\"}}";
+            return $"{{{nameof(LiteralNode)} {Value}}}";
         }
     }
 }
