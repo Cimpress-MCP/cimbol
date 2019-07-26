@@ -31,6 +31,13 @@
         StringValue CastString();
 
         /// <summary>
+        /// Check if this <see cref="ILocalValue"/> is equal to another <see cref="ILocalValue"/>.
+        /// </summary>
+        /// <param name="other">The value to compare with.</param>
+        /// <returns>The result of checking if this local value is equal to another local value.</returns>
+        bool EqualTo(ILocalValue other);
+
+        /// <summary>
         /// Invoke the <see cref="ILocalValue"/> with a list of arguments.
         /// </summary>
         /// <param name="arguments">The list of arguments to use in the invocation.</param>

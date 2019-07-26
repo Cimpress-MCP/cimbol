@@ -16,9 +16,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildren()
         {
-            var child1 = new LiteralNode(1);
-            var child2 = new LiteralNode(2);
-            var child3 = new LiteralNode(3);
+            var child1 = new LiteralNode(null);
+            var child2 = new LiteralNode(null);
+            var child3 = new LiteralNode(null);
             var node = new BlockNode(new[] { child1, child2, child3 });
 
             var expected = new[] { child1, child2, child3 };
@@ -28,9 +28,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildrenReverse()
         {
-            var child1 = new LiteralNode(1);
-            var child2 = new LiteralNode(2);
-            var child3 = new LiteralNode(3);
+            var child1 = new LiteralNode(null);
+            var child2 = new LiteralNode(null);
+            var child3 = new LiteralNode(null);
             var node = new BlockNode(new[] { child1, child2, child3 });
 
             var expected = new[] { child3, child2, child1 };

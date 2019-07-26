@@ -65,6 +65,12 @@ namespace Cimpress.Cimbol.Runtime.Types
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
+        public bool EqualTo(ILocalValue other)
+        {
+            return ReferenceEquals(this, other);
+        }
+
+        /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
             // Turn off the null check analyzer - we can assume this is always not null and we don't want to incur a

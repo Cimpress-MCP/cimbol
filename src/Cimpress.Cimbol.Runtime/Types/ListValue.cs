@@ -49,6 +49,12 @@ namespace Cimpress.Cimbol.Runtime.Types
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
+        public bool EqualTo(ILocalValue other)
+        {
+            return ReferenceEquals(this, other);
+        }
+
+        /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
             throw new NotSupportedException();

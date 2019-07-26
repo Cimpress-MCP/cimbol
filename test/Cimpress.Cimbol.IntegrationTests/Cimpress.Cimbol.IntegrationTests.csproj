@@ -23,10 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Compiler\SyntaxTree\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\Cimpress.Cimbol.Compiler\Cimpress.Cimbol.Compiler.csproj" />
     <ProjectReference Include="..\..\src\Cimpress.Cimbol.Runtime\Cimpress.Cimbol.Runtime.csproj" />
   </ItemGroup>

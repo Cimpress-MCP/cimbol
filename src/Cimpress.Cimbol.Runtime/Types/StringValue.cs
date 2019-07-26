@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Runtime.Functions;
 
 namespace Cimpress.Cimbol.Runtime.Types
 {
@@ -48,6 +49,22 @@ namespace Cimpress.Cimbol.Runtime.Types
         public StringValue CastString()
         {
             return this;
+        }
+
+        /// <inheritdoc cref="ILocalValue.EqualTo"/>
+        public bool EqualTo(ILocalValue other)
+        {
+            switch (other)
+            {
+                case NumberValue otherNumber:
+                    return RuntimeFunctions.InnerEqualTo(otherNumber, this);
+
+                case StringValue otherString:
+                    return RuntimeFunctions.InnerEqualTo(this, otherString);
+
+                default:
+                    return false;
+            }
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>

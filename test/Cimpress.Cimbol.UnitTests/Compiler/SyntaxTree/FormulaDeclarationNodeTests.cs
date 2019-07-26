@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Cimpress.Cimbol.Compiler.SyntaxTree;
+﻿using Cimpress.Cimbol.Compiler.SyntaxTree;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
@@ -18,7 +17,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildren()
         {
-            var child1 = new LiteralNode(1);
+            var child1 = new LiteralNode(null);
             var node = new FormulaDeclarationNode("a", child1);
 
             var expected = new[] { child1 };
@@ -28,7 +27,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildrenReverse()
         {
-            var child1 = new LiteralNode(1);
+            var child1 = new LiteralNode(null);
             var node = new FormulaDeclarationNode("a", child1);
 
             var expected = new[] { child1 };

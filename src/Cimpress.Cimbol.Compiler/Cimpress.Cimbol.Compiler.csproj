@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Cimpress.Cimbol.Runtime\Cimpress.Cimbol.Runtime.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\..\.nuget\packages\microsoft.codeanalysis.common\2.10.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>

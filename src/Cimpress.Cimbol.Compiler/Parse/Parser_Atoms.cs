@@ -2,6 +2,7 @@
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Compiler.Utilities;
+using Cimpress.Cimbol.Runtime.Types;
 
 namespace Cimpress.Cimbol.Compiler.Parse
 {
@@ -24,7 +25,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 case TokenType.TrueKeyword:
                 {
                     Match(TokenType.TrueKeyword);
-                    return new LiteralNode(true);
+                    return new LiteralNode(new BooleanValue(true));
                 }
 
                 // Production rule for a false keyword.
@@ -32,7 +33,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 case TokenType.FalseKeyword:
                 {
                     Match(TokenType.FalseKeyword);
-                    return new LiteralNode(false);
+                    return new LiteralNode(new BooleanValue(false));
                 }
 
                 // Production rule for a number literal.
@@ -40,7 +41,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 case TokenType.NumberLiteral:
                 {
                     var match = Match(TokenType.NumberLiteral);
-                    return new LiteralNode(NumberSerializer.DeserializeNumber(match.Value));
+                    return new LiteralNode(new NumberValue(NumberSerializer.DeserializeNumber(match.Value)));
                 }
 
                 // Production rule for a string literal.
@@ -48,7 +49,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 case TokenType.StringLiteral:
                 {
                     var match = Match(TokenType.StringLiteral);
-                    return new LiteralNode(StringSerializer.DeserializeString(match.Value));
+                    return new LiteralNode(new StringValue(StringSerializer.DeserializeString(match.Value)));
                 }
 
                 // Production rule for an identifier.

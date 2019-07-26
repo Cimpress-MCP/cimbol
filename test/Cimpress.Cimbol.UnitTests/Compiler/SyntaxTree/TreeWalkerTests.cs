@@ -9,7 +9,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_TraversePreOrder_When_GivenSingleNode()
         {
-            var node1 = new LiteralNode(1);
+            var node1 = new LiteralNode(null);
             var traversal = new TreeWalker(node1);
 
             var expected = new ISyntaxNode[] { node1 };
@@ -19,7 +19,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_TraversePostOrder_When_GivenSingleNode()
         {
-            var node1 = new LiteralNode(1);
+            var node1 = new LiteralNode(null);
             var traversal = new TreeWalker(node1);
 
             var expected = new ISyntaxNode[] { node1 };
@@ -30,9 +30,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         public void Should_TraversePreOrder_When_GivenSingleLevel()
         {
             var node1 = new IdentifierNode("x");
-            var argument1 = new PositionalArgument(new LiteralNode(1));
-            var argument2 = new PositionalArgument(new LiteralNode(2));
-            var argument3 = new PositionalArgument(new LiteralNode(3));
+            var argument1 = new PositionalArgument(new LiteralNode(null));
+            var argument2 = new PositionalArgument(new LiteralNode(null));
+            var argument3 = new PositionalArgument(new LiteralNode(null));
             var node2 = new InvokeNode(node1, new[] { argument1, argument2, argument3 });
             var traversal = new TreeWalker(node2);
 
@@ -44,9 +44,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         public void Should_TraversePostOrder_When_GivenSingleLevel()
         {
             var node1 = new IdentifierNode("x");
-            var argument1 = new PositionalArgument(new LiteralNode(1));
-            var argument2 = new PositionalArgument(new LiteralNode(2));
-            var argument3 = new PositionalArgument(new LiteralNode(3));
+            var argument1 = new PositionalArgument(new LiteralNode(null));
+            var argument2 = new PositionalArgument(new LiteralNode(null));
+            var argument3 = new PositionalArgument(new LiteralNode(null));
             var node2 = new InvokeNode(node1, new[] { argument1, argument2, argument3 });
             var traversal = new TreeWalker(node2);
 
@@ -57,10 +57,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_TraversePreOrder_When_GivenManyLevels()
         {
-            var node1 = new LiteralNode(1);
-            var node2 = new LiteralNode(2);
+            var node1 = new LiteralNode(null);
+            var node2 = new LiteralNode(null);
             var node3 = new BinaryOpNode(BinaryOpType.Add, node1, node2);
-            var node4 = new LiteralNode(3);
+            var node4 = new LiteralNode(null);
             var node5 = new BinaryOpNode(BinaryOpType.Add, node3, node4);
             var traversal = new TreeWalker(node5);
 
@@ -71,10 +71,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_TraversePostOrder_When_GivenManyLevels()
         {
-            var node1 = new LiteralNode(1);
-            var node2 = new LiteralNode(2);
+            var node1 = new LiteralNode(null);
+            var node2 = new LiteralNode(null);
             var node3 = new BinaryOpNode(BinaryOpType.Add, node1, node2);
-            var node4 = new LiteralNode(3);
+            var node4 = new LiteralNode(null);
             var node5 = new BinaryOpNode(BinaryOpType.Add, node3, node4);
             var traversal = new TreeWalker(node5);
 

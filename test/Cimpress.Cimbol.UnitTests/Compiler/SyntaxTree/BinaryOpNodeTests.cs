@@ -16,8 +16,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildren()
         {
-            var child1 = new LiteralNode(1);
-            var child2 = new LiteralNode(2);
+            var child1 = new LiteralNode(null);
+            var child2 = new LiteralNode(null);
             var node = new BinaryOpNode(BinaryOpType.Add, child1, child2);
 
             var expected = new[] { child1, child2 };
@@ -27,8 +27,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildrenReverse()
         {
-            var child1 = new LiteralNode(1);
-            var child2 = new LiteralNode(2);
+            var child1 = new LiteralNode(null);
+            var child2 = new LiteralNode(null);
             var node = new BinaryOpNode(BinaryOpType.Add, child1, child2);
 
             var expected = new[] { child2, child1 };

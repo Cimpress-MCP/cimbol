@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cimpress.Cimbol.Runtime.Types;
 
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
@@ -11,7 +12,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// Initializes a new instance of the <see cref="LiteralNode"/> class.
         /// </summary>
         /// <param name="value">The value of the node.</param>
-        public LiteralNode(object value)
+        public LiteralNode(ILocalValue value)
         {
             Value = value;
         }
@@ -19,7 +20,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <summary>
         /// The value of the node.
         /// </summary>
-        public object Value { get; }
+        public ILocalValue Value { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>
         public IEnumerable<ISyntaxNode> Children()
@@ -36,7 +37,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {
-            return $"{{{nameof(LiteralNode)} {Value}}}";
+            return $"{{{nameof(LiteralNode)}}}";
         }
     }
 }

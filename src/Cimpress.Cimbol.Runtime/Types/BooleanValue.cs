@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Runtime.Functions;
 
 namespace Cimpress.Cimbol.Runtime.Types
 {
@@ -15,6 +16,16 @@ namespace Cimpress.Cimbol.Runtime.Types
         {
             Value = value;
         }
+
+        /// <summary>
+        /// The <see cref="BooleanValue"/> equivalent to "false".
+        /// </summary>
+        public static BooleanValue False { get; } = new BooleanValue(false);
+
+        /// <summary>
+        /// The <see cref="BooleanValue"/> equivalent to "true".
+        /// </summary>
+        public static BooleanValue True { get; } = new BooleanValue(true);
 
         /// <summary>
         /// The value stored in the <see cref="BooleanValue"/>.
@@ -43,6 +54,19 @@ namespace Cimpress.Cimbol.Runtime.Types
         public StringValue CastString()
         {
             throw new NotSupportedException();
+        }
+
+        /// <inheritdoc cref="ILocalValue.EqualTo"/>
+        public bool EqualTo(ILocalValue other)
+        {
+            switch (other)
+            {
+                case BooleanValue otherBoolean:
+                    return RuntimeFunctions.InnerEqualTo(this, otherBoolean);
+
+                default:
+                    return false;
+            }
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
