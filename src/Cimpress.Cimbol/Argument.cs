@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Compiler.SyntaxTree;
 
 namespace Cimpress.Cimbol
 {
@@ -28,5 +29,14 @@ namespace Cimpress.Cimbol
         /// The <see cref="Program"/> that the argument belongs to.
         /// </summary>
         public Program Program { get; }
+
+        /// <summary>
+        /// Compile the argument into an abstract syntax tree.
+        /// </summary>
+        /// <returns>An abstract syntax tree.</returns>
+        internal ArgumentDeclarationNode ToSyntaxTree()
+        {
+            return new ArgumentDeclarationNode(Name);
+        }
     }
 }

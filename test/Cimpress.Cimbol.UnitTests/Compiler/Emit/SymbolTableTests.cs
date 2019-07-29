@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Cimpress.Cimbol.Compiler.Emit;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;

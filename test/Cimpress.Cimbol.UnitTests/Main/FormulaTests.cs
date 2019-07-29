@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Compiler.SyntaxTree;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Main
@@ -16,20 +17,11 @@ namespace Cimpress.Cimbol.UnitTests.Main
         }
 
         [Test]
-        public void Should_ThrowException_When_InitializedWithNullNameWhenVisible()
+        public void Should_ThrowArgumentNullException_When_InitializedWithNullName()
         {
-            Assert.Throws<NotSupportedException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
             {
-                var formula = new Formula(new Module(new Program(), "module"), null, "x", FormulaFlags.Visible);
-            });
-        }
-
-        [Test]
-        public void Should_ThrowException_When_InitializedWithNameWhenInvisible()
-        {
-            Assert.Throws<NotSupportedException>(() =>
-            {
-                var formula = new Formula(new Module(new Program(), "module"), "formula", "x", FormulaFlags.None);
+                var formula = new Formula(new Module(new Program(), "module"), null, "x");
             });
         }
 
@@ -76,24 +68,34 @@ namespace Cimpress.Cimbol.UnitTests.Main
         }
 
         [Test]
-        [TestCase(FormulaFlags.None, false, false, false)]
-        [TestCase(FormulaFlags.Visible, false, false, true)]
-        [TestCase(FormulaFlags.Private, false, false, true)]
-        [TestCase(FormulaFlags.Referenceable, false, true, false)]
-        [TestCase(FormulaFlags.Internal, false, true, true)]
-        [TestCase(FormulaFlags.Exported, true, false, false)]
-        [TestCase(FormulaFlags.Public, true, true, true)]
+        [TestCase(FormulaFlags.None, false, false)]
+        [TestCase(FormulaFlags.Private, false, false)]
+        [TestCase(FormulaFlags.Referenceable, false, true)]
+        [TestCase(FormulaFlags.Internal, false, true)]
+        [TestCase(FormulaFlags.Exported, true, false)]
+        [TestCase(FormulaFlags.Public, true, true)]
         public void Should_RetrieveSameFlags_When_InitializedWithFlags(
             FormulaFlags flags,
             bool exported,
-            bool referenceable,
-            bool visible)
+            bool referenceable)
         {
-            var name = flags.HasFlag(FormulaFlags.Visible) ? "formula" : null;
-            var formula = new Formula(new Module(new Program(), "module"), name, "x", flags);
+            var formula = new Formula(new Module(new Program(), "module"), "formula", "x", flags);
             Assert.That(formula.IsExported, Is.EqualTo(exported));
             Assert.That(formula.IsReferenceable, Is.EqualTo(referenceable));
-            Assert.That(formula.IsVisible, Is.EqualTo(visible));
+        }
+
+        [Test]
+        public void Should_CreateFormulaDeclarationNode_When_Given_ValidExpression()
+        {
+            var program = new Program();
+            var module = program.AddModule("module");
+            var formula = module.AddFormula("formula", "x");
+
+            var result = formula.ToSyntaxTree();
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Body, Is.InstanceOf<IdentifierNode>());
+            Assert.That(result.Name, Is.EqualTo("formula"));
         }
     }
 }

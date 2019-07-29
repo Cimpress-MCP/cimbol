@@ -24,9 +24,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// </summary>
         public IExpressionNode Body { get; }
 
-        /// <summary>
-        /// The name to assign to the formula's result.
-        /// </summary>
+        /// <inheritdoc cref="IDeclarationNode.Name"/>
         public string Name { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Cimpress.Cimbol.Compiler.SyntaxTree;
 
 namespace Cimpress.Cimbol
 {
@@ -125,6 +127,88 @@ namespace Cimpress.Cimbol
         public bool TryGetFormula(string formulaName, out Formula formula)
         {
             return _formulas.TryGetValue(formulaName, out formula);
+        }
+
+        /// <summary>
+        /// Compile the module into an abstract syntax tree.
+        /// </summary>
+        /// <returns>An abstract syntax tree.</returns>
+        internal ModuleDeclarationNode ToSyntaxTree()
+        {
+            var imports = new List<ImportStatementNode>();
+
+            foreach (var referenceEntry in _references)
+            {
+                if (_formulas.ContainsKey(referenceEntry.Key))
+                {
+                    // Skip over formulas, they are handled later.
+                    continue;
+                }
+
+                var importPath = GetImportPath(referenceEntry.Value);
+                var importType = GetImportType(referenceEntry.Value);
+
+                imports.Add(new ImportStatementNode(referenceEntry.Key, importPath, importType));
+            }
+
+            var exports = new List<ExportStatementNode>();
+
+            foreach (var formula in _formulas.Values)
+            {
+                if (!formula.IsExported && !formula.IsReferenceable)
+                {
+                    // Skip over anything that can't be referenced.
+                    continue;
+                }
+
+                exports.Add(new ExportStatementNode(formula.Name));
+            }
+
+            var formulas = _formulas.Values.Select(formula => formula.ToSyntaxTree());
+
+            return new ModuleDeclarationNode(Name, imports, exports, formulas);
+        }
+
+        private static IEnumerable<string> GetImportPath(IResource resource)
+        {
+            switch (resource)
+            {
+                case Argument argument:
+                    return new[] { argument.Name };
+
+                case Constant constant:
+                    return new[] { constant.Name };
+
+                case Formula formula:
+                    return new[] { formula.Module.Name, formula.Name };
+
+                case Module module:
+                    return new[] { module.Name };
+
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        private static ImportType GetImportType(IResource resource)
+        {
+            switch (resource)
+            {
+                case Argument _:
+                    return ImportType.Argument;
+
+                case Constant _:
+                    return ImportType.Constant;
+
+                case Formula _:
+                    return ImportType.Formula;
+
+                case Module _:
+                    return ImportType.Module;
+
+                default:
+                    throw new NotSupportedException();
+            }
         }
     }
 }

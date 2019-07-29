@@ -24,23 +24,18 @@ namespace Cimpress.Cimbol
         Referenceable = 2,
 
         /// <summary>
-        /// If set, the formula is referenceable by name from its current module.
-        /// </summary>
-        Visible = 4,
-
-        /// <summary>
         /// If set, the formula cannot be referenced from other modules and is not return as result of the evaluation.
         /// </summary>
-        Private = Visible,
+        Private = None,
 
         /// <summary>
         /// If set, the formula can be referenced from other modules but is not returned as a result of the evaluation.
         /// </summary>
-        Internal = Referenceable | Visible,
+        Internal = Referenceable,
 
         /// <summary>
         /// If set, the formula can be referenced from other modules but is not returned as a result of the evaluation.
         /// </summary>
-        Public = Exported | Referenceable | Visible,
+        Public = Exported | Referenceable,
     }
 }

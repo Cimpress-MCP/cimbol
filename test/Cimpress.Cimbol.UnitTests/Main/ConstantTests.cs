@@ -57,5 +57,18 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var constant = new Constant(new Program(), "constant", value);
             Assert.That(constant.Value, Is.SameAs(value));
         }
+
+        [Test]
+        public void Should_CreateArgumentDeclarationNode_When_Valid()
+        {
+            var program = new Program();
+            var constant = program.AddConstant("constant", BooleanValue.True);
+
+            var result = constant.ToSyntaxTree();
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Name, Is.EqualTo("constant"));
+            Assert.That(result.Value, Is.SameAs(BooleanValue.True));
+        }
     }
 }

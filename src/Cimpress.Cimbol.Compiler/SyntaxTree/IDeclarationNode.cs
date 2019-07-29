@@ -5,5 +5,9 @@
     /// </summary>
     public interface IDeclarationNode : ISyntaxNode
     {
+        /// <summary>
+        /// The name to assign to the declared value.
+        /// </summary>
+        string Name { get; }
     }
 }

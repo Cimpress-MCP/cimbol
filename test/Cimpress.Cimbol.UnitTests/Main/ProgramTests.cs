@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 
@@ -334,6 +335,58 @@ namespace Cimpress.Cimbol.UnitTests.Main
 
             Assert.That(success, Is.False);
             Assert.That(resource, Is.Null);
+        }
+
+        [Test]
+        public void Should_CreateProgramNode_When_Empty()
+        {
+            var program = new Program();
+
+            var result = program.ToSyntaxTree();
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Arguments, Is.Empty);
+            Assert.That(result.Constants, Is.Empty);
+            Assert.That(result.Modules, Is.Empty);
+        }
+
+        [Test]
+        public void Should_CreateProgramNode_When_GivenSingleArgument()
+        {
+            var program = new Program();
+            program.AddArgument("argument");
+
+            var result = program.ToSyntaxTree();
+
+            Assert.That(result.Arguments, Has.Length.EqualTo(1));
+            var argument = result.Arguments.Single();
+            Assert.That(argument.Name, Is.EqualTo("argument"));
+        }
+
+        [Test]
+        public void Should_CreateProgramNode_When_GivenSingleConstant()
+        {
+            var program = new Program();
+            program.AddConstant("constant", BooleanValue.True);
+
+            var result = program.ToSyntaxTree();
+
+            Assert.That(result.Constants, Has.Length.EqualTo(1));
+            var constant = result.Constants.Single();
+            Assert.That(constant.Name, Is.EqualTo("constant"));
+        }
+
+        [Test]
+        public void Should_CreateProgramNode_When_GivenSingleModule()
+        {
+            var program = new Program();
+            program.AddModule("module");
+
+            var result = program.ToSyntaxTree();
+
+            Assert.That(result.Modules, Has.Length.EqualTo(1));
+            var module = result.Modules.Single();
+            Assert.That(module.Name, Is.EqualTo("module"));
         }
     }
 }

@@ -46,9 +46,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// </summary>
         public IReadOnlyCollection<ImportStatementNode> Imports { get; }
 
-        /// <summary>
-        /// The name of the module.
-        /// </summary>
+        /// <inheritdoc cref="IDeclarationNode.Name"/>
         public string Name { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>

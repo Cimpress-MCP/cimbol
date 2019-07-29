@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 
@@ -229,6 +231,136 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var module = program.AddModule("module");
             module.AddFormula("formula", "1 + 2");
             Assert.Throws<NotSupportedException>(() => module.AddReference("formula", resource));
+        }
+
+        [Test]
+        public void Should_CreateModuleDeclaratioNode_When_GivenEmptyModule()
+        {
+            var program = new Program();
+            var module = program.AddModule("module");
+
+            var result = module.ToSyntaxTree();
+            Assert.That(result.Exports, Is.Empty);
+            Assert.That(result.Formulas, Is.Empty);
+            Assert.That(result.Imports, Is.Empty);
+        }
+
+        [Test]
+        public void Should_CreateModuleDeclarationNode_When_GivenSingleArgumentImport()
+        {
+            var program = new Program();
+            var resource = program.AddArgument("argument");
+            var module = program.AddModule("module");
+            module.AddReference("argument", resource);
+
+            var result = module.ToSyntaxTree();
+
+            Assert.That(result.Imports, Has.Length.EqualTo(1));
+            var import = result.Imports.Single();
+            Assert.That(import.Identifier, Is.EqualTo("argument"));
+            Assert.That(import.ImportPath, Is.EqualTo(new[] { "argument" }));
+            Assert.That(import.ImportType, Is.EqualTo(ImportType.Argument));
+        }
+
+        [Test]
+        public void Should_CreateModuleDeclarationNode_When_GivenSingleConstantImport()
+        {
+            var program = new Program();
+            var resource = program.AddConstant("constant", BooleanValue.True);
+            var module = program.AddModule("module");
+            module.AddReference("constant", resource);
+
+            var result = module.ToSyntaxTree();
+
+            Assert.That(result.Imports, Has.Length.EqualTo(1));
+            var import = result.Imports.Single();
+            Assert.That(import.Identifier, Is.EqualTo("constant"));
+            Assert.That(import.ImportPath, Is.EqualTo(new[] { "constant" }));
+            Assert.That(import.ImportType, Is.EqualTo(ImportType.Constant));
+        }
+
+        [Test]
+        public void Should_CreateModuleDeclarationNode_When_GivenSingleFormulaImport()
+        {
+            var program = new Program();
+            var otherModule = program.AddModule("other module");
+            var resource = otherModule.AddFormula("formula", "x");
+            var module = program.AddModule("module");
+            module.AddReference("formula", resource);
+
+            var result = module.ToSyntaxTree();
+
+            Assert.That(result.Imports, Has.Length.EqualTo(1));
+            var import = result.Imports.Single();
+            Assert.That(import.Identifier, Is.EqualTo("formula"));
+            Assert.That(import.ImportPath, Is.EqualTo(new[] { "other module", "formula" }));
+            Assert.That(import.ImportType, Is.EqualTo(ImportType.Formula));
+        }
+
+        [Test]
+        public void Should_CreateModuleDeclarationNode_When_GivenSingleModuleImport()
+        {
+            var program = new Program();
+            var resource = program.AddModule("other module");
+            var module = program.AddModule("module");
+            module.AddReference("other module", resource);
+
+            var result = module.ToSyntaxTree();
+
+            Assert.That(result.Imports, Has.Length.EqualTo(1));
+            var import = result.Imports.Single();
+            Assert.That(import.Identifier, Is.EqualTo("other module"));
+            Assert.That(import.ImportPath, Is.EqualTo(new[] { "other module" }));
+            Assert.That(import.ImportType, Is.EqualTo(ImportType.Module));
+        }
+
+        [Test]
+        public void Should_CreateModuleDeclaration_When_GivenSingleExportedFormula()
+        {
+            var program = new Program();
+            var module = program.AddModule("module");
+            module.AddFormula("formula", "x", FormulaFlags.Exported);
+
+            var result = module.ToSyntaxTree();
+
+            Assert.That(result.Exports, Has.Length.EqualTo(1));
+            Assert.That(result.Formulas, Has.Length.EqualTo(1));
+            var export = result.Exports.Single();
+            Assert.That(export.Identifier, Is.EqualTo("formula"));
+            var formula = result.Formulas.Single();
+            Assert.That(formula.Name, Is.EqualTo("formula"));
+        }
+
+        [Test]
+        public void Should_CreateModuleDeclaration_When_GivenSingleReferenceableFormula()
+        {
+            var program = new Program();
+            var module = program.AddModule("module");
+            module.AddFormula("formula", "x", FormulaFlags.Referenceable);
+
+            var result = module.ToSyntaxTree();
+
+            Assert.That(result.Exports, Has.Length.EqualTo(1));
+            Assert.That(result.Formulas, Has.Length.EqualTo(1));
+            var export = result.Exports.Single();
+            Assert.That(export.Identifier, Is.EqualTo("formula"));
+            var formula = result.Formulas.Single();
+            Assert.That(formula.Name, Is.EqualTo("formula"));
+        }
+
+        [Test]
+        public void Should_CreateModuleDeclaration_When_GivenSingleInternalFormula()
+        {
+            var program = new Program();
+            var module = program.AddModule("module");
+            module.AddFormula("formula", "x", FormulaFlags.None);
+
+            var result = module.ToSyntaxTree();
+
+            Assert.That(result.Exports, Is.Empty);
+            Assert.That(result.Formulas, Has.Length.EqualTo(1));
+            var formula = result.Formulas.Single();
+            Assert.That(formula.Name, Is.EqualTo("formula"));
         }
     }
 }

@@ -39,5 +39,17 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var argument = new Argument(new Program(), name);
             Assert.That(argument.Name, Is.SameAs(name));
         }
+
+        [Test]
+        public void Should_CreateArgumentDeclarationNode_When_Valid()
+        {
+            var program = new Program();
+            var argument = program.AddArgument("argument");
+
+            var result = argument.ToSyntaxTree();
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Name, Is.EqualTo("argument"));
+        }
     }
 }

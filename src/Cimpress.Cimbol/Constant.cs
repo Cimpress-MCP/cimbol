@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Runtime.Types;
 
 namespace Cimpress.Cimbol
@@ -37,5 +38,14 @@ namespace Cimpress.Cimbol
         /// THe value of the constant.
         /// </summary>
         public ILocalValue Value { get; }
+
+        /// <summary>
+        /// Compile the constant into an abstract syntax tree.
+        /// </summary>
+        /// <returns>An abstract syntax tree.</returns>
+        internal ConstantDeclarationNode ToSyntaxTree()
+        {
+            return new ConstantDeclarationNode(Name, Value);
+        }
     }
 }

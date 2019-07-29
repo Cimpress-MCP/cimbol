@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Runtime.Types;
 
 [assembly:InternalsVisibleTo("Cimpress.Cimbol.UnitTests")]
@@ -137,6 +139,21 @@ namespace Cimpress.Cimbol
         public bool TryGetModule(string moduleName, out Module module)
         {
             return _modules.TryGetValue(moduleName, out module);
+        }
+
+        /// <summary>
+        /// Compile the program into an abstract syntax tree.
+        /// </summary>
+        /// <returns>An abstract syntax tree.</returns>
+        internal ProgramNode ToSyntaxTree()
+        {
+            var arguments = _arguments.Values.Select(argument => argument.ToSyntaxTree());
+
+            var constants = _constants.Values.Select(constant => constant.ToSyntaxTree());
+
+            var modules = _modules.Values.Select(module => module.ToSyntaxTree());
+
+            return new ProgramNode(arguments, constants, modules);
         }
     }
 }

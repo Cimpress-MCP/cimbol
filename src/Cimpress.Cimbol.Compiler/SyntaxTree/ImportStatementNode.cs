@@ -13,11 +13,14 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// </summary>
         /// <param name="identifier">The identifier that this node assigns to.</param>
         /// <param name="importPath">The path to import from.</param>
-        public ImportStatementNode(string identifier, IEnumerable<string> importPath)
+        /// <param name="importType">The import type.</param>
+        public ImportStatementNode(string identifier, IEnumerable<string> importPath, ImportType importType)
         {
             Identifier = identifier;
 
             ImportPath = importPath.ToImmutableArray();
+
+            ImportType = importType;
         }
 
         /// <summary>
@@ -29,6 +32,11 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// The path to import from.
         /// </summary>
         public IReadOnlyCollection<string> ImportPath { get; }
+
+        /// <summary>
+        /// The type of import.
+        /// </summary>
+        public ImportType ImportType { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>
         public IEnumerable<ISyntaxNode> Children()
@@ -45,7 +53,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {
-            return $"{{{nameof(ImportStatementNode)} {Identifier}}}";
+            return $"{{{nameof(ImportStatementNode)} {ImportType} {Identifier}}}";
         }
     }
 }

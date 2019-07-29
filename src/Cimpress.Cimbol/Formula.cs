@@ -1,4 +1,6 @@
 ﻿using System;
+using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Compiler.Utilities;
 
 namespace Cimpress.Cimbol
 {
@@ -18,23 +20,11 @@ namespace Cimpress.Cimbol
         /// <param name="flags">The flags to apply to the formula to determine its visibility.</param>
         internal Formula(Module module, string name, string value, FormulaFlags flags = FormulaFlags.Public)
         {
-            if (name != null && !flags.HasFlag(FormulaFlags.Visible))
-            {
-                // Disallow adding invisible formulas with names.
-                throw new NotSupportedException();
-            }
-
-            if (name == null && flags.HasFlag(FormulaFlags.Visible))
-            {
-                // Disallow adding visible formulas without names.
-                throw new NotSupportedException();
-            }
-
             _flags = flags;
 
             Module = module ?? throw new ArgumentNullException(nameof(module));
 
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
 
             Value = value ?? throw new ArgumentNullException(nameof(value));
         }
@@ -48,11 +38,6 @@ namespace Cimpress.Cimbol
         /// True if the formula can be referenced from other modules.
         /// </summary>
         public bool IsReferenceable => _flags.HasFlag(FormulaFlags.Referenceable);
-
-        /// <summary>
-        /// True if the formula can be referenced by name from its current module.
-        /// </summary>
-        public bool IsVisible => _flags.HasFlag(FormulaFlags.Visible);
 
         /// <summary>
         /// The <see cref="Module"/> that the formula belongs to.
@@ -73,5 +58,16 @@ namespace Cimpress.Cimbol
         /// The formula's expression.
         /// </summary>
         public string Value { get; }
+
+        /// <summary>
+        /// Parse the formula and return an abstract syntax equivalent to the formula.
+        /// </summary>
+        /// <returns>An abstract syntax tree equivalent to the formula.</returns>
+        internal FormulaDeclarationNode ToSyntaxTree()
+        {
+            var body = FormulaParser.ParseFormulaPart(Value);
+
+            return new FormulaDeclarationNode(Name, body);
+        }
     }
 }
