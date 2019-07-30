@@ -18,7 +18,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <param name="formulas">The list of formulas in the module.</param>
         public ModuleDeclarationNode(
             string name,
-            IEnumerable<ImportStatementNode> imports,
+            IEnumerable<ImportDeclarationNode> imports,
             IEnumerable<ExportStatementNode> exports,
             IEnumerable<FormulaDeclarationNode> formulas)
         {
@@ -44,7 +44,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <summary>
         /// The list of imports in the module.
         /// </summary>
-        public IReadOnlyCollection<ImportStatementNode> Imports { get; }
+        public IReadOnlyCollection<ImportDeclarationNode> Imports { get; }
 
         /// <inheritdoc cref="IDeclarationNode.Name"/>
         public string Name { get; }

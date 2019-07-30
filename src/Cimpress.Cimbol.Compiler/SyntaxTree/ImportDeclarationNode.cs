@@ -6,27 +6,27 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
     /// <summary>
     /// A syntax node representing the importing of a result or set of results from another module.
     /// </summary>
-    public class ImportStatementNode : IStatementNode
+    public class ImportDeclarationNode : IDeclarationNode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImportStatementNode"/> class.
+        /// Initializes a new instance of the <see cref="ImportDeclarationNode"/> class.
         /// </summary>
-        /// <param name="identifier">The identifier that this node assigns to.</param>
+        /// <param name="name">The identifier that this node assigns to.</param>
         /// <param name="importPath">The path to import from.</param>
         /// <param name="importType">The import type.</param>
-        public ImportStatementNode(string identifier, IEnumerable<string> importPath, ImportType importType)
+        public ImportDeclarationNode(string name, IEnumerable<string> importPath, ImportType importType)
         {
-            Identifier = identifier;
-
             ImportPath = importPath.ToImmutableArray();
 
             ImportType = importType;
+
+            Name = name;
         }
 
         /// <summary>
         /// The identifier that this node assigns to.
         /// </summary>
-        public string Identifier { get; }
+        public string Name { get; }
 
         /// <summary>
         /// The path to import from.
@@ -53,7 +53,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {
-            return $"{{{nameof(ImportStatementNode)} {ImportType} {Identifier}}}";
+            return $"{{{nameof(ImportDeclarationNode)} {ImportType} {Name}}}";
         }
     }
 }

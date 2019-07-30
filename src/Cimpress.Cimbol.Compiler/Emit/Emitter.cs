@@ -154,7 +154,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <returns>The result of compiling the syntax tree to an expression tree.</returns>
         internal Expression EmitIdentifierNode(IdentifierNode identifierNode, SymbolTable symbolTable)
         {
-            return symbolTable.Resolve(identifierNode.Identifier, out var variable) ? variable : BuildError();
+            return symbolTable.Resolve(identifierNode.Identifier, out var variable) ? variable.Variable : BuildError();
         }
 
         /// <summary>

@@ -257,7 +257,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
 
             Assert.That(result.Imports, Has.Length.EqualTo(1));
             var import = result.Imports.Single();
-            Assert.That(import.Identifier, Is.EqualTo("argument"));
+            Assert.That(import.Name, Is.EqualTo("argument"));
             Assert.That(import.ImportPath, Is.EqualTo(new[] { "argument" }));
             Assert.That(import.ImportType, Is.EqualTo(ImportType.Argument));
         }
@@ -274,7 +274,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
 
             Assert.That(result.Imports, Has.Length.EqualTo(1));
             var import = result.Imports.Single();
-            Assert.That(import.Identifier, Is.EqualTo("constant"));
+            Assert.That(import.Name, Is.EqualTo("constant"));
             Assert.That(import.ImportPath, Is.EqualTo(new[] { "constant" }));
             Assert.That(import.ImportType, Is.EqualTo(ImportType.Constant));
         }
@@ -292,7 +292,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
 
             Assert.That(result.Imports, Has.Length.EqualTo(1));
             var import = result.Imports.Single();
-            Assert.That(import.Identifier, Is.EqualTo("formula"));
+            Assert.That(import.Name, Is.EqualTo("formula"));
             Assert.That(import.ImportPath, Is.EqualTo(new[] { "other module", "formula" }));
             Assert.That(import.ImportType, Is.EqualTo(ImportType.Formula));
         }
@@ -309,7 +309,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
 
             Assert.That(result.Imports, Has.Length.EqualTo(1));
             var import = result.Imports.Single();
-            Assert.That(import.Identifier, Is.EqualTo("other module"));
+            Assert.That(import.Name, Is.EqualTo("other module"));
             Assert.That(import.ImportPath, Is.EqualTo(new[] { "other module" }));
             Assert.That(import.ImportType, Is.EqualTo(ImportType.Module));
         }

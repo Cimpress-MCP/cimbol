@@ -12,7 +12,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         {
             var node = new ModuleDeclarationNode(
                 "a",
-                Array.Empty<ImportStatementNode>(),
+                Array.Empty<ImportDeclarationNode>(),
                 Array.Empty<ExportStatementNode>(),
                 Array.Empty<FormulaDeclarationNode>());
 
@@ -22,7 +22,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildren()
         {
-            var child1 = new ImportStatementNode("a", new[] { "b" }, ImportType.Formula);
+            var child1 = new ImportDeclarationNode("a", new[] { "b" }, ImportType.Formula);
             var child2 = new ExportStatementNode("a");
             var child3 = new FormulaDeclarationNode("a", null);
             var node = new ModuleDeclarationNode("a", new[] { child1 }, new[] { child2 }, new[] { child3 });
@@ -34,7 +34,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildrenReverse()
         {
-            var child1 = new ImportStatementNode("a", new[] { "b" }, ImportType.Formula);
+            var child1 = new ImportDeclarationNode("a", new[] { "b" }, ImportType.Formula);
             var child2 = new ExportStatementNode("a");
             var child3 = new FormulaDeclarationNode("a", null);
             var node = new ModuleDeclarationNode("a", new[] { child1 }, new[] { child2 }, new[] { child3 });

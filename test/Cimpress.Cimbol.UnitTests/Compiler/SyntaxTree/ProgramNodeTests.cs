@@ -28,7 +28,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
             var child2 = new ConstantDeclarationNode("b", BooleanValue.True);
             var child3 = new ModuleDeclarationNode(
                 "c",
-                Enumerable.Empty<ImportStatementNode>(),
+                Enumerable.Empty<ImportDeclarationNode>(),
                 Enumerable.Empty<ExportStatementNode>(),
                 Enumerable.Empty<FormulaDeclarationNode>());
             var node = new ProgramNode(new[] { child1 }, new[] { child2 }, new[] { child3 });
@@ -46,7 +46,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
             var child2 = new ConstantDeclarationNode("b", BooleanValue.True);
             var child3 = new ModuleDeclarationNode(
                 "c",
-                Enumerable.Empty<ImportStatementNode>(),
+                Enumerable.Empty<ImportDeclarationNode>(),
                 Enumerable.Empty<ExportStatementNode>(),
                 Enumerable.Empty<FormulaDeclarationNode>());
             var node = new ProgramNode(new[] { child1 }, new[] { child2 }, new[] { child3 });

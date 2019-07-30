@@ -135,7 +135,7 @@ namespace Cimpress.Cimbol
         /// <returns>An abstract syntax tree.</returns>
         internal ModuleDeclarationNode ToSyntaxTree()
         {
-            var imports = new List<ImportStatementNode>();
+            var imports = new List<ImportDeclarationNode>();
 
             foreach (var referenceEntry in _references)
             {
@@ -148,7 +148,7 @@ namespace Cimpress.Cimbol
                 var importPath = GetImportPath(referenceEntry.Value);
                 var importType = GetImportType(referenceEntry.Value);
 
-                imports.Add(new ImportStatementNode(referenceEntry.Key, importPath, importType));
+                imports.Add(new ImportDeclarationNode(referenceEntry.Key, importPath, importType));
             }
 
             var exports = new List<ExportStatementNode>();

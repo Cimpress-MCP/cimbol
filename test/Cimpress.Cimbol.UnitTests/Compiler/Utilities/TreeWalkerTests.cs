@@ -1,7 +1,8 @@
 ﻿using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Compiler.Utilities;
 using NUnit.Framework;
 
-namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
+namespace Cimpress.Cimbol.UnitTests.Compiler.Utilities
 {
     [TestFixture]
     public class TreeWalkerTests
