@@ -1,7 +1,6 @@
-﻿using Cimpress.Cimbol.Compiler.Parse;
-using Cimpress.Cimbol.Compiler.Scan;
+﻿using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
-using Cimpress.Cimbol.Compiler.Utilities;
+using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
@@ -15,7 +14,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Comparison();
             Assert.IsInstanceOf<IdentifierNode>(result);
@@ -35,7 +34,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Comparison();
             Assert.IsInstanceOf<BinaryOpNode>(result);
@@ -72,7 +71,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Comparison();
             Assert.IsInstanceOf<BinaryOpNode>(result);
@@ -88,7 +87,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.LogicalAnd();
             Assert.IsInstanceOf<IdentifierNode>(result);
@@ -102,7 +101,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("and", TokenType.And, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.LogicalAnd();
             Assert.IsInstanceOf<BinaryOpNode>(result);
@@ -133,7 +132,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("and", TokenType.And, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.LogicalAnd();
             Assert.IsInstanceOf<BinaryOpNode>(result);
@@ -149,7 +148,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.LogicalNot();
             Assert.IsInstanceOf<IdentifierNode>(result);
@@ -162,7 +161,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("not", TokenType.Not, new Position(0, 0), new Position(0, 0)),
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.LogicalNot();
             Assert.IsInstanceOf<UnaryOpNode>(result);
@@ -182,7 +181,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("not", TokenType.Not, new Position(0, 0), new Position(0, 0)),
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.LogicalNot();
             Assert.IsInstanceOf<UnaryOpNode>(result);
@@ -206,7 +205,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.LogicalOr();
             Assert.IsInstanceOf<IdentifierNode>(result);
@@ -220,7 +219,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("or", TokenType.Or, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.LogicalOr();
             Assert.IsInstanceOf<BinaryOpNode>(result);
@@ -251,7 +250,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("or", TokenType.Or, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.LogicalOr();
             Assert.IsInstanceOf<BinaryOpNode>(result);

@@ -1,4 +1,4 @@
-﻿namespace Cimpress.Cimbol.Compiler.Utilities
+﻿namespace Cimpress.Cimbol.Utilities
 {
     /// <summary>
     /// A position within a <see cref="SourceText"/> instance.

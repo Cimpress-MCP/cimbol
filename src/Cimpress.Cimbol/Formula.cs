@@ -1,6 +1,6 @@
 ﻿using System;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
-using Cimpress.Cimbol.Compiler.Utilities;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol
 {
@@ -67,7 +67,7 @@ namespace Cimpress.Cimbol
         {
             var body = FormulaParser.ParseFormulaPart(Value);
 
-            return new FormulaDeclarationNode(Name, body);
+            return new FormulaDeclarationNode(Name, body, IsExported);
         }
     }
 }

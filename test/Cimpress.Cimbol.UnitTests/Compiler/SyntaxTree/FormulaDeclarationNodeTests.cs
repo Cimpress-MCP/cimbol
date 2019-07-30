@@ -9,7 +9,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_SerializeToString_When_Valid()
         {
-            var node = new FormulaDeclarationNode("a", null);
+            var node = new FormulaDeclarationNode("a", null, true);
 
             Assert.That(node.ToString(), Is.EqualTo("{FormulaDeclarationNode a}"));
         }
@@ -18,7 +18,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         public void Should_ReturnChildrenInOrder_When_IteratingChildren()
         {
             var child1 = new LiteralNode(null);
-            var node = new FormulaDeclarationNode("a", child1);
+            var node = new FormulaDeclarationNode("a", child1, true);
 
             var expected = new[] { child1 };
             CollectionAssert.AreEqual(expected, node.Children());
@@ -28,7 +28,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         public void Should_ReturnChildrenInOrder_When_IteratingChildrenReverse()
         {
             var child1 = new LiteralNode(null);
-            var node = new FormulaDeclarationNode("a", child1);
+            var node = new FormulaDeclarationNode("a", child1, true);
 
             var expected = new[] { child1 };
             CollectionAssert.AreEqual(expected, node.ChildrenReverse());

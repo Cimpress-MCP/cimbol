@@ -1,5 +1,5 @@
 ﻿using System;
-using Cimpress.Cimbol.Internal;
+using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Main.Internal

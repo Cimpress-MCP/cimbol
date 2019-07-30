@@ -1,8 +1,7 @@
 ﻿using System;
-using Cimpress.Cimbol.Compiler.Parse;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
-using Cimpress.Cimbol.Compiler.Utilities;
+using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
@@ -16,7 +15,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Invoke();
             Assert.IsNotNull(result);
@@ -36,7 +35,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Invoke();
             Assert.IsInstanceOf<MacroNode>(result);
@@ -61,7 +60,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Invoke();
             Assert.IsInstanceOf<MacroNode>(result);
@@ -79,7 +78,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(".", TokenType.Period, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Invoke() as AccessNode;
             Assert.IsNotNull(result);
@@ -99,7 +98,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(".", TokenType.Period, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Invoke() as AccessNode;
             Assert.IsNotNull(result);
@@ -122,7 +121,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Invoke();
             Assert.IsInstanceOf<InvokeNode>(result);
@@ -146,7 +145,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Invoke();
             Assert.IsInstanceOf<InvokeNode>(result);
@@ -175,7 +174,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Invoke();
             Assert.IsInstanceOf<InvokeNode>(result);
@@ -205,7 +204,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(".", TokenType.Period, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             var result = parser.Invoke();
             Assert.IsInstanceOf<AccessNode>(result);
@@ -231,7 +230,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(".", TokenType.Period, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             Assert.Throws<NotSupportedException>(() => parser.Invoke());
         }
@@ -245,7 +244,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(".", TokenType.Period, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             Assert.Throws<NotSupportedException>(() => parser.Invoke());
         }
@@ -258,7 +257,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Parser(tokenStream);
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
             Assert.Throws<NotSupportedException>(() => parser.Invoke());
         }

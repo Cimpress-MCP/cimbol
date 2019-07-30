@@ -1,8 +1,8 @@
 ﻿using System;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
-using Cimpress.Cimbol.Compiler.Utilities;
 using Cimpress.Cimbol.Runtime.Types;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Parse
 {

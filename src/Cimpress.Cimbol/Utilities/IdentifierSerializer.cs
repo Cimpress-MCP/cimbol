@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Cimpress.Cimbol.Compiler.Utilities
+namespace Cimpress.Cimbol.Utilities
 {
     /// <summary>
     /// A collection of helper methods for serializing and deserializing identifiers.

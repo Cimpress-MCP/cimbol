@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Cimpress.Cimbol.Compiler.Scan;
-using Cimpress.Cimbol.Compiler.Utilities;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 {

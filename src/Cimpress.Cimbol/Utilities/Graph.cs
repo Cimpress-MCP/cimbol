@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Cimpress.Cimbol.Internal
+namespace Cimpress.Cimbol.Utilities
 {
     /// <summary>
     /// A directed graph.
@@ -23,7 +23,7 @@ namespace Cimpress.Cimbol.Internal
         private readonly ImmutableHashSet<T> _vertices;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Graph"/> class from an adjacency list.
+        /// Initializes a new instance of the <see cref="Graph{T}"/> class from an adjacency list.
         /// </summary>
         /// <param name="vertices">The vertices in the graph.</param>
         /// <param name="edges">The edges in the graph.</param>
@@ -33,7 +33,7 @@ namespace Cimpress.Cimbol.Internal
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Graph"/> class from an adjacency list.
+        /// Initializes a new instance of the <see cref="Graph{T}"/> class from an adjacency list.
         /// </summary>
         /// <param name="vertices">The vertices in the graph.</param>
         /// <param name="edges">The edges in the graph.</param>

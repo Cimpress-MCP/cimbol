@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
 
-namespace Cimpress.Cimbol.Compiler.Utilities
+namespace Cimpress.Cimbol.Utilities
 {
     /// <summary>
     /// A utility class for working an abstract syntax tree in a particular order.

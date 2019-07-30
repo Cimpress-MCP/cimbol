@@ -151,22 +151,9 @@ namespace Cimpress.Cimbol
                 imports.Add(new ImportDeclarationNode(referenceEntry.Key, importPath, importType));
             }
 
-            var exports = new List<ExportStatementNode>();
-
-            foreach (var formula in _formulas.Values)
-            {
-                if (!formula.IsExported && !formula.IsReferenceable)
-                {
-                    // Skip over anything that can't be referenced.
-                    continue;
-                }
-
-                exports.Add(new ExportStatementNode(formula.Name));
-            }
-
             var formulas = _formulas.Values.Select(formula => formula.ToSyntaxTree());
 
-            return new ModuleDeclarationNode(Name, imports, exports, formulas);
+            return new ModuleDeclarationNode(Name, imports, formulas);
         }
 
         private static IEnumerable<string> GetImportPath(IResource resource)

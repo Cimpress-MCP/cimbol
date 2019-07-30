@@ -12,9 +12,12 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// </summary>
         /// <param name="name">The name to assign to the formula's result.</param>
         /// <param name="body">The body of the formula.</param>
-        public FormulaDeclarationNode(string name, IExpressionNode body)
+        /// <param name="isExported">Whether or not the formula is exported.</param>
+        public FormulaDeclarationNode(string name, IExpressionNode body, bool isExported)
         {
             Body = body;
+
+            IsExported = isExported;
 
             Name = name;
         }
@@ -23,6 +26,11 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// The body of the formula.
         /// </summary>
         public IExpressionNode Body { get; }
+
+        /// <summary>
+        /// Whether or not the formula is exported.
+        /// </summary>
+        public bool IsExported { get; }
 
         /// <inheritdoc cref="IDeclarationNode.Name"/>
         public string Name { get; }

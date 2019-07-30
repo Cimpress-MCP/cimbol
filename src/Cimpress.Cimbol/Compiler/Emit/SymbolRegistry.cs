@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
-using Cimpress.Cimbol.Compiler.Utilities;
 using Cimpress.Cimbol.Runtime.Types;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Emit
 {

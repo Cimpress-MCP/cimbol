@@ -1,4 +1,4 @@
-﻿using Cimpress.Cimbol.Compiler.Utilities;
+﻿using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Scan
 {

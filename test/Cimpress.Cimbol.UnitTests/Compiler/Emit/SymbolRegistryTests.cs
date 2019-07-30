@@ -77,7 +77,6 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var moduleDeclaration = new ModuleDeclarationNode(
                 "x",
                 Enumerable.Empty<ImportDeclarationNode>(),
-                Enumerable.Empty<ExportStatementNode>(),
                 Enumerable.Empty<FormulaDeclarationNode>());
             var symbolTable = new SymbolTable();
             var symbolTables = new Dictionary<IDeclarationNode, SymbolTable>
@@ -141,7 +140,6 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var moduleDeclarationNode = new ModuleDeclarationNode(
                 "x",
                 Enumerable.Empty<ImportDeclarationNode>(),
-                Enumerable.Empty<ExportStatementNode>(),
                 Enumerable.Empty<FormulaDeclarationNode>());
             var programNode = new ProgramNode(
                 Enumerable.Empty<ArgumentDeclarationNode>(),
@@ -162,11 +160,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_CreateSymbolTableInRegistryWithSymbol_When_GivenProgramNodeWithModuleWithFormula()
         {
-            var formulaDeclarationNode = new FormulaDeclarationNode("x", new IdentifierNode("y"));
+            var formulaDeclarationNode = new FormulaDeclarationNode("x", new IdentifierNode("y"), true);
             var moduleDeclarationNode = new ModuleDeclarationNode(
                 "x",
                 Enumerable.Empty<ImportDeclarationNode>(),
-                Enumerable.Empty<ExportStatementNode>(),
                 new[] { formulaDeclarationNode });
             var programNode = new ProgramNode(
                 Enumerable.Empty<ArgumentDeclarationNode>(),
@@ -188,7 +185,6 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var moduleDeclarationNode = new ModuleDeclarationNode(
                 "x",
                 new[] { importDeclarationNode },
-                Enumerable.Empty<ExportStatementNode>(),
                 Enumerable.Empty<FormulaDeclarationNode>());
             var programNode = new ProgramNode(
                 Enumerable.Empty<ArgumentDeclarationNode>(),

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cimpress.Cimbol.Internal;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.UnitTests.Main.Internal
 {

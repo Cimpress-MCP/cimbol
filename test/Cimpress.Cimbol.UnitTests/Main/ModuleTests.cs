@@ -234,13 +234,12 @@ namespace Cimpress.Cimbol.UnitTests.Main
         }
 
         [Test]
-        public void Should_CreateModuleDeclaratioNode_When_GivenEmptyModule()
+        public void Should_CreateModuleDeclarationNode_When_GivenEmptyModule()
         {
             var program = new Program();
             var module = program.AddModule("module");
 
             var result = module.ToSyntaxTree();
-            Assert.That(result.Exports, Is.Empty);
             Assert.That(result.Formulas, Is.Empty);
             Assert.That(result.Imports, Is.Empty);
         }
@@ -323,10 +322,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
 
             var result = module.ToSyntaxTree();
 
-            Assert.That(result.Exports, Has.Length.EqualTo(1));
             Assert.That(result.Formulas, Has.Length.EqualTo(1));
-            var export = result.Exports.Single();
-            Assert.That(export.Identifier, Is.EqualTo("formula"));
             var formula = result.Formulas.Single();
             Assert.That(formula.Name, Is.EqualTo("formula"));
         }
@@ -340,10 +336,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
 
             var result = module.ToSyntaxTree();
 
-            Assert.That(result.Exports, Has.Length.EqualTo(1));
             Assert.That(result.Formulas, Has.Length.EqualTo(1));
-            var export = result.Exports.Single();
-            Assert.That(export.Identifier, Is.EqualTo("formula"));
             var formula = result.Formulas.Single();
             Assert.That(formula.Name, Is.EqualTo("formula"));
         }
@@ -357,7 +350,6 @@ namespace Cimpress.Cimbol.UnitTests.Main
 
             var result = module.ToSyntaxTree();
 
-            Assert.That(result.Exports, Is.Empty);
             Assert.That(result.Formulas, Has.Length.EqualTo(1));
             var formula = result.Formulas.Single();
             Assert.That(formula.Name, Is.EqualTo("formula"));

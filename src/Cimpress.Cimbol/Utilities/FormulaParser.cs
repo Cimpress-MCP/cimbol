@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using Cimpress.Cimbol.Compiler.Parse;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.Source;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
 
-namespace Cimpress.Cimbol.Compiler.Utilities
+namespace Cimpress.Cimbol.Utilities
 {
     /// <summary>
     /// A collection of static methods to orchestrate parsing formulas.
@@ -22,7 +21,7 @@ namespace Cimpress.Cimbol.Compiler.Utilities
 
             var scanner = new Scanner(sourceText);
 
-            var parser = new Parser(new TokenStream(GetTokens(scanner), 2));
+            var parser = new Compiler.Parse.Parser(new TokenStream(GetTokens(scanner), 2));
 
             return parser.Expression();
         }
