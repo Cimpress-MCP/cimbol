@@ -10,7 +10,6 @@ namespace Cimpress.Cimbol.Utilities
     /// </summary>
     /// <typeparam name="T">The type of node in the graph.</typeparam>
     public class Graph<T>
-        where T : IEquatable<T>
     {
         private readonly IEqualityComparer<T> _comparer;
 
@@ -27,7 +26,7 @@ namespace Cimpress.Cimbol.Utilities
         /// </summary>
         /// <param name="vertices">The vertices in the graph.</param>
         /// <param name="edges">The edges in the graph.</param>
-        public Graph(IEnumerable<T> vertices, ICollection<Tuple<T, T>> edges)
+        public Graph(IEnumerable<T> vertices, IEnumerable<Tuple<T, T>> edges)
             : this(vertices, edges, EqualityComparer<T>.Default)
         {
         }
