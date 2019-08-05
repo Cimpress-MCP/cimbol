@@ -83,7 +83,9 @@ namespace Cimpress.Cimbol.UnitTests.Main.Internal
         {
             var graph = GraphTestUtilities.BuildCompleteGraph(n);
 
-            Assert.Throws<NotSupportedException>(() => graph.TopologicalSort());
+            var result = graph.TopologicalSort();
+
+            Assert.That(result, Has.Count.EqualTo(0));
         }
 
         [Test]
@@ -97,7 +99,9 @@ namespace Cimpress.Cimbol.UnitTests.Main.Internal
         {
             var graph = GraphTestUtilities.BuildCycleGraph(n);
 
-            Assert.Throws<NotSupportedException>(() => graph.TopologicalSort());
+            var result = graph.TopologicalSort();
+
+            Assert.That(result, Has.Count.EqualTo(0));
         }
     }
 }

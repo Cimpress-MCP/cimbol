@@ -104,7 +104,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 .OnExit<ModuleDeclarationNode>(moduleDeclarationNode =>
                 {
                     modules[moduleDeclarationNode.Name] =
-                        new Symbol(moduleDeclarationNode.Name, typeof(IDictionary<string, ILocalValue>));
+                        new Symbol(moduleDeclarationNode.Name, typeof(ObjectValue));
 
                     tableStack.Pop();
                 });

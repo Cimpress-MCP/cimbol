@@ -102,6 +102,51 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
             }
         }
 
+        /// <summary>
+        /// Retrieve an argument declaration by name from the program.
+        /// </summary>
+        /// <param name="argumentName">The name of the argument to retrieve.</param>
+        /// <returns>The retrieved argument.</returns>
+        public ArgumentDeclarationNode GetArgumentDeclaration(string argumentName)
+        {
+            if (_argumentTable.TryGetValue(argumentName, out var argument))
+            {
+                return argument;
+            }
+
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Retrieve a constant declaration by name from the program.
+        /// </summary>
+        /// <param name="constantName">The name of the constant to retrieve.</param>
+        /// <returns>The retrieved constant.</returns>
+        public ConstantDeclarationNode GetConstantDeclaration(string constantName)
+        {
+            if (_constantTable.TryGetValue(constantName, out var constant))
+            {
+                return constant;
+            }
+
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Retrieve a module declaration by name from the program.
+        /// </summary>
+        /// <param name="moduleName">The name of the module to retrieve.</param>
+        /// <returns>The retrieved module.</returns>
+        public ModuleDeclarationNode GetModuleDeclaration(string moduleName)
+        {
+            if (_moduleTable.TryGetValue(moduleName, out var module))
+            {
+                return module;
+            }
+
+            throw new NotSupportedException();
+        }
+
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {

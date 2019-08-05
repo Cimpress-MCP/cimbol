@@ -18,7 +18,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
             var scanner = new Scanner(new SourceText(source));
             var token = scanner.Next();
             Assert.AreEqual(type, token.Type);
-            Assert.AreEqual(source, token.Value);
+            Assert.AreEqual(source.Trim(), token.Value);
         }
     }
 }

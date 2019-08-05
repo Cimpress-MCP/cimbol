@@ -29,14 +29,14 @@ namespace Cimpress.Cimbol.Utilities
                 return identifierSource;
             }
 
-            if (!EscapedIdentifierRegex.IsMatch(identifierSource))
+            if (EscapedIdentifierRegex.IsMatch(identifierSource))
             {
-                throw new NotSupportedException();
+                var unquoted = identifierSource.Substring(1, identifierSource.Length - 2);
+                var unescaped = StringEscaper.UnescapeString(unquoted);
+                return unescaped;
             }
 
-            var unquoted = identifierSource.Substring(1, identifierSource.Length - 2);
-            var unescaped = StringEscaper.UnescapeString(unquoted);
-            return unescaped;
+            throw new NotSupportedException();
         }
 
         /// <summary>

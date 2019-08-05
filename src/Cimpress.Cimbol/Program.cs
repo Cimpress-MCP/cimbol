@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Cimpress.Cimbol.Compiler.Emit;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Runtime.Types;
 
-[assembly:InternalsVisibleTo("Cimpress.Cimbol.UnitTests")]
+[assembly: InternalsVisibleTo("Cimpress.Cimbol.IntegrationTests")]
+[assembly: InternalsVisibleTo("Cimpress.Cimbol.UnitTests")]
 
 namespace Cimpress.Cimbol
 {
@@ -107,6 +109,23 @@ namespace Cimpress.Cimbol
 
             return module;
         }
+
+        /// <summary>
+        /// Compiles a Cimbol program down to an executable.
+        /// </summary>
+        /// <returns>The result of compiling the Cimbol program.</returns>
+        public Executable Compile()
+        {
+            var ast = ToSyntaxTree();
+
+            var emitter = new Emitter();
+
+            var lambda = emitter.EmitProgram(ast);
+
+            var method = lambda.Compile();
+
+            return new Executable(method);
+        } 
 
         /// <summary>
         /// Try and retrieve a argument from the program by name.

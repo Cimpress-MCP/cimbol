@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Main.Internal
@@ -113,7 +114,9 @@ namespace Cimpress.Cimbol.UnitTests.Main.Internal
         {
             var graph = GraphTestUtilities.BuildCompleteGraph(n);
 
-            Assert.Throws<NotSupportedException>(() => graph.MinimalPartialOrder());
+            var result = graph.MinimalPartialOrder();
+
+            Assert.That(result, Has.Length.EqualTo(0));
         }
 
         [Test]
@@ -127,7 +130,55 @@ namespace Cimpress.Cimbol.UnitTests.Main.Internal
         {
             var graph = GraphTestUtilities.BuildCycleGraph(n);
 
-            Assert.Throws<NotSupportedException>(() => graph.MinimalPartialOrder());
+            var result = graph.MinimalPartialOrder();
+
+            Assert.That(result, Has.Length.EqualTo(0));
+        }
+
+        [Test]
+        public void Should_ReturnCorrectMinimalPartialOrdering_When_GivenTreeWithShortcut()
+        {
+            var vertices = new[] { 1, 2, 3, 4, 5 };
+            var edges = new[]
+            {
+                Tuple.Create(1, 3),
+                Tuple.Create(2, 4),
+                Tuple.Create(2, 5),
+                Tuple.Create(3, 5),
+                Tuple.Create(4, 5),
+            };
+            var graph = new Graph<int>(vertices, edges);
+
+            var result = graph.MinimalPartialOrder();
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(3));
+            Assert.That(result.ElementAt(0), Is.EquivalentTo(new[] { 1, 2 }));
+            Assert.That(result.ElementAt(1), Is.EquivalentTo(new[] { 3, 4 }));
+            Assert.That(result.ElementAt(2), Is.EquivalentTo(new[] { 5 }));
+        }
+
+        [Test]
+        public void Should_ReturnCorrectMinimalPartialOrdering_When_GivenTreeWithShortcutWithEdgesReversed()
+        {
+            var vertices = new[] { 1, 2, 3, 4, 5 };
+            var edges = new[]
+            {
+                Tuple.Create(4, 5),
+                Tuple.Create(3, 5),
+                Tuple.Create(2, 5),
+                Tuple.Create(2, 4),
+                Tuple.Create(1, 3),
+            };
+            var graph = new Graph<int>(vertices, edges);
+
+            var result = graph.MinimalPartialOrder();
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(3));
+            Assert.That(result.ElementAt(0), Is.EquivalentTo(new[] { 1, 2 }));
+            Assert.That(result.ElementAt(1), Is.EquivalentTo(new[] { 3, 4 }));
+            Assert.That(result.ElementAt(2), Is.EquivalentTo(new[] { 5 }));
         }
     }
 }

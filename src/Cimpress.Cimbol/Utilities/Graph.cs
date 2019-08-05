@@ -222,14 +222,30 @@ namespace Cimpress.Cimbol.Utilities
         /// </returns>
         public IReadOnlyCollection<ISet<T>> MinimalPartialOrder()
         {
-            var depths = MeasureDepths();
+            var topologicalSort = TopologicalSort();
 
-            var minimalPartialOrder = depths
-                .GroupBy(vertex => vertex.Item2)
-                .Select(vertexGroup => vertexGroup.Select(vertexOrder => vertexOrder.Item1).ToImmutableHashSet())
+            var depths = new Dictionary<T, int>(_comparer);
+
+            foreach (var node in topologicalSort)
+            {
+                var nodesIn = _edgesIn[node];
+
+                if (nodesIn.Count == 0)
+                {
+                    depths[node] = 0;
+                }
+                else
+                {
+                    var depth = nodesIn.Select(otherNode => depths[otherNode]).Aggregate(Math.Max) + 1;
+                    depths[node] = depth;
+                }
+            }
+
+            return depths
+                .GroupBy(x => x.Value, x => x.Key)
+                .OrderBy(x => x.Key)
+                .Select(x => x.ToImmutableHashSet())
                 .ToImmutableArray();
-
-            return minimalPartialOrder;
         }
 
         /// <summary>
@@ -241,12 +257,44 @@ namespace Cimpress.Cimbol.Utilities
         /// </returns>
         public IReadOnlyCollection<T> TopologicalSort()
         {
-            var depths = MeasureDepths();
+            var edgeCounts = new Dictionary<T, int>(_comparer);
 
-            var topologicalSort = depths
-                .OrderBy(vertexOrder => vertexOrder.Item2)
-                .Select(vertexOrder => vertexOrder.Item1)
-                .ToImmutableArray();
+            var rootNodes = _vertices.Where(vertex => _edgesIn[vertex].Count == 0);
+
+            var frontierNodes = new Queue<T>(rootNodes);
+
+            var visitedNodes = new HashSet<T>(_comparer);
+
+            var topologicalSort = new List<T>(_vertices.Count);
+
+            while (frontierNodes.Count > 0)
+            {
+                var node = frontierNodes.Dequeue();
+
+                if (visitedNodes.Contains(node))
+                {
+                    continue;
+                }
+
+                visitedNodes.Add(node);
+
+                topologicalSort.Add(node);
+
+                foreach (var otherNode in _edgesOut[node])
+                {
+                    if (!edgeCounts.ContainsKey(otherNode))
+                    {
+                        edgeCounts[otherNode] = 0;
+                    }
+
+                    edgeCounts[otherNode] += 1;
+
+                    if (edgeCounts[otherNode] == _edgesIn[otherNode].Count)
+                    {
+                        frontierNodes.Enqueue(otherNode);
+                    }
+                }
+            }
 
             return topologicalSort;
         }

@@ -67,7 +67,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var symbolTable = new SymbolTable();
             symbolTable.Define("x", typeof(ILocalValue));
 
-            var result = symbolTable.Resolve("x", out var parameter);
+            var result = symbolTable.TryResolve("x", out var parameter);
 
             Assert.That(result, Is.True);
             Assert.That(parameter, Is.Not.Null);
@@ -80,7 +80,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             parentSymbolTable.Define("x", typeof(ILocalValue));
             var symbolTable = new SymbolTable(parentSymbolTable);
 
-            var result = symbolTable.Resolve("x", out var parameter);
+            var result = symbolTable.TryResolve("x", out var parameter);
 
             Assert.That(result, Is.True);
             Assert.That(parameter, Is.Not.Null);
@@ -92,7 +92,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var symbolTable = new SymbolTable();
             symbolTable.Define("y", typeof(ILocalValue));
 
-            var result = symbolTable.Resolve("x", out var parameter);
+            var result = symbolTable.TryResolve("x", out var parameter);
 
             Assert.That(result, Is.False);
             Assert.That(parameter, Is.Null);

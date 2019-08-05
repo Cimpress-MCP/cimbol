@@ -70,10 +70,34 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// Resolve a symbol by the name of the symbol.
         /// This traverses the scope's parent scopes, and returns the symbol that matches in the closest scope.
         /// </summary>
+        /// <param name="symbolName">The name of the symbol to look up.</param>
+        /// <exception cref="NotSupportedException">The symbol could not be found in the symbol table.</exception>
+        /// <returns>The symbol matching the specified symbol name.</returns>
+        public Symbol Resolve(string symbolName)
+        {
+            var symbolTable = this;
+
+            while (symbolTable != null)
+            {
+                if (symbolTable._table.TryGetValue(symbolName, out var symbol))
+                {
+                    return symbol;
+                }
+
+                symbolTable = symbolTable.Parent;
+            }
+
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Try to resolve a symbol by the name of the symbol.
+        /// This traverses the scope's parent scopes, and returns the symbol that matches in the closest scope.
+        /// </summary>
         /// <param name="symbolName">The name of the symbol.</param>
         /// <param name="symbol">The variable corresponding to the symbol.</param>
         /// <returns>True if the symbol was resolved, false if it does not exist in this scope or any parent scope.</returns>
-        public bool Resolve(string symbolName, out Symbol symbol)
+        public bool TryResolve(string symbolName, out Symbol symbol)
         {
             var symbolTable = this;
 

@@ -9,22 +9,6 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
     public class ExecutionGroupTests
     {
         [Test]
-        public void Should_OrderExecutionStepByName_When_Initialized()
-        {
-            var formulaNode1 = new FormulaDeclarationNode("z", null, false);
-            var formulaNode2 = new FormulaDeclarationNode("y", null, false);
-            var formulaNode3 = new FormulaDeclarationNode("x", null, false);
-            var executionStep1 = new ExecutionStep(formulaNode1, ExecutionStepType.Synchronous);
-            var executionStep2 = new ExecutionStep(formulaNode2, ExecutionStepType.Asynchronous);
-            var executionStep3 = new ExecutionStep(formulaNode3, ExecutionStepType.Synchronous);
-            var executionGroup = new ExecutionGroup(new[] { executionStep1, executionStep2, executionStep3 });
-
-            var result = executionGroup.ExecutionSteps.Select(x => x.Node.Name);
-
-            Assert.That(result, Is.EqualTo(new[] { "x", "z", "y" }));
-        }
-
-        [Test]
         public void Should_BeMarkedAsAsynchronous_When_ContainsAsynchronousStep()
         {
             var formulaNode1 = new FormulaDeclarationNode("x", null, false);

@@ -173,7 +173,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var result = SymbolRegistry.Build(programNode).SymbolTables[moduleDeclarationNode];
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Resolve("x", out var resultSymbol), Is.True);
+            Assert.That(result.TryResolve("x", out var resultSymbol), Is.True);
             Assert.That(resultSymbol, Is.Not.Null);
             Assert.That(resultSymbol.Name, Is.EqualTo("x"));
         }
@@ -194,7 +194,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var result = SymbolRegistry.Build(programNode).SymbolTables[moduleDeclarationNode];
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Resolve("x", out var resultSymbol), Is.True);
+            Assert.That(result.TryResolve("x", out var resultSymbol), Is.True);
             Assert.That(resultSymbol, Is.Not.Null);
             Assert.That(resultSymbol.Name, Is.EqualTo("x"));
         }

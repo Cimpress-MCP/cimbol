@@ -11,12 +11,6 @@ namespace Cimpress.Cimbol.Runtime.Functions
     public static class RuntimeFunctions
     {
         /// <summary>
-        /// The cached <see cref="ConstructorInfo"/> for the constructor for a <see cref="ListValue"/>.
-        /// </summary>
-        public static ConstructorInfo ListConstructorInfo { get; } =
-            typeof(ListValue).GetConstructor(new[] { typeof(ILocalValue[]) });
-
-        /// <summary>
         /// The cached <see cref="ConstructorInfo"/> for the constructor for a <see cref="NotSupportedException"/>.
         /// </summary>
         public static ConstructorInfo NotSupportedExceptionConstructorInfo { get; } =
@@ -24,6 +18,12 @@ namespace Cimpress.Cimbol.Runtime.Functions
 
         /// <summary>
         /// The cached <see cref="ConstructorInfo"/> for the constructor for a <see cref="ListValue"/>.
+        /// </summary>
+        public static ConstructorInfo ListConstructorInfo { get; } =
+            typeof(ListValue).GetConstructor(new[] { typeof(ILocalValue[]) });
+
+        /// <summary>
+        /// The cached <see cref="ConstructorInfo"/> for the constructor for an <see cref="ObjectValue"/>.
         /// </summary>
         public static ConstructorInfo ObjectConstructorInfo { get; } =
             typeof(ObjectValue).GetConstructor(new[] { typeof(IDictionary<string, ILocalValue>) });
@@ -59,10 +59,16 @@ namespace Cimpress.Cimbol.Runtime.Functions
             typeof(ILocalValue).GetMethod("CastString", BindingFlags.Instance | BindingFlags.Public);
 
         /// <summary>
-        /// The cached <see cref="MethodInfo"/> for the function for invoke a function value.
+        /// The cached <see cref="MethodInfo"/> for the function for invoking a function value.
         /// </summary>
         public static MethodInfo InvokeInfo { get; } =
             typeof(ILocalValue).GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public);
+
+        /// <summary>
+        /// The cached <see cref="MethodInfo"/> for the function for assigning a value to an object value.
+        /// </summary>
+        public static MethodInfo ObjectAssignInfo { get; } =
+            typeof(ObjectValue).GetMethod("Assign", BindingFlags.Instance | BindingFlags.NonPublic);
 
         /// <summary>
         /// The cached <see cref="MethodInfo"/> for the function for checking equality.

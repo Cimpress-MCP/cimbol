@@ -17,7 +17,6 @@ namespace Cimpress.Cimbol.Compiler.Emit
         {
             ExecutionSteps = executionSteps
                 .OrderBy(executionStep => executionStep.IsAsynchronous ? 1 : 0)
-                .ThenBy(executionStep => executionStep.Node.Name)
                 .ToImmutableArray();
 
             IsAsynchronous = ExecutionSteps.Any(executionStep => executionStep.IsAsynchronous);

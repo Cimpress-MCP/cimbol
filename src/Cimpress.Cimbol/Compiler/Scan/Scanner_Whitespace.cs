@@ -21,6 +21,8 @@
                     break;
                 }
             }
+
+            _context.Skip();
         }
 
         private bool IsWhitespace(string character)

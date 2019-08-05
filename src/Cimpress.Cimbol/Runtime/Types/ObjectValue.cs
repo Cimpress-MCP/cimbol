@@ -62,5 +62,15 @@ namespace Cimpress.Cimbol.Runtime.Types
         {
             throw new NotSupportedException();
         }
+
+        /// <summary>
+        /// Assign a value to the given key.
+        /// </summary>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to set the key to.</param>
+        internal void Assign(string key, ILocalValue value)
+        {
+            Value[key] = value;
+        }
     }
 }

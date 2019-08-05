@@ -97,5 +97,17 @@ namespace Cimpress.Cimbol.Compiler.Scan
         {
             return _sourceText.Peek();
         }
+
+        /// <summary>
+        /// Ignore all the characters from the last point consumption happened up until the current position.
+        /// </summary>
+        public void Skip()
+        {
+            _builder.Clear();
+
+            var end = new Position(_sourceText.Row, _sourceText.Column);
+
+            _mark = end;
+        }
     }
 }

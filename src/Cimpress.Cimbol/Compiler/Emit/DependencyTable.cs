@@ -82,11 +82,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
                 var formulaName = importDeclarationNode.ImportPath.ElementAtOrDefault(1);
 
-                if (!dependencyTable.TryGetValue(importDeclarationNode, out var dependencies))
-                {
-                    dependencies = new HashSet<IDeclarationNode>();
-                    dependencyTable[importDeclarationNode] = dependencies;
-                }
+                var dependencies = new HashSet<IDeclarationNode>();
+
+                dependencyTable[importDeclarationNode] = dependencies;
 
                 if (importDeclarationNode.ImportType == ImportType.Formula)
                 {
