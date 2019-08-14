@@ -36,7 +36,7 @@ namespace Cimpress.Cimbol.Utilities
                 return unescaped;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode081");
         }
 
         /// <summary>

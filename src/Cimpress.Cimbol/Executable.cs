@@ -39,7 +39,7 @@ namespace Cimpress.Cimbol
 
             if (arguments.Length != _argumentCount)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode038");
             }
 
             var castArguments = arguments.Cast<object>().ToArray();

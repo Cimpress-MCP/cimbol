@@ -72,7 +72,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
 
                 default:
                     // Expected a terminal, found something else.
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode014");
             }
         }
     }

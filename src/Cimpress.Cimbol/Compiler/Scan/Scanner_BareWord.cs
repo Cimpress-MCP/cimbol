@@ -17,7 +17,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
         {
             if (!IsBareWordStart(_context.Peek()))
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode017");
             }
 
             ScanBareWord();

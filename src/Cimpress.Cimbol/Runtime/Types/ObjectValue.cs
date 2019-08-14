@@ -30,25 +30,25 @@ namespace Cimpress.Cimbol.Runtime.Types
                 return value;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode070");
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode071");
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode072");
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode073");
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
@@ -60,7 +60,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode074");
         }
 
         /// <summary>

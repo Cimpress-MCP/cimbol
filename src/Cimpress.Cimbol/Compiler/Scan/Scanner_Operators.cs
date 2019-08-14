@@ -57,7 +57,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return ScanOperatorGreaterThan();
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode027");
             }
         }
 
@@ -112,7 +112,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return _context.Consume(TokenType.NotEqual);
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode028");
             }
         }
 

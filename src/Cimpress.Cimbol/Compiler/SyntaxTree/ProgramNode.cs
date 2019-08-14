@@ -114,7 +114,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
                 return argument;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode035");
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
                 return constant;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode036");
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
                 return module;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode037");
         }
 
         /// <inheritdoc cref="object.ToString"/>

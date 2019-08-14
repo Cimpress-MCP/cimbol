@@ -50,7 +50,7 @@ namespace Cimpress.Cimbol.Utilities
                 if (!_vertices.Contains(edge.Item1) || !_vertices.Contains(edge.Item2))
                 {
                     // All edges must reference vertices in the vertex set.
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode079");
                 }
             }
 
@@ -348,7 +348,7 @@ namespace Cimpress.Cimbol.Utilities
             if (!visited.SetEquals(_vertices))
             {
                 // The graph contains cycles.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode080");
             }
 
             return ordering;

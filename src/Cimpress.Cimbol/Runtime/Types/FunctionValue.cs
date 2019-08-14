@@ -43,25 +43,25 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access{T}"/>
         public ILocalValue Access(string key)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode054");
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode055");
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode056");
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode057");
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
@@ -78,7 +78,7 @@ namespace Cimpress.Cimbol.Runtime.Types
 #pragma warning disable CA1062
             if (arguments.Length != _argumentCount)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode058");
             }
 #pragma warning enable CA1062
 
@@ -111,7 +111,7 @@ namespace Cimpress.Cimbol.Runtime.Types
                     return tValue;
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode059");
             }
         }
 
@@ -120,7 +120,7 @@ namespace Cimpress.Cimbol.Runtime.Types
             // Validate that the function return type implements ILocalValue.
             if (!typeof(ILocalValue).IsAssignableFrom(methodInfo.ReturnType))
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode060");
             }
 
             // Validate that each parameter type implements ILocalValue.
@@ -130,7 +130,7 @@ namespace Cimpress.Cimbol.Runtime.Types
 
                 if (!typeof(ILocalValue).IsAssignableFrom(parameterType))
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode061");
                 }
             }
 

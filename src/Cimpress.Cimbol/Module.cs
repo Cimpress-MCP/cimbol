@@ -52,7 +52,7 @@ namespace Cimpress.Cimbol
             if (_formulas.ContainsKey(formulaName) || _references.ContainsKey(formulaName))
             {
                 // Disallow adding duplicate references to a module.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode039");
             }
 
             var formula = new Formula(this, formulaName, formulaValue, flags);
@@ -85,13 +85,13 @@ namespace Cimpress.Cimbol
             if (!ReferenceEquals(Program, resource.Program))
             {
                 // Disallow adding a reference to a resource outside of the program.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode040");
             }
 
             if (ReferenceEquals(this, resource))
             {
                 // Disallow adding a self-reference to a module within that module.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode041");
             }
 
             if (resource is Formula formula)
@@ -99,20 +99,20 @@ namespace Cimpress.Cimbol
                 if (ReferenceEquals(this, formula.Module))
                 {
                     // Disallow adding a reference to a formula within the module that owns the formula.
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode042");
                 }
 
                 if (!formula.IsReferenceable)
                 {
                     // Disallow adding a reference to a formula when that formula is not referenceable.
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode043");
                 }
             }
 
             if (_references.ContainsKey(referenceName))
             {
                 // Disallow adding duplicate references to a module.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode044");
             }
 
             _references[referenceName] = resource;
@@ -173,7 +173,7 @@ namespace Cimpress.Cimbol
                     return new[] { module.Name };
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode045");
             }
         }
 
@@ -194,7 +194,7 @@ namespace Cimpress.Cimbol
                     return ImportType.Module;
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode046");
             }
         }
     }

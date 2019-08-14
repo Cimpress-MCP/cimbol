@@ -236,7 +236,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 return Expression.Assign(importSymbol.Variable, variable);
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode005");
         }
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     return EmitUnaryOpNode(unaryOpNode, symbolTable);
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode006");
             }
         }
 
@@ -448,7 +448,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     return BuildWhereMacro(arguments);
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode007");
             }
         }
 
@@ -529,7 +529,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             if (firstBranch == null)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode008");
             }
 
             var test = Expression.Call(null, RuntimeFunctions.IfTrueInfo, arguments[0].Item2);
@@ -556,7 +556,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 return Expression.Condition(test, ifTrue, ifFalse, typeof(ILocalValue));
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode009");
         }
 
         private Expression BuildListMacro(Tuple<string, Expression>[] arguments)
@@ -614,7 +614,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         {
             if (arguments.Length == 0)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode010");
             }
 
             var head = arguments.Length % 2 == 1 ? arguments.Last().Item2 : BuildError();

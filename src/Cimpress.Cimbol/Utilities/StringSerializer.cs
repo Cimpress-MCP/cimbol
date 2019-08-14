@@ -25,7 +25,7 @@ namespace Cimpress.Cimbol.Utilities
             if (!StringRegex.IsMatch(stringSource))
             {
                 // Expected a number but received something else.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode083");
             }
 
             var unquoted = stringSource.Substring(1, stringSource.Length - 2);

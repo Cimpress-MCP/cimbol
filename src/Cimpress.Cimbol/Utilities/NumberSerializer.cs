@@ -21,7 +21,7 @@ namespace Cimpress.Cimbol.Utilities
             }
 
             // Expected a number but received something else.
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode082");
         }
 
         /// <summary>

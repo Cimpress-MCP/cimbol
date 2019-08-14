@@ -17,7 +17,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
             if (_context.Peek() != "\"")
             {
                 // String literals must start with a single quote.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode029");
             }
 
             _context.Advance();
@@ -37,7 +37,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     case "\n":
                     case "\r":
                         // String literals cannot have new lines in them.
-                        throw new NotSupportedException();
+                        throw new NotSupportedException("ErrorCode030");
 
                     default:
                         _context.Advance();
@@ -46,7 +46,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
             }
 
             // Unexpected end of file reached while lexing a string.
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode031");
         }
     }
 }

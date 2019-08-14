@@ -68,13 +68,13 @@ namespace Cimpress.Cimbol.Compiler.Parse
             if (current == null)
             {
                 // Unexpected end of file.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode012");
             }
 
             if (current.Type != tokenType)
             {
                 // Wrong token type.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode013");
             }
 
             _tokenStream.Next();

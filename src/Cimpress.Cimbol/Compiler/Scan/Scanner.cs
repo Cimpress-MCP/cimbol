@@ -69,7 +69,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return NextNumberLiteral();
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode016");
         }
     }
 }

@@ -105,7 +105,7 @@ namespace Cimpress.Cimbol.Utilities
             if (_enterFunctions.ContainsKey(nodeType))
             {
                 // Disallow adding duplicate handlers for the same node type.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode084");
             }
 
             _enterFunctions[nodeType] = node => enterFunction(node as T);
@@ -127,7 +127,7 @@ namespace Cimpress.Cimbol.Utilities
             if (_exitFunctions.ContainsKey(nodeType))
             {
                 // Disallow adding duplicate handlers for the same node type.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode085");
             }
 
             _exitFunctions[nodeType] = node => exitFunction(node as T);

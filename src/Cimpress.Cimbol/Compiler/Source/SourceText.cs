@@ -68,7 +68,7 @@ namespace Cimpress.Cimbol.Compiler.Source
 
             if (!IsValid())
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode033");
             }
 
             _character = GetCurrentCharacter();
@@ -155,7 +155,7 @@ namespace Cimpress.Cimbol.Compiler.Source
 
             if (!IsValid())
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode034");
             }
 
             _character = GetCurrentCharacter();

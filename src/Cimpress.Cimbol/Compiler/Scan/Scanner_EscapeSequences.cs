@@ -39,7 +39,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
 
                 default:
                     // Unrecognized escape sequence.
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode021");
             }
         }
 
@@ -54,7 +54,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
                 if (!HexRegex.IsMatch(_context.Peek()))
                 {
                     // The encounter character is not valid hexadecimal.
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode022");
                 }
 
                 _context.Advance();

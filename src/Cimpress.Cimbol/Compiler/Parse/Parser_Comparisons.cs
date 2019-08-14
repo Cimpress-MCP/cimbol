@@ -155,7 +155,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                     return BinaryOpType.NotEqual;
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode015");
             }
         }
     }

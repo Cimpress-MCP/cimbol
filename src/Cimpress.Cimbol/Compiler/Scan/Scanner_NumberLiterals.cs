@@ -25,7 +25,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
 
                 default:
                     // Numbers must start with either a decimal digit or a period.
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("ErrorCode023");
             }
         }
 
@@ -99,7 +99,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
             else
             {
                 // DecimalOnlyPart needs at least one number, otherwise strings like "-.e2" will parse as a number.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode024");
             }
 
             // Matches regex /([eE][+-]?[0-9]{1-3})?/
@@ -127,7 +127,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
             else
             {
                 // ExponentPart needs at least one number, otherwise strings like "-2.e" will parse as a number.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode025");
             }
 
             // Matches regex /[0-9]?/
@@ -146,7 +146,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
             if (IsNumber(_context.Peek()))
             {
                 // Don't support four or more digits in the exponent.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode026");
             }
         }
 

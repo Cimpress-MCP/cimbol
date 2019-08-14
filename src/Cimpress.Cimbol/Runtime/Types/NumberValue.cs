@@ -26,13 +26,13 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access{T}"/>
         public ILocalValue Access(string key)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode067");
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode068");
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
@@ -66,7 +66,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode069");
         }
     }
 }

@@ -87,7 +87,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 symbolTable = symbolTable.Parent;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("ErrorCode011");
         }
 
         /// <summary>

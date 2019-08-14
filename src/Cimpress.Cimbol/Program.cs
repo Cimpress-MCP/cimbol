@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Cimpress.Cimbol.Compiler.Emit;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
@@ -22,6 +23,8 @@ namespace Cimpress.Cimbol
 
         private readonly Dictionary<string, Module> _modules;
 
+        private LambdaExpression _expression;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Program"/> class.
         /// </summary>
@@ -30,6 +33,8 @@ namespace Cimpress.Cimbol
             _arguments = new Dictionary<string, Argument>(StringComparer.OrdinalIgnoreCase);
 
             _constants = new Dictionary<string, Constant>(StringComparer.OrdinalIgnoreCase);
+
+            _expression = null;
 
             _modules = new Dictionary<string, Module>(StringComparer.OrdinalIgnoreCase);
         }
@@ -49,7 +54,7 @@ namespace Cimpress.Cimbol
             if (_arguments.ContainsKey(argumentName))
             {
                 // Disallow duplicate resource names.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode047");
             }
 
             var argument = new Argument(this, argumentName);
@@ -75,7 +80,7 @@ namespace Cimpress.Cimbol
             if (_constants.ContainsKey(constantName))
             {
                 // Disallow duplicate resource names.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode048");
             }
 
             var constant = new Constant(this, constantName, constantValue);
@@ -100,7 +105,7 @@ namespace Cimpress.Cimbol
             if (_modules.ContainsKey(moduleName))
             {
                 // Disallow duplicate resource names.
-                throw new NotSupportedException();
+                throw new NotSupportedException("ErrorCode049");
             }
 
             var module = new Module(this, moduleName);
@@ -123,6 +128,8 @@ namespace Cimpress.Cimbol
             var lambda = emitter.EmitProgram(ast);
 
             var method = lambda.Compile();
+
+            _expression = lambda;
 
             return new Executable(method);
         } 
