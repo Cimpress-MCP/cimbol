@@ -72,7 +72,9 @@ namespace Cimpress.Cimbol.Compiler.Parse
 
                 default:
                     // Expected a terminal, found something else.
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode014");
+#pragma warning restore CA1303
             }
         }
     }

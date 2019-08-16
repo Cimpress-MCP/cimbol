@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
@@ -17,8 +18,13 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         {
             OpType = opType;
 
-            Operand = operand;
+            Operand = operand ?? throw new ArgumentNullException(nameof(operand));
+
+            IsAsynchronous = OpType == UnaryOpType.Await || Operand.IsAsynchronous;
         }
+
+        /// <inheritdoc cref="IExpressionNode.IsAsynchronous"/>
+        public bool IsAsynchronous { get; }
 
         /// <summary>
         /// The type of unary operation.

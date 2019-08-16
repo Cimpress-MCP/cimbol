@@ -157,7 +157,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
             if (graph.IsCyclical())
             {
                 // Do not allow cycles between declarations.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode004");
+#pragma warning restore CA1303
             }
 
             return new DependencyTable(graph);

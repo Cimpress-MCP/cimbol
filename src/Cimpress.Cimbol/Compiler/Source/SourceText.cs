@@ -68,7 +68,9 @@ namespace Cimpress.Cimbol.Compiler.Source
 
             if (!IsValid())
             {
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode033");
+#pragma warning restore CA1303
             }
 
             _character = GetCurrentCharacter();
@@ -155,7 +157,9 @@ namespace Cimpress.Cimbol.Compiler.Source
 
             if (!IsValid())
             {
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode034");
+#pragma warning restore CA1303
             }
 
             _character = GetCurrentCharacter();

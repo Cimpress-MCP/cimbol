@@ -35,5 +35,41 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
             var expected = new IExpressionNode[] { child2, child1 };
             Assert.That(node.ChildrenReverse(), Is.EqualTo(expected));
         }
+
+        [Test]
+        public void Should_BeAsync_When_AnyArgumentIsAsync()
+        {
+            var child1 = new UnaryOpNode(UnaryOpType.Await, new LiteralNode(null));
+            var child2 = new LiteralNode(null);
+            var node = new MacroNode("if", new[] { new PositionalArgument(child1), new PositionalArgument(child2) });
+
+            var result = node.IsAsynchronous;
+
+            Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public void Should_BeAsync_When_AllArgumentsAreAsync()
+        {
+            var child1 = new UnaryOpNode(UnaryOpType.Await, new LiteralNode(null));
+            var child2 = new UnaryOpNode(UnaryOpType.Await, new LiteralNode(null));
+            var node = new MacroNode("if", new[] { new PositionalArgument(child1), new PositionalArgument(child2) });
+
+            var result = node.IsAsynchronous;
+
+            Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public void ShouldNot_BeAsync_When_NoArgumentsAreAsync()
+        {
+            var child1 = new LiteralNode(null);
+            var child2 = new LiteralNode(null);
+            var node = new MacroNode("if", new[] { new PositionalArgument(child1), new PositionalArgument(child2) });
+
+            var result = node.IsAsynchronous;
+
+            Assert.That(result, Is.False);
+        }
     }
 }

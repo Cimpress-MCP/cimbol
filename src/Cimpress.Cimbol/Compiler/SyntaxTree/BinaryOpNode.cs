@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
@@ -18,10 +19,15 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         {
             OpType = opType;
 
-            Left = left;
+            Left = left ?? throw new ArgumentNullException(nameof(left));
 
-            Right = right;
+            Right = right ?? throw new ArgumentNullException(nameof(right));
+
+            IsAsynchronous = Left.IsAsynchronous || Right.IsAsynchronous;
         }
+
+        /// <inheritdoc cref="IExpressionNode.IsAsynchronous"/>
+        public bool IsAsynchronous { get; }
 
         /// <summary>
         /// The type of binary operation.

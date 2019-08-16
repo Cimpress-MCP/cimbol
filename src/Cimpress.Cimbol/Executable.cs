@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Cimpress.Cimbol.Runtime.Types;
 
 namespace Cimpress.Cimbol
@@ -30,7 +31,7 @@ namespace Cimpress.Cimbol
         /// </summary>
         /// <param name="arguments">The list of arguments to call the executable with.</param>
         /// <returns>The result of evaluating the executable.</returns>
-        public ObjectValue Call(params ILocalValue[] arguments)
+        public Task<ObjectValue> Call(params ILocalValue[] arguments)
         {
             if (arguments == null)
             {
@@ -39,14 +40,16 @@ namespace Cimpress.Cimbol
 
             if (arguments.Length != _argumentCount)
             {
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode038");
+#pragma warning restore CA1303
             }
 
             var castArguments = arguments.Cast<object>().ToArray();
 
-            var returnValue = _function.DynamicInvoke(castArguments) as ObjectValue;
+            var returnValue = _function.DynamicInvoke(castArguments);
 
-            return returnValue;
+            return returnValue as Task<ObjectValue>;
         }
     }
 }

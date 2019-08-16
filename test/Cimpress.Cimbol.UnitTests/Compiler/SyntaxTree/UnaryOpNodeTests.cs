@@ -9,7 +9,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_SerializeToString_When_Valid()
         {
-            var node = new UnaryOpNode(UnaryOpType.Negate, null);
+            var child1 = new LiteralNode(null);
+            var node = new UnaryOpNode(UnaryOpType.Negate, child1);
             Assert.AreEqual("{UnaryOpNode -}", node.ToString());
         }
 
@@ -31,6 +32,39 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
 
             var expected = new[] { child1 };
             CollectionAssert.AreEqual(expected, node.ChildrenReverse());
+        }
+
+        [Test]
+        public void Should_BeAsync_When_ChildIsAsync()
+        {
+            var child1 = new UnaryOpNode(UnaryOpType.Await, new LiteralNode(null));
+            var node = new UnaryOpNode(UnaryOpType.Negate, child1);
+
+            var result = node.IsAsynchronous;
+
+            Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public void Should_BeAsync_When_OperationTypeIsAwait()
+        {
+            var child1 = new LiteralNode(null);
+            var node = new UnaryOpNode(UnaryOpType.Await, child1);
+
+            var result = node.IsAsynchronous;
+
+            Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public void ShouldNot_BeAsync_WhenOperationTypeIsNotAwaitAndChildIsNotAsync()
+        {
+            var child1 = new LiteralNode(null);
+            var node = new UnaryOpNode(UnaryOpType.Negate, child1);
+
+            var result = node.IsAsynchronous;
+
+            Assert.That(result, Is.False);
         }
     }
 }

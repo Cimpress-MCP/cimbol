@@ -21,7 +21,9 @@ namespace Cimpress.Cimbol.Utilities
             }
 
             // Expected a number but received something else.
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode082");
+#pragma warning restore CA1303
         }
 
         /// <summary>

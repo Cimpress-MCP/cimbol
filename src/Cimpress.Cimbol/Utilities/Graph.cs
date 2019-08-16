@@ -50,7 +50,9 @@ namespace Cimpress.Cimbol.Utilities
                 if (!_vertices.Contains(edge.Item1) || !_vertices.Contains(edge.Item2))
                 {
                     // All edges must reference vertices in the vertex set.
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode079");
+#pragma warning restore CA1303
                 }
             }
 
@@ -348,7 +350,9 @@ namespace Cimpress.Cimbol.Utilities
             if (!visited.SetEquals(_vertices))
             {
                 // The graph contains cycles.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode080");
+#pragma warning restore CA1303
             }
 
             return ordering;

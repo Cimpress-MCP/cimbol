@@ -24,8 +24,10 @@ namespace Cimpress.Cimbol.Utilities
 
             if (!StringRegex.IsMatch(stringSource))
             {
+#pragma warning disable CA1303
                 // Expected a number but received something else.
                 throw new NotSupportedException("ErrorCode083");
+#pragma warning restore CA1303
             }
 
             var unquoted = stringSource.Substring(1, stringSource.Length - 2);

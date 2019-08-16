@@ -27,21 +27,21 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
             IEnumerable<ConstantDeclarationNode> constants,
             IEnumerable<ModuleDeclarationNode> modules)
         {
-            Arguments = arguments.ToImmutableArray();
+            Arguments = arguments?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(arguments));
 
             _argumentTable = Arguments.ToImmutableDictionary(
                 argument => argument.Name,
                 argument => argument,
                 StringComparer.OrdinalIgnoreCase);
 
-            Constants = constants.ToImmutableArray();
+            Constants = constants?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(constants));
 
             _constantTable = Constants.ToImmutableDictionary(
                 constant => constant.Name,
                 constant => constant,
                 StringComparer.OrdinalIgnoreCase);
 
-            Modules = modules.ToImmutableArray();
+            Modules = modules?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(modules));
 
             _moduleTable = Modules.ToImmutableDictionary(
                 module => module.Name,
@@ -114,7 +114,9 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
                 return argument;
             }
 
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode035");
+#pragma warning restore CA1303
         }
 
         /// <summary>
@@ -129,7 +131,9 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
                 return constant;
             }
 
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode036");
+#pragma warning restore CA1303
         }
 
         /// <summary>
@@ -144,7 +148,9 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
                 return module;
             }
 
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode037");
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc cref="object.ToString"/>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Cimpress.Cimbol.Compiler.SyntaxTree;
 
 namespace Cimpress.Cimbol.Compiler.Emit
 {
@@ -26,7 +27,14 @@ namespace Cimpress.Cimbol.Compiler.Emit
             var executionGroups = partialOrdering.Select(declarationGroup =>
             {
                 var executionEvents = declarationGroup.Select(declaration =>
-                    new ExecutionStep(declaration, ExecutionStepType.Synchronous));
+                {
+                    if (declaration is FormulaDeclarationNode formulaDeclaration && formulaDeclaration.IsAsynchronous)
+                    {
+                        return new ExecutionStep(declaration, ExecutionStepType.Asynchronous);
+                    }
+
+                    return new ExecutionStep(declaration, ExecutionStepType.Synchronous);
+                });
 
                 return new ExecutionGroup(executionEvents);
             });

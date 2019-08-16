@@ -36,7 +36,9 @@ namespace Cimpress.Cimbol.Utilities
                 return unescaped;
             }
 
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode081");
+#pragma warning restore CA1303
         }
 
         /// <summary>

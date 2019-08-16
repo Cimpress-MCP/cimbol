@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -16,7 +17,9 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <param name="arguments">The arguments to invoke the macro with.</param>
         public MacroNode(string macro, IEnumerable<IArgument> arguments)
         {
-            Arguments = arguments.ToImmutableArray();
+            Arguments = arguments?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(arguments));
+
+            IsAsynchronous = Arguments.Any(argument => argument.Value.IsAsynchronous);
 
             Macro = macro;
         }
@@ -25,6 +28,9 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// The arguments to invoke the macro with.
         /// </summary>
         public ImmutableArray<IArgument> Arguments { get; }
+
+        /// <inheritdoc cref="IExpressionNode.IsAsynchronous"/>
+        public bool IsAsynchronous { get; }
 
         /// <summary>
         /// The macro to invoke.

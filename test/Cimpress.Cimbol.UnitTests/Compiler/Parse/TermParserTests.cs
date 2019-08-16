@@ -118,7 +118,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
-            ParserAssert.Parses<IdentifierNode>(() => parser.Factor());
+            ParserAssert.Parses<IdentifierNode>(() => parser.Unary());
         }
 
         [Test]
@@ -130,12 +130,12 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
-            ParserAssert.Parses<IdentifierNode>(() => parser.Factor());
+            ParserAssert.Parses<IdentifierNode>(() => parser.Unary());
         }
 
         [Test]
         [TestCase("-", TokenType.Subtract, UnaryOpType.Negate)]
-        public void Should_ParseBinaryOpNode_When_GivenFactor(string value, TokenType token, UnaryOpType op)
+        public void Should_ParseUnaryOpNode_When_GivenFactor(string value, TokenType token, UnaryOpType op)
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
@@ -143,7 +143,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
-            var result = ParserAssert.Parses<UnaryOpNode>(() => parser.Factor());
+            var result = ParserAssert.Parses<UnaryOpNode>(() => parser.Unary());
             Assert.AreEqual(op, result.OpType);
 
             var innerResult = ParserAssert.HasProperty<IdentifierNode>(result, "Operand");
@@ -152,7 +152,28 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
         [Test]
         [TestCase("-", TokenType.Subtract, UnaryOpType.Negate)]
-        public void Should_ParseBinaryOpNode_When_GivenNestedFactors(string value, TokenType token, UnaryOpType op)
+        public void Should_ParseUnaryOpNode_When_GivenNestedFactors(string value, TokenType token, UnaryOpType op)
+        {
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token(value, token, new Position(0, 0), new Position(0, 0)),
+                new Token(value, token, new Position(0, 0), new Position(0, 0)),
+                new Token(value, token, new Position(0, 0), new Position(0, 0)),
+                new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
+
+            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+
+            var result = ParserAssert.Parses<UnaryOpNode>(() => parser.Unary());
+            Assert.AreEqual(op, result.OpType);
+
+            var innerResult = ParserAssert.HasProperty<IdentifierNode>(result, "Operand");
+            Assert.AreEqual("x", innerResult.Identifier);
+        }
+
+        [Test]
+        [TestCase("-", TokenType.Subtract)]
+        public void Should_PruneRedundantUnaryOperations_When_GivenNestedFactors(
+            string value,
+            TokenType token)
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
@@ -161,14 +182,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
 
-            var result = ParserAssert.Parses<UnaryOpNode>(() => parser.Factor());
-            Assert.AreEqual(op, result.OpType);
-
-            var innerResult = ParserAssert.HasProperty<UnaryOpNode>(result, "Operand");
-            Assert.AreEqual(op, innerResult.OpType);
-
-            var innerInnerResult = ParserAssert.HasProperty<IdentifierNode>(innerResult, "Operand");
-            Assert.AreEqual("x", innerInnerResult.Identifier);
+            var result = ParserAssert.Parses<IdentifierNode>(() => parser.Unary());
+            Assert.That(result.Identifier, Is.EqualTo("x"));
         }
 
         [Test]

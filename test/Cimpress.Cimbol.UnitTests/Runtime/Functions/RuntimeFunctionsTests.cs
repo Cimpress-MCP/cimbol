@@ -8,24 +8,24 @@ using NUnit.Framework;
 namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
 {
     [TestFixture]
-    public class RuntimeFunctionTests
+    public class RuntimeFunctionsTests
     {
         [Test]
-        [TestCaseSource(typeof(RuntimeFunctionTests), nameof(ConstructorInfoTestCases))]
+        [TestCaseSource(typeof(RuntimeFunctionsTests), nameof(ConstructorInfoTestCases))]
         public void Should_HaveNonNullConstructorInfos_When_Accessed(ConstructorInfo constructorInfo)
         {
             Assert.That(constructorInfo, Is.Not.Null);
         }
 
         [Test]
-        [TestCaseSource(typeof(RuntimeFunctionTests), nameof(MethodInfoTestCases))]
+        [TestCaseSource(typeof(RuntimeFunctionsTests), nameof(MethodInfoTestCases))]
         public void Should_HaveNonNullMethodInfos_When_Accessed(MethodInfo constructorInfo)
         {
             Assert.That(constructorInfo, Is.Not.Null);
         }
 
         [Test]
-        [TestCaseSource(typeof(RuntimeFunctionTests), nameof(EqualToTestCases))]
+        [TestCaseSource(typeof(RuntimeFunctionsTests), nameof(EqualToTestCases))]
         public void Should_CheckEquality_When_GivenLocalValues(ILocalValue left, ILocalValue right, bool expected)
         {
             var result = RuntimeFunctions.EqualTo(left, right);
@@ -34,7 +34,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         }
 
         [Test]
-        [TestCaseSource(typeof(RuntimeFunctionTests), nameof(EqualToTestCases))]
+        [TestCaseSource(typeof(RuntimeFunctionsTests), nameof(EqualToTestCases))]
         public void Should_CheckInequality_When_GivenLocalValues(ILocalValue left, ILocalValue right, bool expected)
         {
             var result = RuntimeFunctions.NotEqualTo(left, right);
@@ -324,28 +324,28 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
 
         private static IEnumerable<TestCaseData> ConstructorInfoTestCases()
         {
-            yield return new TestCaseData(RuntimeFunctions.ListConstructorInfo);
-            yield return new TestCaseData(RuntimeFunctions.NotSupportedExceptionConstructorInfo);
-            yield return new TestCaseData(RuntimeFunctions.ObjectConstructorInfo);
-            yield return new TestCaseData(RuntimeFunctions.ObjectDictionaryConstructorInfo);
+            yield return new TestCaseData(LocalValueFunctions.ListValueConstructorInfo);
+            yield return new TestCaseData(StandardFunctions.NotSupportedExceptionConstructorInfo);
+            yield return new TestCaseData(LocalValueFunctions.ObjectValueConstructorInfo);
+            yield return new TestCaseData(StandardFunctions.DictionaryConstructorInfo);
         }
 
         private static IEnumerable<TestCaseData> MethodInfoTestCases()
         {
-            yield return new TestCaseData(RuntimeFunctions.AccessInfo);
+            yield return new TestCaseData(LocalValueFunctions.AccessInfo);
             yield return new TestCaseData(RuntimeFunctions.BooleanAndInfo);
             yield return new TestCaseData(RuntimeFunctions.BooleanNotInfo);
             yield return new TestCaseData(RuntimeFunctions.BooleanOrInfo);
-            yield return new TestCaseData(RuntimeFunctions.CastBooleanInfo);
-            yield return new TestCaseData(RuntimeFunctions.CastNumberInfo);
-            yield return new TestCaseData(RuntimeFunctions.CastStringInfo);
+            yield return new TestCaseData(LocalValueFunctions.CastBooleanInfo);
+            yield return new TestCaseData(LocalValueFunctions.CastNumberInfo);
+            yield return new TestCaseData(LocalValueFunctions.CastStringInfo);
             yield return new TestCaseData(RuntimeFunctions.CompareGreaterThanInfo);
             yield return new TestCaseData(RuntimeFunctions.CompareGreaterThanOrEqualInfo);
             yield return new TestCaseData(RuntimeFunctions.CompareLessThanInfo);
             yield return new TestCaseData(RuntimeFunctions.CompareLessThanOrEqualInfo);
             yield return new TestCaseData(RuntimeFunctions.EqualToInfo);
             yield return new TestCaseData(RuntimeFunctions.IfTrueInfo);
-            yield return new TestCaseData(RuntimeFunctions.InvokeInfo);
+            yield return new TestCaseData(LocalValueFunctions.InvokeInfo);
             yield return new TestCaseData(RuntimeFunctions.MathAddInfo);
             yield return new TestCaseData(RuntimeFunctions.MathSubtractInfo);
             yield return new TestCaseData(RuntimeFunctions.MathMultiplyInfo);
@@ -354,7 +354,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             yield return new TestCaseData(RuntimeFunctions.MathPowerInfo);
             yield return new TestCaseData(RuntimeFunctions.MathNegateInfo);
             yield return new TestCaseData(RuntimeFunctions.NotEqualToInfo);
-            yield return new TestCaseData(RuntimeFunctions.ObjectDictionaryAdd);
+            yield return new TestCaseData(StandardFunctions.DictionaryAddInfo);
             yield return new TestCaseData(RuntimeFunctions.StringConcatenateInfo);
         }
 

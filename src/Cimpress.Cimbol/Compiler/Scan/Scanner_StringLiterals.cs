@@ -17,7 +17,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
             if (_context.Peek() != "\"")
             {
                 // String literals must start with a single quote.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode029");
+#pragma warning restore CA1303
             }
 
             _context.Advance();
@@ -37,7 +39,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     case "\n":
                     case "\r":
                         // String literals cannot have new lines in them.
+#pragma warning disable CA1303
                         throw new NotSupportedException("ErrorCode030");
+#pragma warning restore CA1303
 
                     default:
                         _context.Advance();
@@ -46,7 +50,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
             }
 
             // Unexpected end of file reached while lexing a string.
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode031");
+#pragma warning restore CA1303
         }
     }
 }

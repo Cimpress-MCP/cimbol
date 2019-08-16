@@ -27,5 +27,15 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
             var node = new LiteralNode(null);
             CollectionAssert.AreEqual(Enumerable.Empty<IExpressionNode>(), node.ChildrenReverse());
         }
+
+        [Test]
+        public void ShouldNot_BeAsync_When_Initialized()
+        {
+            var node = new LiteralNode(null);
+
+            var result = node.IsAsynchronous;
+
+            Assert.That(result, Is.False);
+        }
     }
 }

@@ -17,7 +17,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
         {
             if (!IsBareWordStart(_context.Peek()))
             {
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode017");
+#pragma warning restore CA1303
             }
 
             ScanBareWord();

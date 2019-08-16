@@ -1,0 +1,312 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Runtime.Functions;
+using Cimpress.Cimbol.Runtime.Types;
+
+namespace Cimpress.Cimbol.Compiler.Emit
+{
+    /// <summary>
+    /// A collection of methods for generating expression trees.
+    /// </summary>
+    internal static partial class CodeGen
+    {
+        /// <summary>
+        /// Generate the expression tree for a binary operation with no type coercion.
+        /// </summary>
+        /// <param name="methodInfo">The method to run.</param>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>An expression that perform the given operation on the left and right operands.</returns>
+        internal static Expression BinaryOp(MethodInfo methodInfo, Expression left, Expression right)
+        {
+            return Expression.Call(null, methodInfo, left, right);
+        }
+
+        /// <summary>
+        /// Generate the expression tree for a binary operation with type coercion.
+        /// </summary>
+        /// <param name="methodInfo">The method to run.</param>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <param name="targetType">The target type for the operation parameters.</param>
+        /// <returns>An expression that perform the given operation on the left and right operands.</returns>
+        internal static Expression BinaryOp(MethodInfo methodInfo, Expression left, Expression right, Type targetType)
+        {
+            MethodInfo castFunction;
+
+            if (targetType == typeof(BooleanValue))
+            {
+                castFunction = LocalValueFunctions.CastBooleanInfo;
+            }
+            else if (targetType == typeof(NumberValue))
+            {
+                castFunction = LocalValueFunctions.CastNumberInfo;
+            }
+            else if (targetType == typeof(StringValue))
+            {
+                castFunction = LocalValueFunctions.CastStringInfo;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(targetType));
+            }
+
+            return Expression.Call(
+                null,
+                methodInfo,
+                left.Type == targetType ? left : Expression.Call(left, castFunction),
+                right.Type == targetType ? right : Expression.Call(right, castFunction));
+        }
+
+        /// <summary>
+        /// Generate the expression tree for a member access.
+        /// </summary>
+        /// <param name="operand">The operand for the access.</param>
+        /// <param name="member">The name of the member to access.</param>
+        /// <returns>An expression that access the member on the operand.</returns>
+        internal static Expression Access(Expression operand, string member)
+        {
+            return Expression.Call(operand, LocalValueFunctions.AccessInfo, Expression.Constant(member));
+        }
+
+        /// <summary>
+        /// Generate the expression tree for a block of expressions.
+        /// </summary>
+        /// <param name="expressions">The list of expressions to include in the block.</param>
+        /// <returns>A block of expressions.</returns>
+        internal static Expression Block(IEnumerable<Expression> expressions)
+        {
+            return Expression.Block(expressions);
+        }
+
+        /// <summary>
+        /// Generate the expression tree for creating a constant value.
+        /// </summary>
+        /// <param name="localValue">The local value to create as a constant.</param>
+        /// <returns>An expression that returns the provided value.</returns>
+        internal static Expression Constant(ILocalValue localValue)
+        {
+            return Expression.Constant(localValue, localValue.GetType());
+        }
+
+        /// <summary>
+        /// Generate the expression tree for throwing an error.
+        /// </summary>
+        /// <returns>An expression that throws an error.</returns>
+        internal static Expression Error()
+        {
+            return Expression.Throw(
+                Expression.New(StandardFunctions.NotSupportedExceptionConstructorInfo),
+                typeof(ILocalValue));
+        }
+
+        /// <summary>
+        /// Generate the expression tree for an if macro.
+        /// </summary>
+        /// <param name="arguments">The list of named arguments to the if macro.</param>
+        /// <returns>An expression that performs a conditional check.</returns>
+        internal static Expression IfMacro(Tuple<string, Expression>[] arguments)
+        {
+            var firstBranch = arguments.ElementAtOrDefault(1);
+            var secondBranch = arguments.ElementAtOrDefault(2);
+
+            if (firstBranch == null)
+            {
+#pragma warning disable CA1303
+                throw new NotSupportedException("ErrorCode008");
+#pragma warning restore CA1303
+            }
+
+            var test = Expression.Call(null, RuntimeFunctions.IfTrueInfo, arguments[0].Item2);
+
+            if (firstBranch.Item1.Equals("then", StringComparison.OrdinalIgnoreCase))
+            {
+                var ifTrue = firstBranch.Item2;
+
+                var ifFalse = secondBranch?.Item1?.Equals("else", StringComparison.OrdinalIgnoreCase) == true
+                        ? secondBranch.Item2
+                        : Error();
+
+                return Expression.Condition(test, ifTrue, ifFalse, typeof(ILocalValue));
+            }
+
+            if (firstBranch.Item1.Equals("else", StringComparison.OrdinalIgnoreCase))
+            {
+                var ifTrue = secondBranch?.Item1?.Equals("then", StringComparison.OrdinalIgnoreCase) == true
+                    ? secondBranch.Item2
+                    : Error();
+
+                var ifFalse = firstBranch.Item2;
+
+                return Expression.Condition(test, ifTrue, ifFalse, typeof(ILocalValue));
+            }
+
+#pragma warning disable CA1303
+            throw new NotSupportedException("ErrorCode009");
+#pragma warning restore CA1303
+        }
+
+        /// <summary>
+        /// Generate the expression tree for constructing a list.
+        /// </summary>
+        /// <param name="arguments">The list of named arguments to the list macro.</param>
+        /// <returns>An expression that constructs a list.</returns>
+        internal static Expression ListMacro(Tuple<string, Expression>[] arguments)
+        {
+            var elements = new Expression[arguments.Length];
+            for (var i = 0; i < arguments.Length; ++i)
+            {
+                elements[i] = arguments[i].Item2;
+            }
+
+            var array = Expression.NewArrayInit(typeof(ILocalValue), elements);
+
+            return Expression.New(LocalValueFunctions.ListValueConstructorInfo, array);
+        }
+
+        /// <summary>
+        /// Generate the expression tree for constructing an object.
+        /// </summary>
+        /// <param name="arguments">The list of named arguments to the object macro.</param>
+        /// <returns>An expression that constructs an object.</returns>
+        internal static Expression ObjectMacro(Tuple<string, Expression>[] arguments)
+        {
+            var elements = new ElementInit[arguments.Length];
+            for (var i = 0; i < arguments.Length; ++i)
+            {
+                var key = Expression.Constant(arguments[i].Item1);
+                var value = arguments[i].Item2;
+                elements[i] = Expression.ElementInit(StandardFunctions.DictionaryAddInfo, key, value);
+            }
+
+            var init = Expression.New(
+                StandardFunctions.DictionaryConstructorInfo,
+                Expression.Constant(StringComparer.OrdinalIgnoreCase));
+            var dictionary = Expression.ListInit(init, elements);
+
+            return Expression.New(LocalValueFunctions.ObjectValueConstructorInfo, dictionary);
+        }
+
+        /// <summary>
+        /// Generate the expression tree that wraps the entire program and returns a collection of exported formula results.
+        /// </summary>
+        /// <param name="arguments">The list of arguments to the program.</param>
+        /// <param name="variables">The list of variables in the program.</param>
+        /// <param name="expressions">The list of expressions in the program.</param>
+        /// <returns>A lambda expression that runs a program and returns its results.</returns>
+        internal static LambdaExpression ProgramLambda(
+            IEnumerable<ParameterExpression> arguments,
+            IEnumerable<ParameterExpression> variables,
+            IEnumerable<Expression> expressions)
+        {
+            var lambdaBody = Expression.Block(variables, expressions);
+
+            var lambda = Expression.Lambda(lambdaBody, arguments);
+
+            return lambda;
+        }
+
+        /// <summary>
+        /// Generate the expression tree that returns a collection of objects of exported formula results.
+        /// </summary>
+        /// <param name="programNode">The program.</param>
+        /// <param name="symbolRegistry">The symbol registry for the program.</param>
+        /// <returns>An expression that returns a collection of objects of exported formula results.</returns>
+        internal static Expression ProgramReturn(ProgramNode programNode, SymbolRegistry symbolRegistry)
+        {
+            var modules = programNode.Modules.ToArray();
+
+            var elements = new ElementInit[modules.Length];
+            for (var i = 0; i < modules.Length; ++i)
+            {
+                var key = Expression.Constant(modules[i].Name);
+                var value = symbolRegistry.Modules[modules[i].Name].Variable;
+                elements[i] = Expression.ElementInit(StandardFunctions.DictionaryAddInfo, key, value);
+            }
+
+            var init = Expression.New(
+                StandardFunctions.DictionaryConstructorInfo,
+                Expression.Constant(StringComparer.OrdinalIgnoreCase));
+            var dictionary = Expression.ListInit(init, elements);
+
+            return Expression.New(LocalValueFunctions.ObjectValueConstructorInfo, dictionary);
+        }
+
+        /// <summary>
+        /// Generate the expression tree for a unary operation with no type coercion.
+        /// </summary>
+        /// <param name="methodInfo">The method to run.</param>
+        /// <param name="operand">The operand.</param>
+        /// <returns>An expression that performs the given operation on the operand.</returns>
+        internal static Expression UnaryOp(MethodInfo methodInfo, Expression operand)
+        {
+            return Expression.Call(null, methodInfo, operand);
+        }
+
+        /// <summary>
+        /// Generate the expression tree for a unary operation with type coercion.
+        /// </summary>
+        /// <param name="methodInfo">The method to run.</param>
+        /// <param name="operand">The operand.</param>
+        /// <param name="targetType">The target type for the operation parameter.</param>
+        /// <returns>An expression that performs the given operation on the operand.</returns>
+        internal static Expression UnaryOp(MethodInfo methodInfo, Expression operand, Type targetType)
+        {
+            MethodInfo castFunction;
+
+            if (targetType == typeof(BooleanValue))
+            {
+                castFunction = LocalValueFunctions.CastBooleanInfo;
+            }
+            else if (targetType == typeof(NumberValue))
+            {
+                castFunction = LocalValueFunctions.CastNumberInfo;
+            }
+            else if (targetType == typeof(StringValue))
+            {
+                castFunction = LocalValueFunctions.CastStringInfo;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(targetType));
+            }
+
+            return Expression.Call(
+                null,
+                methodInfo,
+                operand.Type == targetType ? operand : Expression.Call(operand, castFunction));
+        }
+
+        /// <summary>
+        /// Generate the expression tree for an where macro.
+        /// </summary>
+        /// <param name="arguments">The list of named arguments to the where macro.</param>
+        /// <returns>An expression that performs a series of conditional checks.</returns>
+        internal static Expression WhereMacro(Tuple<string, Expression>[] arguments)
+        {
+            if (arguments.Length == 0)
+            {
+#pragma warning disable CA1303
+                throw new NotSupportedException("ErrorCode010");
+#pragma warning restore CA1303
+            }
+
+            var head = arguments.Length % 2 == 1 ? arguments.Last().Item2 : Error();
+
+            var conditionCount = arguments.Length / 2;
+            for (var i = conditionCount - 1; i >= 0; --i)
+            {
+                var caseExpression = Expression.Call(null, RuntimeFunctions.IfTrueInfo, arguments[i * 2].Item2);
+                var doExpression = arguments[(i * 2) + 1].Item2;
+
+                head = Expression.Condition(caseExpression, doExpression, head, typeof(ILocalValue));
+            }
+
+            return head;
+        }
+    }
+}

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
@@ -16,8 +17,13 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         {
             Member = member;
 
-            Value = value;
+            Value = value ?? throw new ArgumentNullException(nameof(value));
+
+            IsAsynchronous = Value.IsAsynchronous;
         }
+
+        /// <inheritdoc cref="IExpressionNode.IsAsynchronous"/>
+        public bool IsAsynchronous { get; }
 
         /// <summary>
         /// The name of the member to access.

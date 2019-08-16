@@ -57,7 +57,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return ScanOperatorGreaterThan();
 
                 default:
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode027");
+#pragma warning restore CA1303
             }
         }
 
@@ -112,7 +114,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return _context.Consume(TokenType.NotEqual);
 
                 default:
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode028");
+#pragma warning restore CA1303
             }
         }
 

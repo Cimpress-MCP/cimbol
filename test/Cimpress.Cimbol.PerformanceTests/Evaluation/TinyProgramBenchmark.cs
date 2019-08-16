@@ -52,7 +52,7 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
         [Benchmark]
         public ObjectValue Benchmark_TinyProgram()
         {
-            return _executable.Call();
+            return _executable.Call().Result;
         }
     }
 }

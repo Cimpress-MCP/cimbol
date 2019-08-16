@@ -6,6 +6,11 @@
     public enum UnaryOpType
     {
         /// <summary>
+        /// Represents the await operation.
+        /// </summary>
+        Await,
+
+        /// <summary>
         /// Represents the negate arithmetic unary operation.
         /// </summary>
         Negate,

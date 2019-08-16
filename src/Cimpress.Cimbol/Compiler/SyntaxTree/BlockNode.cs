@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -15,13 +16,18 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <param name="expressions">The list of expressions contained in the block.</param>
         public BlockNode(IEnumerable<IExpressionNode> expressions)
         {
-            Expressions = expressions.ToImmutableArray();
+            Expressions = expressions?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(expressions));
+
+            IsAsynchronous = Expressions.Any(expression => expression.IsAsynchronous);
         }
 
         /// <summary>
         /// The list of expressions contained in the block.
         /// </summary>
         public ImmutableArray<IExpressionNode> Expressions { get; }
+
+        /// <inheritdoc cref="IExpressionNode.IsAsynchronous"/>
+        public bool IsAsynchronous { get; }
 
         /// <inheritdoc cref="ISyntaxNode.ChildrenReverse"/>
         public IEnumerable<ISyntaxNode> Children()

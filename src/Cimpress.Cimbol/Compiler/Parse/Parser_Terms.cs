@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
@@ -68,11 +69,12 @@ namespace Cimpress.Cimbol.Compiler.Parse
         }
 
         /// <summary>
-        /// Parse a series of <see cref="Token"/> objects into a factor.
-        /// A factor is an expression with a leading unary arithmetic operator like "+" or "-".
+        /// Parse a series of <see cref="Token"/> objects into a unary expression.
+        /// A factor is an expression with a leading unary arithmetic operator like "+" or "-", or the "await" operator.
+        /// This does not include the "not" keyword because of precedence issues.
         /// </summary>
         /// <returns>The result of parsing the factor.</returns>
-        public IExpressionNode Factor()
+        public IExpressionNode Unary()
         {
             var operationStack = new Stack<UnaryOpType>();
 
@@ -85,7 +87,15 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 else if (Lookahead(0) == TokenType.Subtract)
                 {
                     Match(TokenType.Subtract);
-                    operationStack.Push(UnaryOpType.Negate);
+
+                    if (operationStack.Count > 0 && operationStack.Peek() == UnaryOpType.Negate)
+                    {
+                        operationStack.Pop();
+                    }
+                    else
+                    {
+                        operationStack.Push(UnaryOpType.Negate);
+                    }
                 }
                 else
                 {
@@ -97,9 +107,15 @@ namespace Cimpress.Cimbol.Compiler.Parse
 
             while (operationStack.Any())
             {
-                operationStack.Pop();
+                switch (operationStack.Pop())
+                {
+                    case UnaryOpType.Negate:
+                        head = new UnaryOpNode(UnaryOpType.Negate, head);
+                        break;
 
-                head = new UnaryOpNode(UnaryOpType.Negate, head);
+                    default:
+                        throw new NotSupportedException();
+                }
             }
 
             return head;
@@ -111,7 +127,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// <returns>The result of parsing the multiplication and division operations.</returns>
         public IExpressionNode Multiply()
         {
-            var head = Factor();
+            var head = Unary();
 
             while (true)
             {
@@ -121,21 +137,21 @@ namespace Cimpress.Cimbol.Compiler.Parse
                     // Multiply -> Factor ( "/" Factor )*
                     case TokenType.Divide:
                         Match(TokenType.Divide);
-                        head = new BinaryOpNode(BinaryOpType.Divide, head, Factor());
+                        head = new BinaryOpNode(BinaryOpType.Divide, head, Unary());
                         break;
 
                     // Production rule for multiplying two expressions.
                     // Multiply -> Factor ( "*" Factor )*
                     case TokenType.Multiply:
                         Match(TokenType.Multiply);
-                        head = new BinaryOpNode(BinaryOpType.Multiply, head, Factor());
+                        head = new BinaryOpNode(BinaryOpType.Multiply, head, Unary());
                         break;
 
                     // Production rule for get the remainder between two expressions.
                     // Multiply -> Factor ( "%" Factor )*
                     case TokenType.Remainder:
                         Match(TokenType.Remainder);
-                        head = new BinaryOpNode(BinaryOpType.Remainder, head, Factor());
+                        head = new BinaryOpNode(BinaryOpType.Remainder, head, Unary());
                         break;
 
                     default:

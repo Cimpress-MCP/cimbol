@@ -1,4 +1,6 @@
-﻿namespace Cimpress.Cimbol.Compiler.SyntaxTree
+﻿using System;
+
+namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
     /// <summary>
     /// A positional argument.
@@ -11,7 +13,7 @@
         /// <param name="value">The value of the argument.</param>
         public PositionalArgument(IExpressionNode value)
         {
-            Value = value;
+            Value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>

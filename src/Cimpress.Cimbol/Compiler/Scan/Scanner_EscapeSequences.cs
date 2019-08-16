@@ -39,7 +39,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
 
                 default:
                     // Unrecognized escape sequence.
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode021");
+#pragma warning restore CA1303
             }
         }
 
@@ -54,7 +56,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
                 if (!HexRegex.IsMatch(_context.Peek()))
                 {
                     // The encounter character is not valid hexadecimal.
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode022");
+#pragma warning restore CA1303
                 }
 
                 _context.Advance();

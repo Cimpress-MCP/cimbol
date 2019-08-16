@@ -26,14 +26,14 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
             IEnumerable<ImportDeclarationNode> imports,
             IEnumerable<FormulaDeclarationNode> formulas)
         {
-            Formulas = formulas.ToImmutableArray();
+            Formulas = formulas?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(formulas));
 
             _formulaTable = Formulas.ToImmutableDictionary(
                 formula => formula.Name,
                 formula => formula,
                 StringComparer.OrdinalIgnoreCase);
 
-            Imports = imports.ToImmutableArray();
+            Imports = imports?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(imports));
 
             _importTable = Imports.ToImmutableDictionary(
                 import => import.Name,

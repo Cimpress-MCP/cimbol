@@ -1,6 +1,6 @@
 <root> ::= <expression> <eof>
 
-<expression> ::= <logical-and>
+<expression> ::= "await"? <logical-and>
 
 <logical-and> ::= <logical-or> ( "and" <logical-or> )*
 

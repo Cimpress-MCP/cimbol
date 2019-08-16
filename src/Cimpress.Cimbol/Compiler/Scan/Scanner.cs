@@ -69,7 +69,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return NextNumberLiteral();
             }
 
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode016");
+#pragma warning restore CA1303
         }
     }
 }

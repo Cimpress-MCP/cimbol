@@ -155,7 +155,9 @@ namespace Cimpress.Cimbol.Compiler.Parse
                     return BinaryOpType.NotEqual;
 
                 default:
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode015");
+#pragma warning restore CA1303
             }
         }
     }

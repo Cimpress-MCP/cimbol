@@ -5,5 +5,9 @@
     /// </summary>
     public interface IExpressionNode : ISyntaxNode
     {
+        /// <summary>
+        /// Whether or not the expression is asynchronous.
+        /// </summary>
+        bool IsAsynchronous { get; }
     }
 }

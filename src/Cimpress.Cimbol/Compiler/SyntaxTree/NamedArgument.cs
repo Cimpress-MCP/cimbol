@@ -1,4 +1,6 @@
-﻿namespace Cimpress.Cimbol.Compiler.SyntaxTree
+﻿using System;
+
+namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
     /// <summary>
     /// A keyword argument.
@@ -14,7 +16,7 @@
         {
             Name = name;
 
-            Value = value;
+            Value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>

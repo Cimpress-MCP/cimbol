@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
@@ -32,43 +31,41 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             var executionPlan = new ExecutionPlan(dependencyTable);
 
-            var argumentDeclarations = new List<ParameterExpression>(programNode.Arguments.Count());
-
-            var initializationExpressions = new List<Expression>(programNode.Constants.Count() + programNode.Modules.Count());
+            var arguments = new List<ParameterExpression>(programNode.Arguments.Count());
 
             var expressions = new List<Expression>();
 
-            var variableDeclarations = new List<ParameterExpression>();
+            var variables = new List<ParameterExpression>();
 
             foreach (var argumentNode in programNode.Arguments)
             {
                 var symbol = symbolRegistry.Arguments[argumentNode.Name];
-                argumentDeclarations.Add(symbol.Variable);
+                arguments.Add(symbol.Variable);
             }
 
             foreach (var constantNode in programNode.Constants)
             {
                 var symbol = symbolRegistry.Constants[constantNode.Name];
-                variableDeclarations.Add(symbol.Variable);
+                variables.Add(symbol.Variable);
 
                 var constant = EmitConstantDeclaration(constantNode, symbol);
-                initializationExpressions.Add(constant);
+                expressions.Add(constant);
             }
 
             var executableDeclarations = Enumerable.Empty<KeyValuePair<IDeclarationNode, Expression>>();
             foreach (var moduleNode in programNode.Modules)
             {
                 var symbol = symbolRegistry.Modules[moduleNode.Name];
-                variableDeclarations.Add(symbol.Variable);
+                variables.Add(symbol.Variable);
 
                 var symbolTable = symbolRegistry.SymbolTables[moduleNode];
                 foreach (var childSymbol in symbolTable)
                 {
-                    variableDeclarations.Add(childSymbol.Value.Variable);
+                    variables.Add(childSymbol.Value.Variable);
                 }
 
                 var module = EmitModuleDeclaration(symbol);
-                initializationExpressions.Add(module);
+                expressions.Add(module);
 
                 var moduleBody = EmitModuleBody(moduleNode, programNode, symbolRegistry);
                 executableDeclarations = executableDeclarations.Concat(moduleBody);
@@ -76,23 +73,13 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             var expressionLookup = executableDeclarations.ToDictionary(pair => pair.Key, pair => pair.Value);
 
-            var executionSteps = executionPlan.ExecutionGroups.SelectMany(executionGroup => executionGroup.ExecutionSteps);
-            foreach (var executionStep in executionSteps)
-            {
-                var expression = expressionLookup[executionStep.Node];
+            var programOutput = CodeGen.ProgramReturn(programNode, symbolRegistry);
 
-                expressions.Add(expression);
-            }
+            var programBody = EmitExecutionGroups(executionPlan.ExecutionGroups, expressionLookup, programOutput);
 
-            var programReturn = BuildProgramReturn(programNode, symbolRegistry);
+            expressions.Add(programBody);
 
-            var lambdaBody = Expression.Block(
-                variableDeclarations,
-                initializationExpressions.Concat(expressions).Concat(new[] { programReturn }));
-
-            var lambda = Expression.Lambda(lambdaBody, argumentDeclarations);
-
-            return lambda;
+            return CodeGen.ProgramLambda(arguments, variables, expressions);
         }
 
         /// <summary>
@@ -114,10 +101,10 @@ namespace Cimpress.Cimbol.Compiler.Emit
         internal Expression EmitModuleDeclaration(Symbol symbol)
         {
             var innerInitialization = Expression.New(
-                RuntimeFunctions.ObjectDictionaryConstructorInfo,
+                StandardFunctions.DictionaryConstructorInfo,
                 Expression.Constant(StringComparer.OrdinalIgnoreCase));
 
-            var outerInitialization = Expression.New(RuntimeFunctions.ObjectConstructorInfo, innerInitialization);
+            var outerInitialization = Expression.New(LocalValueFunctions.ObjectValueConstructorInfo, innerInitialization);
 
             return Expression.Assign(symbol.Variable, outerInitialization);
         }
@@ -154,11 +141,47 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
+        /// Emit an expression from a series of execution groups.
+        /// </summary>
+        /// <param name="executionGroups">The list of execution groups.</param>
+        /// <param name="executionStepLookup">A mapping of execution steps to expressions.</param>
+        /// <param name="outputBuilder">The expression that builds the program output.</param>
+        /// <returns>An expression that executes a series of execution groups.</returns>
+        internal Expression EmitExecutionGroups(
+            IReadOnlyCollection<ExecutionGroup> executionGroups,
+            IDictionary<IDeclarationNode, Expression> executionStepLookup,
+            Expression outputBuilder)
+        {
+            var executionGroupExpressions = executionGroups.Select(executionGroup =>
+            {
+                var asynchronousStepExpressions = executionGroup.ExecutionSteps
+                    .Where(executionStep => executionStep.IsAsynchronous)
+                    .Select(executionStep => executionStepLookup[executionStep.Node])
+                    .ToArray();
+
+                var synchronousStepExpressions = executionGroup.ExecutionSteps
+                    .Where(executionStep => !executionStep.IsAsynchronous)
+                    .Select(executionStep => executionStepLookup[executionStep.Node])
+                    .ToArray();
+
+                var executionGroupExpression = CodeGen.ExecutionGroup(
+                    asynchronousStepExpressions,
+                    synchronousStepExpressions);
+
+                return executionGroupExpression;
+            });
+
+            var executionGroupChain = CodeGen.ExecutionGroupChain(executionGroupExpressions, outputBuilder);
+
+            return executionGroupChain;
+        }
+
+        /// <summary>
         /// Emit an expression from a formula declaration node.
         /// </summary>
         /// <param name="formulaNode">The formula declaration node to emit from.</param>
         /// <param name="exportSymbol">The parent module node's symbol.</param>
-        /// <param name="symbolTable">The symbol table for the current scope.</param
+        /// <param name="symbolTable">The symbol table for the current scope.</param>
         /// <returns>An expression that encompasses evaluating and assigning a formula.</returns>
         internal Expression EmitFormulaDeclaration(
             FormulaDeclarationNode formulaNode,
@@ -169,20 +192,30 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             var expression = EmitExpression(formulaNode.Body, symbolTable);
 
-            var assignment = Expression.Assign(formulaSymbol.Variable, expression);
-
-            if (!formulaNode.IsExported)
+            if (formulaNode.IsAsynchronous)
             {
-                return assignment;
+                if (formulaNode.IsExported)
+                {
+                    return CodeGen.ExecutionStepAsyncExported(
+                        expression,
+                        formulaSymbol.Variable,
+                        formulaNode.Name,
+                        exportSymbol.Variable);
+                }
+
+                return CodeGen.ExecutionStepAsync(expression, formulaSymbol.Variable);
             }
 
-            var export = Expression.Call(
-                exportSymbol.Variable,
-                RuntimeFunctions.ObjectAssignInfo,
-                Expression.Constant(formulaNode.Name),
-                assignment);
+            if (formulaNode.IsExported)
+            {
+                return CodeGen.ExecutionStepSyncExported(
+                    expression,
+                    formulaSymbol.Variable,
+                    formulaNode.Name,
+                    exportSymbol.Variable);
+            }
 
-            return export;
+            return CodeGen.ExecutionStepSync(expression, formulaSymbol.Variable);
         }
 
         /// <summary>
@@ -236,7 +269,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 return Expression.Assign(importSymbol.Variable, variable);
             }
 
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode005");
+#pragma warning restore CA1303
         }
 
         /// <summary>
@@ -279,7 +314,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     return EmitUnaryOpNode(unaryOpNode, symbolTable);
 
                 default:
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode006");
+#pragma warning restore CA1303
             }
         }
 
@@ -293,7 +330,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         {
             var value = EmitExpression(accessNode.Value, symbolTable);
 
-            return Expression.Call(value, RuntimeFunctions.AccessInfo, Expression.Constant(accessNode.Member));
+            return CodeGen.Access(value, accessNode.Member);
         }
 
         /// <summary>
@@ -311,49 +348,49 @@ namespace Cimpress.Cimbol.Compiler.Emit
             switch (binaryOpNode.OpType)
             {
                 case BinaryOpType.Add:
-                    return BuildBinaryExpression(RuntimeFunctions.MathAddInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.MathAddInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.And:
-                    return BuildBinaryExpression(RuntimeFunctions.BooleanAndInfo, left, right, typeof(BooleanValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.BooleanAndInfo, left, right, typeof(BooleanValue));
 
                 case BinaryOpType.Concatenate:
-                    return BuildBinaryExpression(RuntimeFunctions.StringConcatenateInfo, left, right, typeof(StringValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.StringConcatenateInfo, left, right, typeof(StringValue));
 
                 case BinaryOpType.Divide:
-                    return BuildBinaryExpression(RuntimeFunctions.MathDivideInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.MathDivideInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.Equal:
-                    return BuildBinaryExpression(RuntimeFunctions.EqualToInfo, left, right);
+                    return CodeGen.BinaryOp(RuntimeFunctions.EqualToInfo, left, right);
 
                 case BinaryOpType.GreaterThan:
-                    return BuildBinaryExpression(RuntimeFunctions.CompareGreaterThanInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.CompareGreaterThanInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.GreaterThanOrEqual:
-                    return BuildBinaryExpression(RuntimeFunctions.CompareGreaterThanOrEqualInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.CompareGreaterThanOrEqualInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.LessThan:
-                    return BuildBinaryExpression(RuntimeFunctions.CompareLessThanInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.CompareLessThanInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.LessThanOrEqual:
-                    return BuildBinaryExpression(RuntimeFunctions.CompareLessThanOrEqualInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.CompareLessThanOrEqualInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.Multiply:
-                    return BuildBinaryExpression(RuntimeFunctions.MathMultiplyInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.MathMultiplyInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.NotEqual:
-                    return BuildBinaryExpression(RuntimeFunctions.NotEqualToInfo, left, right);
+                    return CodeGen.BinaryOp(RuntimeFunctions.NotEqualToInfo, left, right);
 
                 case BinaryOpType.Or:
-                    return BuildBinaryExpression(RuntimeFunctions.BooleanOrInfo, left, right, typeof(BooleanValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.BooleanOrInfo, left, right, typeof(BooleanValue));
 
                 case BinaryOpType.Power:
-                    return BuildBinaryExpression(RuntimeFunctions.MathPowerInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.MathPowerInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.Remainder:
-                    return BuildBinaryExpression(RuntimeFunctions.MathRemainderInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.MathRemainderInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.Subtract:
-                    return BuildBinaryExpression(RuntimeFunctions.MathSubtractInfo, left, right, typeof(NumberValue));
+                    return CodeGen.BinaryOp(RuntimeFunctions.MathSubtractInfo, left, right, typeof(NumberValue));
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(binaryOpNode));
@@ -369,7 +406,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         internal Expression EmitBlockNode(BlockNode blockNode, SymbolTable symbolTable)
         {
             var expressions = blockNode.Expressions.Select(expression => EmitExpression(expression, symbolTable));
-            return Expression.Block(expressions);
+            return CodeGen.Block(expressions);
         }
 
         /// <summary>
@@ -380,7 +417,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <returns>The result of compiling the syntax tree to an expression tree.</returns>
         internal Expression EmitIdentifierNode(IdentifierNode identifierNode, SymbolTable symbolTable)
         {
-            return symbolTable.TryResolve(identifierNode.Identifier, out var variable) ? variable.Variable : BuildError();
+            return symbolTable.TryResolve(identifierNode.Identifier, out var variable) ? variable.Variable : CodeGen.Error();
         }
 
         /// <summary>
@@ -396,7 +433,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 .Select(argument => EmitExpression(argument.Value, symbolTable))
                 .ToArray();
             var argumentList = Expression.NewArrayInit(typeof(ILocalValue), arguments);
-            return Expression.Call(function, RuntimeFunctions.InvokeInfo, argumentList);
+            return Expression.Call(function, LocalValueFunctions.InvokeInfo, argumentList);
         }
 
         /// <summary>
@@ -406,7 +443,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <returns>The result of compiling the syntax tree to an expression tree.</returns>
         internal Expression EmitLiteralNode(LiteralNode literalNode)
         {
-            return Expression.Constant(literalNode.Value);
+            return CodeGen.Constant(literalNode.Value);
         }
 
         /// <summary>
@@ -436,19 +473,21 @@ namespace Cimpress.Cimbol.Compiler.Emit
             switch (macroNode.Macro.ToUpperInvariant())
             {
                 case "IF":
-                    return BuildIfMacro(arguments);
+                    return CodeGen.IfMacro(arguments);
 
                 case "LIST":
-                    return BuildListMacro(arguments);
+                    return CodeGen.ListMacro(arguments);
 
                 case "OBJECT":
-                    return BuildObjectMacro(arguments);
+                    return CodeGen.ObjectMacro(arguments);
 
                 case "WHERE":
-                    return BuildWhereMacro(arguments);
+                    return CodeGen.WhereMacro(arguments);
 
                 default:
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode007");
+#pragma warning restore CA1303
             }
         }
 
@@ -464,171 +503,19 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             switch (unaryOpNode.OpType)
             {
+                case UnaryOpType.Await:
+                    // TODO: Handle mid-expression async calls.
+                    return operand;
+
                 case UnaryOpType.Negate:
-                    return Expression.Call(
-                        null,
-                        RuntimeFunctions.MathNegateInfo,
-                        Expression.Call(operand, RuntimeFunctions.CastNumberInfo));
+                    return CodeGen.UnaryOp(RuntimeFunctions.MathNegateInfo, operand, typeof(NumberValue));
 
                 case UnaryOpType.Not:
-                    return Expression.Call(
-                        null,
-                        RuntimeFunctions.BooleanNotInfo,
-                        Expression.Call(operand, RuntimeFunctions.CastBooleanInfo));
-                    break;
+                    return CodeGen.UnaryOp(RuntimeFunctions.BooleanNotInfo, operand, typeof(BooleanValue));
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unaryOpNode));
             }
-        }
-
-        private Expression BuildBinaryExpression(MethodInfo methodInfo, Expression left, Expression right)
-        {
-            return Expression.Call(null, methodInfo, left, right);
-        }
-
-        private Expression BuildBinaryExpression(MethodInfo methodInfo, Expression left, Expression right, Type targetType)
-        {
-            MethodInfo castFunction;
-
-            if (targetType == typeof(BooleanValue))
-            {
-                castFunction = RuntimeFunctions.CastBooleanInfo;
-            }
-            else if (targetType == typeof(NumberValue))
-            {
-                castFunction = RuntimeFunctions.CastNumberInfo;
-            }
-            else if (targetType == typeof(StringValue))
-            {
-                castFunction = RuntimeFunctions.CastStringInfo;
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(nameof(targetType));
-            }
-
-            return Expression.Call(
-                null,
-                methodInfo,
-                Expression.Call(left, castFunction),
-                Expression.Call(right, castFunction));
-        }
-
-        private Expression BuildError()
-        {
-            return Expression.Throw(
-                Expression.New(RuntimeFunctions.NotSupportedExceptionConstructorInfo),
-                typeof(ILocalValue));
-        }
-
-        private Expression BuildIfMacro(Tuple<string, Expression>[] arguments)
-        {
-            var firstBranch = arguments.ElementAtOrDefault(1);
-            var secondBranch = arguments.ElementAtOrDefault(2);
-
-            if (firstBranch == null)
-            {
-                throw new NotSupportedException("ErrorCode008");
-            }
-
-            var test = Expression.Call(null, RuntimeFunctions.IfTrueInfo, arguments[0].Item2);
-
-            if (firstBranch.Item1.Equals("then", StringComparison.OrdinalIgnoreCase))
-            {
-                var ifTrue = firstBranch.Item2;
-
-                var ifFalse = secondBranch?.Item1?.Equals("else", StringComparison.OrdinalIgnoreCase) == true
-                        ? secondBranch.Item2
-                        : BuildError();
-
-                return Expression.Condition(test, ifTrue, ifFalse, typeof(ILocalValue));
-            }
-
-            if (firstBranch.Item1.Equals("else", StringComparison.OrdinalIgnoreCase))
-            {
-                var ifTrue = secondBranch?.Item1?.Equals("then", StringComparison.OrdinalIgnoreCase) == true
-                    ? secondBranch.Item2
-                    : BuildError();
-
-                var ifFalse = firstBranch.Item2;
-
-                return Expression.Condition(test, ifTrue, ifFalse, typeof(ILocalValue));
-            }
-
-            throw new NotSupportedException("ErrorCode009");
-        }
-
-        private Expression BuildListMacro(Tuple<string, Expression>[] arguments)
-        {
-            var elements = new Expression[arguments.Length];
-            for (var i = 0; i < arguments.Length; ++i)
-            {
-                elements[i] = arguments[i].Item2;
-            }
-
-            var array = Expression.NewArrayInit(typeof(ILocalValue), elements);
-
-            return Expression.New(RuntimeFunctions.ListConstructorInfo, array);
-        }
-
-        private Expression BuildObjectMacro(Tuple<string, Expression>[] arguments)
-        {
-            var elements = new ElementInit[arguments.Length];
-            for (var i = 0; i < arguments.Length; ++i)
-            {
-                var key = Expression.Constant(arguments[i].Item1);
-                var value = arguments[i].Item2;
-                elements[i] = Expression.ElementInit(RuntimeFunctions.ObjectDictionaryAdd, key, value);
-            }
-
-            var init = Expression.New(
-                RuntimeFunctions.ObjectDictionaryConstructorInfo,
-                Expression.Constant(StringComparer.OrdinalIgnoreCase));
-            var dictionary = Expression.ListInit(init, elements);
-
-            return Expression.New(RuntimeFunctions.ObjectConstructorInfo, dictionary);
-        }
-
-        private Expression BuildProgramReturn(ProgramNode programNode, SymbolRegistry symbolRegistry)
-        {
-            var modules = programNode.Modules.ToArray();
-
-            var elements = new ElementInit[modules.Length];
-            for (var i = 0; i < modules.Length; ++i)
-            {
-                var key = Expression.Constant(modules[i].Name);
-                var value = symbolRegistry.Modules[modules[i].Name].Variable;
-                elements[i] = Expression.ElementInit(RuntimeFunctions.ObjectDictionaryAdd, key, value);
-            }
-
-            var init = Expression.New(
-                RuntimeFunctions.ObjectDictionaryConstructorInfo,
-                Expression.Constant(StringComparer.OrdinalIgnoreCase));
-            var dictionary = Expression.ListInit(init, elements);
-
-            return Expression.New(RuntimeFunctions.ObjectConstructorInfo, dictionary);
-        }
-
-        private Expression BuildWhereMacro(Tuple<string, Expression>[] arguments)
-        {
-            if (arguments.Length == 0)
-            {
-                throw new NotSupportedException("ErrorCode010");
-            }
-
-            var head = arguments.Length % 2 == 1 ? arguments.Last().Item2 : BuildError();
-
-            var conditionCount = arguments.Length / 2;
-            for (var i = conditionCount - 1; i >= 0; --i)
-            {
-                var caseExpression = Expression.Call(null, RuntimeFunctions.IfTrueInfo, arguments[i * 2].Item2);
-                var doExpression = arguments[(i * 2) + 1].Item2;
-
-                head = Expression.Condition(caseExpression, doExpression, head, typeof(ILocalValue));
-            }
-
-            return head;
         }
     }
 }

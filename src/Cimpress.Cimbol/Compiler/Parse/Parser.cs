@@ -17,12 +17,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// <param name="tokenStream">The stream of tokens to parse.</param>
         public Parser(TokenStream tokenStream)
         {
-            if (tokenStream == null)
-            {
-                throw new ArgumentNullException(nameof(tokenStream));
-            }
-
-            _tokenStream = tokenStream;
+            _tokenStream = tokenStream ?? throw new ArgumentNullException(nameof(tokenStream));
         }
 
         /// <summary>
@@ -31,9 +26,20 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// <returns>A syntax tree node representing an expression.</returns>
         public IExpressionNode Expression()
         {
-            var expression = LogicalAnd();
+            if (Lookahead(0) == TokenType.AwaitKeyword)
+            {
+                Match(TokenType.AwaitKeyword);
 
-            return expression;
+                var expression = LogicalAnd();
+
+                return new UnaryOpNode(UnaryOpType.Await, expression);
+            }
+            else
+            {
+                var expression = LogicalAnd();
+
+                return expression;
+            }
         }
 
         /// <summary>
@@ -68,13 +74,17 @@ namespace Cimpress.Cimbol.Compiler.Parse
             if (current == null)
             {
                 // Unexpected end of file.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode012");
+#pragma warning restore CA1303
             }
 
             if (current.Type != tokenType)
             {
                 // Wrong token type.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode013");
+#pragma warning restore CA1303
             }
 
             _tokenStream.Next();

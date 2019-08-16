@@ -14,8 +14,13 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <param name="value">The value of the node.</param>
         public LiteralNode(ILocalValue value)
         {
+            IsAsynchronous = false;
+
             Value = value;
         }
+
+        /// <inheritdoc cref="IExpressionNode.IsAsynchronous"/>
+        public bool IsAsynchronous { get; }
 
         /// <summary>
         /// The value of the node.

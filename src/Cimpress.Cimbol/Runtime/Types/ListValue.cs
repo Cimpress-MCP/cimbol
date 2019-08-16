@@ -27,25 +27,33 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode062");
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode063");
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode064");
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode065");
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
@@ -57,7 +65,9 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode066");
+#pragma warning restore CA1303
         }
     }
 }

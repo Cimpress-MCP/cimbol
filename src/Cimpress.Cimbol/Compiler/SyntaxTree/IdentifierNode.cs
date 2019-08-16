@@ -14,12 +14,17 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         public IdentifierNode(string identifier)
         {
             Identifier = identifier;
+
+            IsAsynchronous = false;
         }
 
         /// <summary>
         /// The identifier that this node references.
         /// </summary>
         public string Identifier { get; }
+
+        /// <inheritdoc cref="IExpressionNode.IsAsynchronous"/>
+        public bool IsAsynchronous { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>
         public IEnumerable<ISyntaxNode> Children()

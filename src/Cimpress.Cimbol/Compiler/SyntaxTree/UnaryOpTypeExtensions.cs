@@ -16,10 +16,15 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         {
             switch (opType)
             {
+                case UnaryOpType.Await:
+                    return "await";
+
                 case UnaryOpType.Negate:
                     return "-";
+
                 case UnaryOpType.Not:
                     return "not";
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(opType), opType, null);
             }

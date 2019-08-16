@@ -52,7 +52,9 @@ namespace Cimpress.Cimbol
             if (_formulas.ContainsKey(formulaName) || _references.ContainsKey(formulaName))
             {
                 // Disallow adding duplicate references to a module.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode039");
+#pragma warning restore CA1303
             }
 
             var formula = new Formula(this, formulaName, formulaValue, flags);
@@ -85,13 +87,17 @@ namespace Cimpress.Cimbol
             if (!ReferenceEquals(Program, resource.Program))
             {
                 // Disallow adding a reference to a resource outside of the program.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode040");
+#pragma warning restore CA1303
             }
 
             if (ReferenceEquals(this, resource))
             {
                 // Disallow adding a self-reference to a module within that module.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode041");
+#pragma warning restore CA1303
             }
 
             if (resource is Formula formula)
@@ -99,20 +105,26 @@ namespace Cimpress.Cimbol
                 if (ReferenceEquals(this, formula.Module))
                 {
                     // Disallow adding a reference to a formula within the module that owns the formula.
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode042");
+#pragma warning restore CA1303
                 }
 
                 if (!formula.IsReferenceable)
                 {
                     // Disallow adding a reference to a formula when that formula is not referenceable.
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode043");
+#pragma warning restore CA1303
                 }
             }
 
             if (_references.ContainsKey(referenceName))
             {
                 // Disallow adding duplicate references to a module.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode044");
+#pragma warning restore CA1303
             }
 
             _references[referenceName] = resource;
@@ -173,7 +185,9 @@ namespace Cimpress.Cimbol
                     return new[] { module.Name };
 
                 default:
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode045");
+#pragma warning restore CA1303
             }
         }
 
@@ -194,7 +208,9 @@ namespace Cimpress.Cimbol
                     return ImportType.Module;
 
                 default:
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode046");
+#pragma warning restore CA1303
             }
         }
     }

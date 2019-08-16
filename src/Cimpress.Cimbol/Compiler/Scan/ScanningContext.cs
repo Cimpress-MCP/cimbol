@@ -83,7 +83,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
                 // Unexpected end of file reached.
                 // Currently still processing a token.
                 // This is an error in the lexer, not in the input string.
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode032");
+#pragma warning restore CA1303
             }
 
             return Consume(TokenType.EndOfFile);

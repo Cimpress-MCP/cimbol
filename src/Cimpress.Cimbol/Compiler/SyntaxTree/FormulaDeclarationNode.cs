@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
@@ -15,7 +16,9 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <param name="isExported">Whether or not the formula is exported.</param>
         public FormulaDeclarationNode(string name, IExpressionNode body, bool isExported)
         {
-            Body = body;
+            Body = body ?? throw new ArgumentNullException(nameof(body));
+
+            IsAsynchronous = Body.IsAsynchronous;
 
             IsExported = isExported;
 
@@ -26,6 +29,11 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// The body of the formula.
         /// </summary>
         public IExpressionNode Body { get; }
+
+        /// <summary>
+        /// Whether or not the formula is asynchronous.
+        /// </summary>
+        public bool IsAsynchronous { get; }
 
         /// <summary>
         /// Whether or not the formula is exported.

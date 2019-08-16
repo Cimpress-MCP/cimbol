@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -16,9 +17,11 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <param name="arguments">The arguments to invoke the function with.</param>
         public InvokeNode(IExpressionNode function, IEnumerable<PositionalArgument> arguments)
         {
-            Arguments = arguments.ToImmutableArray();
+            Arguments = arguments?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(arguments));
 
-            Function = function;
+            Function = function ?? throw new ArgumentNullException(nameof(function));
+
+            IsAsynchronous = Function.IsAsynchronous || Arguments.Any(argument => argument.Value.IsAsynchronous);
         }
 
         /// <summary>
@@ -30,6 +33,9 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// The function to invoke.
         /// </summary>
         public IExpressionNode Function { get; }
+
+        /// <inheritdoc cref="IExpressionNode.IsAsynchronous"/>
+        public bool IsAsynchronous { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>
         public IEnumerable<ISyntaxNode> Children()

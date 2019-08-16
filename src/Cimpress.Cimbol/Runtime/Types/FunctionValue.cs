@@ -40,28 +40,36 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// </summary>
         public Delegate Value { get; }
 
-        /// <inheritdoc cref="ILocalValue.Access{T}"/>
+        /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode054");
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode055");
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode056");
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
+#pragma warning disable CA1303
             throw new NotSupportedException("ErrorCode057");
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
@@ -78,9 +86,11 @@ namespace Cimpress.Cimbol.Runtime.Types
 #pragma warning disable CA1062
             if (arguments.Length != _argumentCount)
             {
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode058");
+#pragma warning restore CA1303
             }
-#pragma warning enable CA1062
+#pragma warning restore CA1062
 
             var castArguments = _argumentMapper(arguments);
 
@@ -96,6 +106,7 @@ namespace Cimpress.Cimbol.Runtime.Types
                 { typeof(ListValue), DefaultConversion<ListValue> },
                 { typeof(NumberValue), localValue => localValue.CastNumber() },
                 { typeof(ObjectValue), DefaultConversion<ObjectValue> },
+                { typeof(PromiseValue), DefaultConversion<PromiseValue> },
                 { typeof(StringValue), localValue => localValue.CastString() },
             };
 
@@ -111,7 +122,9 @@ namespace Cimpress.Cimbol.Runtime.Types
                     return tValue;
 
                 default:
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode059");
+#pragma warning restore CA1303
             }
         }
 
@@ -120,7 +133,9 @@ namespace Cimpress.Cimbol.Runtime.Types
             // Validate that the function return type implements ILocalValue.
             if (!typeof(ILocalValue).IsAssignableFrom(methodInfo.ReturnType))
             {
+#pragma warning disable CA1303
                 throw new NotSupportedException("ErrorCode060");
+#pragma warning restore CA1303
             }
 
             // Validate that each parameter type implements ILocalValue.
@@ -130,7 +145,9 @@ namespace Cimpress.Cimbol.Runtime.Types
 
                 if (!typeof(ILocalValue).IsAssignableFrom(parameterType))
                 {
+#pragma warning disable CA1303
                     throw new NotSupportedException("ErrorCode061");
+#pragma warning restore CA1303
                 }
             }
 

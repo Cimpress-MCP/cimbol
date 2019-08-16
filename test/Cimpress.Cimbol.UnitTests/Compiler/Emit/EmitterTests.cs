@@ -52,7 +52,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var expression = _emitter.EmitExpression(node, _symbolTable) as MethodCallExpression;
 
             Assert.That(expression, Is.Not.Null);
-            Assert.That(expression.Method, Is.EqualTo(RuntimeFunctions.AccessInfo));
+            Assert.That(expression.Method, Is.EqualTo(LocalValueFunctions.AccessInfo));
             Assert.That(expression, Is.InstanceOf(typeof(MethodCallExpression)));
             Assert.That(expression.Type, Is.EqualTo(typeof(ILocalValue)));
         }
@@ -171,7 +171,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
 
             Assert.That(expression, Is.Not.Null);
             Assert.That(expression, Is.InstanceOf(typeof(MethodCallExpression)));
-            Assert.That(expression.Method, Is.EqualTo(RuntimeFunctions.InvokeInfo));
+            Assert.That(expression.Method, Is.EqualTo(LocalValueFunctions.InvokeInfo));
             Assert.That(expression.Type, Is.EqualTo(typeof(ILocalValue)));
         }
 
@@ -194,7 +194,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
 
             Assert.That(expression, Is.Not.Null);
             Assert.That(expression, Is.InstanceOf(typeof(MethodCallExpression)));
-            Assert.That(expression.Method, Is.EqualTo(RuntimeFunctions.InvokeInfo));
+            Assert.That(expression.Method, Is.EqualTo(LocalValueFunctions.InvokeInfo));
             Assert.That(expression.Type, Is.EqualTo(typeof(ILocalValue)));
         }
 
@@ -218,7 +218,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
 
             Assert.That(expression, Is.Not.Null);
             Assert.That(expression, Is.InstanceOf(typeof(MethodCallExpression)));
-            Assert.That(expression.Method, Is.EqualTo(RuntimeFunctions.InvokeInfo));
+            Assert.That(expression.Method, Is.EqualTo(LocalValueFunctions.InvokeInfo));
             Assert.That(expression.Type, Is.EqualTo(typeof(ILocalValue)));
         }
 

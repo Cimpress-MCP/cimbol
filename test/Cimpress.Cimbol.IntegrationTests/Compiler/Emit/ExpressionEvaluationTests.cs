@@ -9,7 +9,6 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
         [Test]
         [TestCase("1", 1)]
         [TestCase("-1", -1)]
-        [TestCase("-1", -1)]
         [TestCase("1 + 3", 4)]
         [TestCase("5 - 2", 3)]
         [TestCase("2 * 3", 6)]
@@ -36,7 +35,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             module.AddFormula("Formula", expression);
             var executable = program.Compile();
 
-            var result = executable.Call();
+            var result = executable.Call().Result;
 
             var resultModule = result.Value["Main"] as ObjectValue;
             Assert.That(resultModule, Is.Not.Null);
