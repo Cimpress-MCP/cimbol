@@ -2,15 +2,20 @@
 <package>
   <metadata>
     <id>Cimpress.Cimbol</id>
-    <version>$version$</version>
+    <version>2.0.0-beta2</version>
     <title>Cimpress.Cimbol</title>
     <owners>Pricing Squad</owners>
     <authors>Pricing Squad</authors>
     <description>Cimbol applications</description>
     <tags>Squad:PricingSquad,BU:Cimpress Technology,CostCenter:103380,OwnerEmail:PricingSquad@cimpress.com</tags>
-    <dependencies></dependencies>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Collections.Immutable" version="[1.5,2)" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
   </metadata>
   <files>
-    <file src='src\Cimpress.Cimbol\bin\Release\netstandard2.0\**' target='lib\netstandard2.0'/>
+    <file src='build/Cimpress.Cimbol.dll' target='lib\netstandard2.0'/>
+    <file src='build/Cimpress.Cimbol.pdb' target='lib\netstandard2.0'/>
   </files>
 </package>
