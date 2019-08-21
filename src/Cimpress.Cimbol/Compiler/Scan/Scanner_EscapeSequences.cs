@@ -1,5 +1,5 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Compiler.Scan
 {
@@ -39,9 +39,11 @@ namespace Cimpress.Cimbol.Compiler.Scan
 
                 default:
                     // Unrecognized escape sequence.
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode021");
-#pragma warning restore CA1303
+                    throw CimbolCompilationException.UnrecognizedEscapeSequenceError(
+                        FormulaName,
+                        _context.Start(),
+                        _context.End(),
+                        _context.Current);
             }
         }
 
@@ -55,10 +57,11 @@ namespace Cimpress.Cimbol.Compiler.Scan
             {
                 if (!HexRegex.IsMatch(_context.Peek()))
                 {
-                    // The encounter character is not valid hexadecimal.
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode022");
-#pragma warning restore CA1303
+                    // The encountered character is not valid hexadecimal.
+                    throw CimbolCompilationException.InvalidHexadecimalSequenceError(
+                        FormulaName,
+                        _context.Start(),
+                        _context.End());
                 }
 
                 _context.Advance();

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Compiler.Scan
 {
@@ -17,9 +17,10 @@ namespace Cimpress.Cimbol.Compiler.Scan
             if (_context.Peek() != "'")
             {
                 // Escaped identifiers must start with a single quote.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode018");
-#pragma warning restore CA1303
+                throw CimbolCompilationException.IdentifierQuoteStartError(
+                    FormulaName,
+                    _context.Start(),
+                    _context.End());
             }
 
             _context.Advance();
@@ -39,9 +40,10 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     case "\n":
                     case "\r":
                         // Escaped identifiers cannot have new lines in them.
-#pragma warning disable CA1303
-                        throw new NotSupportedException("ErrorCode019");
-#pragma warning restore CA1303
+                        throw CimbolCompilationException.IdentifierNewLineError(
+                            FormulaName,
+                            _context.Start(),
+                            _context.End());
 
                     default:
                         _context.Advance();
@@ -50,9 +52,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
             }
 
             // Unexpected end of file reached while lexing a string.
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode020");
-#pragma warning restore CA1303
+            throw CimbolCompilationException.UnexpectedEndOfFileError(FormulaName, _context.Start(), _context.End());
         }
     }
 }

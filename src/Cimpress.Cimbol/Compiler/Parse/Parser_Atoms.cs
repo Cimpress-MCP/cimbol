@@ -1,6 +1,6 @@
-﻿using System;
-using Cimpress.Cimbol.Compiler.Scan;
+﻿using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using Cimpress.Cimbol.Utilities;
 
@@ -70,11 +70,15 @@ namespace Cimpress.Cimbol.Compiler.Parse
                     return expression;
                 }
 
+                // Expected a terminal, found something else.
                 default:
-                    // Expected a terminal, found something else.
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode014");
-#pragma warning restore CA1303
+                {
+                    var currentToken = Next();
+                    throw CimbolCompilationException.ExpectedTerminalError(
+                        FormulaName,
+                        currentToken.Start,
+                        currentToken.End);
+                }
             }
         }
     }

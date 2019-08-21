@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Cimpress.Cimbol.Compiler.Source;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Scan
@@ -21,13 +22,16 @@ namespace Cimpress.Cimbol.Compiler.Scan
         /// <summary>
         /// Initializes a new instance of the <see cref="ScanningContext"/> class.
         /// </summary>
+        /// <param name="formulaName">The name of the formula being operator on.</param>
         /// <param name="sourceText">The <see cref="SourceText"/> to scan.</param>
-        public ScanningContext(SourceText sourceText)
+        public ScanningContext(string formulaName, SourceText sourceText)
         {
             if (sourceText == null)
             {
                 throw new ArgumentNullException(nameof(sourceText));
             }
+
+            FormulaName = formulaName;
 
             _builder = new StringBuilder(InitialBuilderCapacity);
 
@@ -45,6 +49,11 @@ namespace Cimpress.Cimbol.Compiler.Scan
         /// Whether or no there is any source text left to read.
         /// </summary>
         public bool EndOfFile => _sourceText.EndOfFile;
+
+        /// <summary>
+        /// The name of the formula being operator on.
+        /// </summary>
+        public string FormulaName { get; }
 
         /// <summary>
         /// Advance to the next character.
@@ -65,8 +74,8 @@ namespace Cimpress.Cimbol.Compiler.Scan
             var value = _builder.ToString();
             _builder.Clear();
 
-            var end = new Position(_sourceText.Row, _sourceText.Column);
-            var token = new Token(value, type, _mark, end);
+            var end = End();
+            var token = new Token(value, type, Start(), end);
 
             _mark = end;
             return token;
@@ -83,12 +92,19 @@ namespace Cimpress.Cimbol.Compiler.Scan
                 // Unexpected end of file reached.
                 // Currently still processing a token.
                 // This is an error in the lexer, not in the input string.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode032");
-#pragma warning restore CA1303
+                throw CimbolCompilationException.UnexpectedEndOfFileError(FormulaName, Start(), End());
             }
 
             return Consume(TokenType.EndOfFile);
+        }
+
+        /// <summary>
+        /// Gets the end position of the token being processed.
+        /// </summary>
+        /// <returns>The end position of the token being processed.</returns>
+        public Position End()
+        {
+            return new Position(_sourceText.Row, _sourceText.Column);
         }
 
         /// <summary>
@@ -110,6 +126,15 @@ namespace Cimpress.Cimbol.Compiler.Scan
             var end = new Position(_sourceText.Row, _sourceText.Column);
 
             _mark = end;
+        }
+
+        /// <summary>
+        /// Gets the start position of the token being processed.
+        /// </summary>
+        /// <returns>The start position of the token being processed.</returns>
+        public Position Start()
+        {
+            return _mark;
         }
     }
 }

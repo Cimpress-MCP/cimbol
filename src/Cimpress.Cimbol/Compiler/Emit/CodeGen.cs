@@ -4,8 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Emit
 {
@@ -116,9 +118,12 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             if (firstBranch == null)
             {
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode008");
-#pragma warning restore CA1303
+                // TODO: Use the actual formula name.
+                // TODO: Track positional information inside the if-expression AST node.
+                throw CimbolCompilationException.IfExpressionBranchCountError(
+                    null,
+                    new Position(0, 0),
+                    new Position(0, 0));
             }
 
             var test = Expression.Call(null, RuntimeFunctions.IfTrueInfo, arguments[0].Item2);
@@ -290,9 +295,12 @@ namespace Cimpress.Cimbol.Compiler.Emit
         {
             if (arguments.Length == 0)
             {
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode010");
-#pragma warning restore CA1303
+                // TODO: Use the actual formula name.
+                // TODO: Track positional information inside the where-expression AST node.
+                throw CimbolCompilationException.WhereExpressionBranchCountError(
+                    null,
+                    new Position(0, 0),
+                    new Position(0, 0));
             }
 
             var head = arguments.Length % 2 == 1 ? arguments.Last().Item2 : Error();

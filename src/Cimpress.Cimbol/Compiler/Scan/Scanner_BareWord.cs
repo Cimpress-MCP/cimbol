@@ -1,5 +1,5 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Compiler.Scan
 {
@@ -17,9 +17,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
         {
             if (!IsBareWordStart(_context.Peek()))
             {
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode017");
-#pragma warning restore CA1303
+                throw CimbolCompilationException.IdentifierStartError(FormulaName, _context.Start(), _context.End());
             }
 
             ScanBareWord();

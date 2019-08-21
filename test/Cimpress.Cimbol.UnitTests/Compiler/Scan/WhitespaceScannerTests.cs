@@ -15,7 +15,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("\t123", TokenType.NumberLiteral)]
         public void Should_IgnoreWhitespace_When_GivenWhitespaceSource(string source, TokenType type)
         {
-            var scanner = new Scanner(new SourceText(source));
+            var scanner = new Scanner("formula", new SourceText("formula", source));
             var token = scanner.Next();
             Assert.AreEqual(type, token.Type);
             Assert.AreEqual(source?.Trim(), token.Value);

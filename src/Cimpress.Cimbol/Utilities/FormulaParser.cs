@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cimpress.Cimbol.Compiler.Parse;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.Source;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
@@ -13,15 +14,16 @@ namespace Cimpress.Cimbol.Utilities
         /// <summary>
         /// Turn part of a formula into an abstract syntax tree.
         /// </summary>
+        /// <param name="formulaName">The name of the formula being parsed.</param>
         /// <param name="formulaPart">The formula to parse.</param>
         /// <returns>An abstract syntax tree representing that part of the formula.</returns>
-        public static IExpressionNode ParseFormulaPart(string formulaPart)
+        public static IExpressionNode ParseFormulaPart(string formulaName, string formulaPart)
         {
-            var sourceText = new SourceText(formulaPart);
+            var sourceText = new SourceText("formula", formulaPart);
 
-            var scanner = new Scanner(sourceText);
+            var scanner = new Scanner(formulaName, sourceText);
 
-            var parser = new Compiler.Parse.Parser(new TokenStream(GetTokens(scanner), 2));
+            var parser = new Parser(formulaName, new TokenStream(GetTokens(scanner), 2));
 
             return parser.Expression();
         }

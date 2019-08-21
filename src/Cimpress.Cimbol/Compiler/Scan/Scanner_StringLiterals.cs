@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Compiler.Scan
 {
@@ -16,10 +16,8 @@ namespace Cimpress.Cimbol.Compiler.Scan
             // Matches the regex /"/
             if (_context.Peek() != "\"")
             {
-                // String literals must start with a single quote.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode029");
-#pragma warning restore CA1303
+                // String literals must start with a double quote.
+                throw CimbolCompilationException.StringQuoteStartError(FormulaName, _context.Start(), _context.End());
             }
 
             _context.Advance();
@@ -39,9 +37,10 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     case "\n":
                     case "\r":
                         // String literals cannot have new lines in them.
-#pragma warning disable CA1303
-                        throw new NotSupportedException("ErrorCode030");
-#pragma warning restore CA1303
+                        throw CimbolCompilationException.StringNewLineError(
+                            FormulaName,
+                            _context.Start(),
+                            _context.End());
 
                     default:
                         _context.Advance();
@@ -50,9 +49,10 @@ namespace Cimpress.Cimbol.Compiler.Scan
             }
 
             // Unexpected end of file reached while lexing a string.
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode031");
-#pragma warning restore CA1303
+            throw CimbolCompilationException.UnexpectedEndOfFileError(
+                FormulaName,
+                _context.Start(),
+                _context.End());
         }
     }
 }

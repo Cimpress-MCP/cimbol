@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.Emit;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 
@@ -256,7 +257,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
 
-            Assert.Throws<NotSupportedException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolCompilationException>(() => DependencyTable.Build(programNode));
         }
 
         [Test]
@@ -274,7 +275,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
 
-            Assert.Throws<NotSupportedException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolCompilationException>(() => DependencyTable.Build(programNode));
         }
 
         [Test]
@@ -291,7 +292,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1, moduleNode2 });
 
-            Assert.Throws<NotSupportedException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolCompilationException>(() => DependencyTable.Build(programNode));
         }
 
         [Test]
@@ -308,7 +309,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1, moduleNode2 });
 
-            Assert.Throws<NotSupportedException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolCompilationException>(() => DependencyTable.Build(programNode));
         }
 
         [Test]

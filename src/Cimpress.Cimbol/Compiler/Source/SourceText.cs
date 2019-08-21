@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using Cimpress.Cimbol.Exceptions;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Source
 {
@@ -17,8 +19,9 @@ namespace Cimpress.Cimbol.Compiler.Source
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceText"/> class.
         /// </summary>
+        /// <param name="formulaName">The name of the formula that the source belongs to.</param>
         /// <param name="source">The source string.</param>
-        public SourceText(string source)
+        public SourceText(string formulaName, string source)
         {
             _character = null;
 
@@ -28,6 +31,8 @@ namespace Cimpress.Cimbol.Compiler.Source
 
             Column = 0;
 
+            FormulaName = formulaName;
+
             Row = 0;
         }
 
@@ -35,6 +40,11 @@ namespace Cimpress.Cimbol.Compiler.Source
         /// The current column position.
         /// </summary>
         public int Column { get; private set; }
+
+        /// <summary>
+        /// The name of the formula that the source belongs to.
+        /// </summary>
+        public string FormulaName { get; }
 
         /// <summary>
         /// Whether or no there is any source text left to read.
@@ -68,9 +78,9 @@ namespace Cimpress.Cimbol.Compiler.Source
 
             if (!IsValid())
             {
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode033");
-#pragma warning restore CA1303
+                var position = new Position(Row, Column);
+
+                throw CimbolCompilationException.InvalidUnicodeSequenceError(FormulaName, position, position);
             }
 
             _character = GetCurrentCharacter();
@@ -157,9 +167,9 @@ namespace Cimpress.Cimbol.Compiler.Source
 
             if (!IsValid())
             {
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode034");
-#pragma warning restore CA1303
+                var position = new Position(Row, Column);
+
+                throw CimbolCompilationException.InvalidUnicodeSequenceError(FormulaName, position, position);
             }
 
             _character = GetCurrentCharacter();

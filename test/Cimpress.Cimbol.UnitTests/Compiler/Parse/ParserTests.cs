@@ -1,6 +1,8 @@
 ﻿using System;
+using Cimpress.Cimbol.Compiler.Parse;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
 
@@ -12,7 +14,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         [Test]
         public void ShouldNot_ConstructParser_When_GivenNullTokenStream()
         {
-            Assert.Throws<ArgumentNullException>(() => new Cimbol.Compiler.Parse.Parser(null));
+            Assert.Throws<ArgumentNullException>(() => new Parser("formula", null));
         }
 
         [Test]
@@ -22,9 +24,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("if", TokenType.IfKeyword, new Position(0, 0), new Position(0, 0)),
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.Root());
+            Assert.Throws<CimbolCompilationException>(() => parser.Root());
         }
 
         [Test]
@@ -39,7 +41,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("/", TokenType.Divide, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<BinaryOpNode>(() => parser.Root());
             Assert.AreEqual(BinaryOpType.Divide, result.OpType);
@@ -62,9 +64,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream();
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.Root());
+            Assert.Throws<CimbolCompilationException>(() => parser.Root());
         }
 
         [Test]
@@ -78,9 +80,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.Root());
+            Assert.Throws<CimbolCompilationException>(() => parser.Root());
         }
     }
 }

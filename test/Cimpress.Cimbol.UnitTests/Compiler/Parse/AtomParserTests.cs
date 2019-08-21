@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Cimpress.Cimbol.Compiler.Parse;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
@@ -15,7 +16,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token(string.Empty, TokenType.TrueKeyword, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as LiteralNode;
 
@@ -32,7 +33,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
                 new Token(string.Empty, TokenType.TrueKeyword, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as LiteralNode;
 
@@ -47,7 +48,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token(string.Empty, TokenType.FalseKeyword, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as LiteralNode;
 
@@ -64,7 +65,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
                 new Token(string.Empty, TokenType.FalseKeyword, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as LiteralNode;
 
@@ -79,7 +80,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("123", TokenType.NumberLiteral, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as LiteralNode;
 
@@ -97,7 +98,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("123", TokenType.NumberLiteral, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as LiteralNode;
 
@@ -112,7 +113,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("\"hat\"", TokenType.StringLiteral, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as LiteralNode;
 
@@ -129,7 +130,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
                 new Token("\"hat\"", TokenType.StringLiteral, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as LiteralNode;
 
@@ -144,7 +145,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("hat", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as IdentifierNode;
 
@@ -160,7 +161,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
                 new Token("hat", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.Atom() as IdentifierNode;
 
@@ -174,18 +175,18 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("+", TokenType.Add, new Position(0, 0), new Position(0, 0)));
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.Atom());
+            Assert.Throws<CimbolCompilationException>(() => parser.Atom());
         }
 
         [Test]
         public void ShouldNot_ParseAtom_When_GivenEndOfFile()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream();
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.Atom());
+            Assert.Throws<CimbolCompilationException>(() => parser.Atom());
         }
     }
 }

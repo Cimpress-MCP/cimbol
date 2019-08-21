@@ -65,7 +65,7 @@ namespace Cimpress.Cimbol
         /// <returns>An abstract syntax tree equivalent to the formula.</returns>
         internal FormulaDeclarationNode ToSyntaxTree()
         {
-            var body = FormulaParser.ParseFormulaPart(Value);
+            var body = FormulaParser.ParseFormulaPart(Name, Value);
 
             return new FormulaDeclarationNode(Name, body, IsExported);
         }

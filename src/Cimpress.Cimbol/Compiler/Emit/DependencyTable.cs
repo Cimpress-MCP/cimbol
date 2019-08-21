@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Emit
@@ -157,9 +158,8 @@ namespace Cimpress.Cimbol.Compiler.Emit
             if (graph.IsCyclical())
             {
                 // Do not allow cycles between declarations.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode004");
-#pragma warning restore CA1303
+                // TODO: Log the formulas that form a cycle.
+                throw CimbolCompilationException.CycleError(null);
             }
 
             return new DependencyTable(graph);

@@ -1,4 +1,5 @@
-﻿using Cimpress.Cimbol.Compiler.Scan;
+﻿using Cimpress.Cimbol.Compiler.Parse;
+using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
@@ -14,7 +15,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             ParserAssert.Parses<IdentifierNode>(() => parser.Add());
         }
@@ -29,7 +30,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<BinaryOpNode>(() => parser.Add());
             Assert.AreEqual(op, result.OpType);
@@ -53,7 +54,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<BinaryOpNode>(() => parser.Add());
             ParserAssert.HasProperty<BinaryOpNode>(result, "Left");
@@ -66,7 +67,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             ParserAssert.Parses<IdentifierNode>(() => parser.Concatenate());
         }
@@ -80,7 +81,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<BinaryOpNode>(() => parser.Concatenate());
             Assert.AreEqual(op, result.OpType);
@@ -103,7 +104,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<BinaryOpNode>(() => parser.Concatenate());
             ParserAssert.HasProperty<BinaryOpNode>(result, "Left");
@@ -116,7 +117,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             ParserAssert.Parses<IdentifierNode>(() => parser.Unary());
         }
@@ -128,7 +129,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("+", TokenType.Add, new Position(0, 0), new Position(0, 0)),
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             ParserAssert.Parses<IdentifierNode>(() => parser.Unary());
         }
@@ -141,7 +142,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<UnaryOpNode>(() => parser.Unary());
             Assert.AreEqual(op, result.OpType);
@@ -160,7 +161,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<UnaryOpNode>(() => parser.Unary());
             Assert.AreEqual(op, result.OpType);
@@ -180,7 +181,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<IdentifierNode>(() => parser.Unary());
             Assert.That(result.Identifier, Is.EqualTo("x"));
@@ -192,7 +193,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             ParserAssert.Parses<IdentifierNode>(() => parser.Multiply());
         }
@@ -208,7 +209,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<BinaryOpNode>(() => parser.Multiply());
             Assert.AreEqual(op, result.OpType);
@@ -233,7 +234,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<BinaryOpNode>(() => parser.Multiply());
             ParserAssert.HasProperty<BinaryOpNode>(result, "Left");
@@ -246,7 +247,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             ParserAssert.Parses<IdentifierNode>(() => parser.Power());
         }
@@ -260,7 +261,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<BinaryOpNode>(() => parser.Power());
             Assert.AreEqual(op, result.OpType);
@@ -283,7 +284,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(value, token, new Position(0, 0), new Position(0, 0)),
                 new Token("z", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = ParserAssert.Parses<BinaryOpNode>(() => parser.Power());
             ParserAssert.HasProperty<IdentifierNode>(result, "Left");

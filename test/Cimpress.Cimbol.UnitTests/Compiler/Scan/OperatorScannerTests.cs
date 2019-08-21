@@ -24,7 +24,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("=", TokenType.Assign)]
         public void Should_MakeOperatorToken_When_GivenOperatorSource(string source, TokenType type)
         {
-            var scanner = new Scanner(new SourceText(source));
+            var scanner = new Scanner("formula", new SourceText("formula", source));
             var token = scanner.NextOperator();
             Assert.AreEqual(type, token.Type);
             Assert.AreEqual(source, token.Value);

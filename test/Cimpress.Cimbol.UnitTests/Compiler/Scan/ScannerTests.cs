@@ -1,6 +1,6 @@
-﻿using System;
-using Cimpress.Cimbol.Compiler.Scan;
+﻿using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.Source;
+using Cimpress.Cimbol.Exceptions;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
@@ -26,7 +26,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("not", TokenType.Not)]
         public void Should_PickCorrectToken_When_GivenSource(string source, TokenType type)
         {
-            var scanner = new Scanner(new SourceText(source));
+            var scanner = new Scanner("formula", new SourceText("formula", source));
             var token = scanner.Next();
             Assert.AreEqual(type, token.Type);
             Assert.AreEqual(source, token.Value);
@@ -43,8 +43,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("$")]
         public void Should_ThrowError_When_GivenUnrecognizableCharacters(string source)
         {
-            var scanner = new Scanner(new SourceText(source));
-            Assert.Throws<NotSupportedException>(() => scanner.Next());
+            var scanner = new Scanner("formula", new SourceText("formula", source));
+            Assert.Throws<CimbolCompilationException>(() => scanner.Next());
         }
     }
 }

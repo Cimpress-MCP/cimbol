@@ -1,7 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using Cimpress.Cimbol.Compiler.Parse;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
 
@@ -17,7 +18,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.ArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -32,7 +33,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.ArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -53,7 +54,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.ArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -75,7 +76,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.NamedArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -90,7 +91,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.NamedArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -111,7 +112,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.NamedArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -136,7 +137,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.NamedArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -162,7 +163,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.NamedArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -191,7 +192,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.NamedArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -219,7 +220,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
             var result = parser.NamedArgumentList()?.ToList();
             Assert.IsNotNull(result);
@@ -244,9 +245,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -258,9 +259,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -272,9 +273,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -286,9 +287,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(",", TokenType.Comma, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -300,9 +301,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token(",", TokenType.Comma, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -315,9 +316,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -332,9 +333,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -348,9 +349,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -364,9 +365,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -380,9 +381,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -396,9 +397,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -412,9 +413,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("=", TokenType.Assign, new Position(0, 0), new Position(0, 0)),
                 new Token(")", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
 
         [Test]
@@ -428,9 +429,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
                 new Token("=", TokenType.Assign, new Position(0, 0), new Position(0, 0)),
                 new Token("y", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
 
-            var parser = new Cimbol.Compiler.Parse.Parser(tokenStream);
+            var parser = new Parser("formula", tokenStream);
 
-            Assert.Throws<NotSupportedException>(() => parser.ArgumentList()?.ToList());
+            Assert.Throws<CimbolCompilationException>(() => parser.ArgumentList()?.ToList());
         }
     }
 }

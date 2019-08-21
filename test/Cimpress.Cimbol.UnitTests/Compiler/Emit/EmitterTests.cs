@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Cimpress.Cimbol.Compiler.Emit;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
@@ -351,7 +352,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             };
             var node = new MacroNode("if", arguments);
 
-            Assert.Throws<NotSupportedException>(() => _emitter.EmitExpression(node, _symbolTable));
+            Assert.Throws<CimbolCompilationException>(() => _emitter.EmitExpression(node, _symbolTable));
         }
 
         [Test]
@@ -563,7 +564,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var arguments = Array.Empty<IArgument>();
             var node = new MacroNode("where", arguments);
 
-            Assert.Throws<NotSupportedException>(() => _emitter.EmitExpression(node, _symbolTable));
+            Assert.Throws<CimbolCompilationException>(() => _emitter.EmitExpression(node, _symbolTable));
         }
 
         [Test]

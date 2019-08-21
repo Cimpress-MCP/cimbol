@@ -1,5 +1,5 @@
-﻿using System;
-using Cimpress.Cimbol.Compiler.Source;
+﻿using Cimpress.Cimbol.Compiler.Source;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Compiler.Scan
 {
@@ -13,11 +13,19 @@ namespace Cimpress.Cimbol.Compiler.Scan
         /// <summary>
         /// Initializes a new instance of the <see cref="Scanner"/> class.
         /// </summary>
+        /// <param name="formulaName">The name of the formula being operated on.</param>
         /// <param name="sourceText">The <see cref="SourceText"/> to scan.</param>
-        public Scanner(SourceText sourceText)
+        public Scanner(string formulaName, SourceText sourceText)
         {
-            _context = new ScanningContext(sourceText);
+            FormulaName = formulaName;
+
+            _context = new ScanningContext(formulaName, sourceText);
         }
+
+        /// <summary>
+        /// The name of the formula being operator on.
+        /// </summary>
+        public string FormulaName { get; }
 
         /// <summary>
         /// Scans the source and returns the next <see cref="Token"/>.
@@ -69,9 +77,11 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return NextNumberLiteral();
             }
 
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode016");
-#pragma warning restore CA1303
+            throw CimbolCompilationException.UnrecognizedCharacterError(
+                FormulaName,
+                _context.Start(),
+                _context.End(),
+                _context.Peek());
         }
     }
 }

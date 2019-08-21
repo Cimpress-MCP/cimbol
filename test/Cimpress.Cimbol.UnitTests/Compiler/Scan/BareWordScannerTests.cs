@@ -1,6 +1,6 @@
-﻿using System;
-using Cimpress.Cimbol.Compiler.Scan;
+﻿using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.Source;
+using Cimpress.Cimbol.Exceptions;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
@@ -20,7 +20,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("うま", TokenType.Identifier)]
         public void Should_MakeIdentifier_When_GivenIdentifierSource(string source, TokenType type)
         {
-            var scanner = new Scanner(new SourceText(source));
+            var scanner = new Scanner("formula", new SourceText("formula", source));
             var token = scanner.NextBareWord();
             Assert.AreEqual(type, token.Type);
             Assert.AreEqual(source, token.Value);
@@ -31,8 +31,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("🂡")]
         public void ShouldNot_MakeIdentifier_When_GiveGarbageSource(string source)
         {
-            var scanner = new Scanner(new SourceText(source));
-            Assert.Throws<NotSupportedException>(() => scanner.NextBareWord());
+            var scanner = new Scanner("formula", new SourceText("formula", source));
+            Assert.Throws<CimbolCompilationException>(() => scanner.NextBareWord());
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("xOr", TokenType.Xor)]
         public void Should_MakeKeyword_When_GivenKeywordSource(string source, TokenType type)
         {
-            var scanner = new Scanner(new SourceText(source));
+            var scanner = new Scanner("formula", new SourceText("formula", source));
             var token = scanner.NextBareWord();
             Assert.AreEqual(type, token.Type);
             Assert.AreEqual(source, token.Value);

@@ -1,6 +1,7 @@
 ﻿using System;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Compiler.Parse
 {
@@ -14,11 +15,19 @@ namespace Cimpress.Cimbol.Compiler.Parse
         /// <summary>
         /// Initializes a new instance of the <see cref="Parser"/> class.
         /// </summary>
+        /// <param name="formulaName">The name of the formula being parsed.</param>
         /// <param name="tokenStream">The stream of tokens to parse.</param>
-        public Parser(TokenStream tokenStream)
+        public Parser(string formulaName, TokenStream tokenStream)
         {
+            FormulaName = formulaName;
+
             _tokenStream = tokenStream ?? throw new ArgumentNullException(nameof(tokenStream));
         }
+
+        /// <summary>
+        /// The name of the formula being parsed.
+        /// </summary>
+        public string FormulaName { get; }
 
         /// <summary>
         /// Parse a series of <see cref="Token"/> objects into an expression.
@@ -73,18 +82,39 @@ namespace Cimpress.Cimbol.Compiler.Parse
 
             if (current == null)
             {
-                // Unexpected end of file.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode012");
-#pragma warning restore CA1303
+                var last = _tokenStream.Current();
+
+                throw CimbolCompilationException.UnexpectedEndOfFileError(FormulaName, last.Start, last.End);
             }
 
             if (current.Type != tokenType)
             {
-                // Wrong token type.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode013");
-#pragma warning restore CA1303
+                var exception = errorMessage != null
+                    ? new CimbolCompilationException(errorMessage, FormulaName, current.Start, current.End)
+                    : CimbolCompilationException.TokenMismatchError(
+                        FormulaName,
+                        current.Start,
+                        current.End,
+                        tokenType,
+                        current.Type);
+
+                throw exception;
+            }
+
+            _tokenStream.Next();
+
+            return current;
+        }
+
+        private Token Next()
+        {
+            var current = _tokenStream.Lookahead(0);
+
+            if (current == null)
+            {
+                var last = _tokenStream.Current();
+
+                throw CimbolCompilationException.UnexpectedEndOfFileError(FormulaName, last.Start, last.End);
             }
 
             _tokenStream.Next();

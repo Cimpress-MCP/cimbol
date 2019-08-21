@@ -61,7 +61,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Scan
         [TestCaseSource(typeof(ScannerSequenceTests), nameof(TestCases))]
         public void Should_MatchSequence_When_GivenSource(string source, TokenType[] types)
         {
-            var scanner = new Scanner(new SourceText(source));
+            var scanner = new Scanner("formula", new SourceText("formula", source));
 
             var nextToken = scanner.Next();
             var tokens = new List<TokenType> { nextToken.Type };

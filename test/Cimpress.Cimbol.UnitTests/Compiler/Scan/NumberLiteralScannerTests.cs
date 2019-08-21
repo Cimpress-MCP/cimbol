@@ -1,6 +1,6 @@
-﻿using System;
-using Cimpress.Cimbol.Compiler.Scan;
+﻿using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.Source;
+using Cimpress.Cimbol.Exceptions;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
@@ -23,7 +23,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("3e+999", TokenType.NumberLiteral)]
         public void Should_MakeNumberLiteralToken_When_GivenNumberLiteralSource(string source, TokenType type)
         {
-            var scanner = new Scanner(new SourceText(source));
+            var scanner = new Scanner("formula", new SourceText("formula", source));
             var token = scanner.NextNumberLiteral();
             Assert.AreEqual(type, token.Type);
             Assert.AreEqual(source, token.Value);
@@ -44,8 +44,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("1e+1234")]
         public void ShouldNot_MakeNumberLiteralToken_When_GivenGarbageSource(string source)
         {
-            var scanner = new Scanner(new SourceText(source));
-            Assert.Throws<NotSupportedException>(() => scanner.NextNumberLiteral());
+            var scanner = new Scanner("formula", new SourceText("formula", source));
+            Assert.Throws<CimbolCompilationException>(() => scanner.NextNumberLiteral());
         }
     }
 }

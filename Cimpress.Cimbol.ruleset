@@ -250,6 +250,9 @@
     <Rule Id="IDE0033" Action="None" />
     <Rule Id="IDE0033WithoutSuggestion" Action="None" />
   </Rules>
+  <Rules AnalyzerId="Microsoft.Globalization" RuleNamespace="Microsoft.Globalization">
+    <Rule Id="CA1303" Action="None" />
+  </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA0001" Action="Error" />
     <Rule Id="SA0002" Action="Error" />

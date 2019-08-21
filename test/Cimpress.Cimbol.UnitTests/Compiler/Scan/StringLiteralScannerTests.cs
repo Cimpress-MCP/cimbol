@@ -1,6 +1,6 @@
-﻿using System;
-using Cimpress.Cimbol.Compiler.Scan;
+﻿using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.Source;
+using Cimpress.Cimbol.Exceptions;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
@@ -40,7 +40,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("\"うま\"", TokenType.StringLiteral)]
         public void Should_MakeStringLiteral_When_GivenStringLiteralSource(string source, TokenType type)
         {
-            var scanner = new Scanner(new SourceText(source));
+            var scanner = new Scanner("formula", new SourceText("formula", source));
             var token = scanner.NextStringLiteral();
             Assert.AreEqual(type, token.Type);
             Assert.AreEqual(source, token.Value);
@@ -53,8 +53,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Scan
         [TestCase("\"\\U0000000G\"")]
         public void ShouldNot_MakeStringLiteral_When_GivenGarbageSource(string source)
         {
-            var scanner = new Scanner(new SourceText(source));
-            Assert.Throws<NotSupportedException>(() => scanner.NextStringLiteral());
+            var scanner = new Scanner("formula", new SourceText("formula", source));
+            Assert.Throws<CimbolCompilationException>(() => scanner.NextStringLiteral());
         }
     }
 }

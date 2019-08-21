@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Compiler.Scan
 {
@@ -57,9 +57,11 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return ScanOperatorGreaterThan();
 
                 default:
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode027");
-#pragma warning restore CA1303
+                    throw CimbolCompilationException.UnrecognizedOperatorError(
+                        FormulaName,
+                        _context.Start(),
+                        _context.End(),
+                        _context.Current);
             }
         }
 
@@ -114,9 +116,11 @@ namespace Cimpress.Cimbol.Compiler.Scan
                     return _context.Consume(TokenType.NotEqual);
 
                 default:
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode028");
-#pragma warning restore CA1303
+                    throw CimbolCompilationException.UnrecognizedOperatorError(
+                        FormulaName,
+                        _context.Start(),
+                        _context.End(),
+                        _context.Current);
             }
         }
 

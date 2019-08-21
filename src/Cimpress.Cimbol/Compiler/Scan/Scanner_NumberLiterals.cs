@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Compiler.Scan
 {
@@ -25,9 +25,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
 
                 default:
                     // Numbers must start with either a decimal digit or a period.
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode023");
-#pragma warning restore CA1303
+                    throw CimbolCompilationException.NumberStartError(FormulaName, _context.Start(), _context.End());
             }
         }
 
@@ -101,9 +99,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
             else
             {
                 // DecimalOnlyPart needs at least one number, otherwise strings like "-.e2" will parse as a number.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode024");
-#pragma warning restore CA1303
+                throw CimbolCompilationException.NumberFormatError(FormulaName, _context.Start(), _context.End());
             }
 
             // Matches regex /([eE][+-]?[0-9]{1-3})?/
@@ -131,9 +127,10 @@ namespace Cimpress.Cimbol.Compiler.Scan
             else
             {
                 // ExponentPart needs at least one number, otherwise strings like "-2.e" will parse as a number.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode025");
-#pragma warning restore CA1303
+                throw CimbolCompilationException.NumberExponentMinSizeError(
+                    FormulaName,
+                    _context.Start(),
+                    _context.End());
             }
 
             // Matches regex /[0-9]?/
@@ -152,9 +149,10 @@ namespace Cimpress.Cimbol.Compiler.Scan
             if (IsNumber(_context.Peek()))
             {
                 // Don't support four or more digits in the exponent.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode026");
-#pragma warning restore CA1303
+                throw CimbolCompilationException.NumberExponentMaxSizeError(
+                    FormulaName,
+                    _context.Start(),
+                    _context.End());
             }
         }
 
