@@ -1,5 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Runtime.Types
 {
@@ -25,25 +25,25 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
-            throw new NotSupportedException();
+            throw CimbolRuntimeException.AccessError(null);
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-            throw new NotSupportedException();
+            throw CimbolRuntimeException.CastBooleanError(null, typeof(PromiseValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-            throw new NotSupportedException();
+            throw CimbolRuntimeException.CastNumberError(null, typeof(PromiseValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
-            throw new NotSupportedException();
+            throw CimbolRuntimeException.CastStringError(null, typeof(PromiseValue));
         }
 
         /// <inheritdoc cref="ILocalValue.EqualTo"/>
@@ -55,7 +55,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
-            throw new NotSupportedException();
+            throw CimbolRuntimeException.InvocationError(null);
         }
     }
 }

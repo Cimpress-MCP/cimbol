@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 
@@ -12,28 +13,28 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         public void Should_ThrowException_When_AccessingAnElement()
         {
             var functionValue = new FunctionValue((Func<NumberValue>)MockFunction);
-            Assert.Throws<NotSupportedException>(() => functionValue.Access("test"));
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.Access("test"));
         }
 
         [Test]
         public void Should_ThrowException_When_ConvertingToBoolean()
         {
             var functionValue = new FunctionValue((Func<NumberValue>)MockFunction);
-            Assert.Throws<NotSupportedException>(() => functionValue.CastBoolean());
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.CastBoolean());
         }
 
         [Test]
         public void Should_ThrowException_When_ConvertingToNumber()
         {
             var functionValue = new FunctionValue((Func<NumberValue>)MockFunction);
-            Assert.Throws<NotSupportedException>(() => functionValue.CastNumber());
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.CastNumber());
         }
 
         [Test]
         public void Should_ThrowException_When_ConvertingToString()
         {
             var functionValue = new FunctionValue((Func<NumberValue>)MockFunction);
-            Assert.Throws<NotSupportedException>(() => functionValue.CastString());
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.CastString());
         }
 
         [Test]
@@ -61,7 +62,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
 
             var functionValue = new FunctionValue((Func<BooleanValue, BooleanValue>)TestFunction);
 
-            Assert.Throws<NotSupportedException>(() => functionValue.Invoke(new NumberValue(1)));
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.Invoke(new NumberValue(1)));
         }
 
         [Test]
@@ -74,7 +75,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
 
             var functionValue = new FunctionValue((Func<BooleanValue, BooleanValue>)TestFunction);
 
-            Assert.Throws<NotSupportedException>(() => functionValue.Invoke(new StringValue("test")));
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.Invoke(new StringValue("test")));
         }
 
         [Test]
@@ -103,7 +104,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
 
             var functionValue = new FunctionValue((Func<FunctionValue, FunctionValue>)TestFunction);
 
-            Assert.Throws<NotSupportedException>(() => functionValue.Invoke(new NumberValue(1)));
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.Invoke(new NumberValue(1)));
         }
 
         [Test]
@@ -132,7 +133,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
 
             var functionValue = new FunctionValue((Func<ListValue, ListValue>)TestFunction);
 
-            Assert.Throws<NotSupportedException>(() => functionValue.Invoke(new NumberValue(1)));
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.Invoke(new NumberValue(1)));
         }
 
         [Test]
@@ -145,7 +146,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
 
             var functionValue = new FunctionValue((Func<NumberValue, NumberValue>)TestFunction);
 
-            Assert.Throws<NotSupportedException>(() => functionValue.Invoke(new BooleanValue(true)));
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.Invoke(new BooleanValue(true)));
         }
 
         [Test]
@@ -187,7 +188,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
             }
 
             var functionValue = new FunctionValue((Func<ObjectValue, ObjectValue>)TestFunction);
-            Assert.Throws<NotSupportedException>(() => functionValue.Invoke(new NumberValue(1)));
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.Invoke(new NumberValue(1)));
         }
 
         [Test]
@@ -216,7 +217,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
 
             var functionValue = new FunctionValue((Func<StringValue, StringValue>)TestFunction);
 
-            Assert.Throws<NotSupportedException>(() => functionValue.Invoke(new BooleanValue(true)));
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.Invoke(new BooleanValue(true)));
         }
 
         [Test]
@@ -266,7 +267,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
 
             var functionValue = new FunctionValue((Func<NumberValue, NumberValue, NumberValue>)TestFunction);
 
-            Assert.Throws<NotSupportedException>(() => functionValue.Invoke(new NumberValue(1)));
+            Assert.Throws<CimbolRuntimeException>(() => functionValue.Invoke(new NumberValue(1)));
         }
 
         [Test]
@@ -279,7 +280,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
 
             var functionValue = new FunctionValue((Func<NumberValue, NumberValue, NumberValue>)TestFunction);
 
-            Assert.Throws<NotSupportedException>(() =>
+            Assert.Throws<CimbolRuntimeException>(() =>
                 functionValue.Invoke(new NumberValue(1), new NumberValue(2), new NumberValue(3)));
         }
 

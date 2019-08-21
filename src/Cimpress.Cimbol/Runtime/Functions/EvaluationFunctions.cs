@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 
 namespace Cimpress.Cimbol.Runtime.Functions
@@ -42,9 +42,7 @@ namespace Cimpress.Cimbol.Runtime.Functions
         {
             if (!(awaitedValue is PromiseValue promiseValue))
             {
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode086");
-#pragma warning restore CA1303
+                throw CimbolRuntimeException.AwaitError(null);
             }
 
             var taskResult = await promiseValue.Value;

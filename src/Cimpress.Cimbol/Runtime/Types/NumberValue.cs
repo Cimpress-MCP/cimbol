@@ -1,5 +1,5 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Functions;
 
 namespace Cimpress.Cimbol.Runtime.Types
@@ -26,17 +26,13 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode067");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.AccessError(null);
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode068");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.CastBooleanError(null, typeof(NumberValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
@@ -70,9 +66,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode069");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.InvocationError(null);
         }
     }
 }

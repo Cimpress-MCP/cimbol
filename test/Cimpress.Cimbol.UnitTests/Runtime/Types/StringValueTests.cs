@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 
@@ -11,14 +12,14 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         public void Should_ThrowException_When_AccessingAnElement()
         {
             var stringValue = new StringValue("test");
-            Assert.Throws<NotSupportedException>(() => stringValue.Access("test"));
+            Assert.Throws<CimbolRuntimeException>(() => stringValue.Access("test"));
         }
 
         [Test]
         public void Should_ThrowException_When_ConvertingToBoolean()
         {
             var stringValue = new StringValue("test");
-            Assert.Throws<NotSupportedException>(() => stringValue.CastBoolean());
+            Assert.Throws<CimbolRuntimeException>(() => stringValue.CastBoolean());
         }
 
         [Test]
@@ -38,7 +39,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         public void Should_ThrowException_When_ConvertingInvalidNumber(string value)
         {
             var stringValue = new StringValue(value);
-            Assert.Throws<NotSupportedException>(() => stringValue.CastNumber());
+            Assert.Throws<CimbolRuntimeException>(() => stringValue.CastNumber());
         }
 
         [Test]
@@ -54,7 +55,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         public void Should_ThrowException_When_Invoked()
         {
             var stringValue = new StringValue("test");
-            Assert.Throws<NotSupportedException>(() => stringValue.Invoke());
+            Assert.Throws<CimbolRuntimeException>(() => stringValue.Invoke());
         }
 
         [Test]

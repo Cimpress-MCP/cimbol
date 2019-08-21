@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
@@ -57,8 +57,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             ILocalValue result = null;
             var resultTask = EvaluationFunctions.AsyncEval(promiseValue, localValue => result = localValue);
 
-            var resultError = Assert.ThrowsAsync<NotSupportedException>(async () => await resultTask);
-            Assert.That(resultError.Message, Is.EqualTo("ErrorCode086"));
+            var resultError = Assert.ThrowsAsync<CimbolRuntimeException>(async () => await resultTask);
             Assert.That(result, Is.Null);
             Assert.That(resultTask.Status, Is.EqualTo(TaskStatus.Faulted));
         }

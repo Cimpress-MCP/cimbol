@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
 
@@ -417,7 +418,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <returns>The result of compiling the syntax tree to an expression tree.</returns>
         internal Expression EmitIdentifierNode(IdentifierNode identifierNode, SymbolTable symbolTable)
         {
-            return symbolTable.TryResolve(identifierNode.Identifier, out var variable) ? variable.Variable : CodeGen.Error();
+            return symbolTable.TryResolve(identifierNode.Identifier, out var variable)
+                ? variable.Variable
+                : CodeGen.Error(CimbolRuntimeException.UnresolvedIdentifier(null, identifierNode.Identifier));
         }
 
         /// <summary>

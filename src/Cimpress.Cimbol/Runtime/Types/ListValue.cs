@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Runtime.Types
 {
     /// <summary>
-    /// An implementation of <see cref="ILocalValue"/> used to store <see cref="ILocalValue[]"/> values.
+    /// An implementation of <see cref="ILocalValue"/> used to store an array of <see cref="ILocalValue"/> values.
     /// </summary>
     public class ListValue : ILocalValue
     {
@@ -27,33 +27,25 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode062");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.AccessError(null);
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode063");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.CastBooleanError(null, typeof(ListValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode064");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.CastNumberError(null, typeof(ListValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode065");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.CastStringError(null, typeof(ListValue));
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
@@ -65,9 +57,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode066");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.InvocationError(null);
         }
     }
 }

@@ -98,12 +98,11 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <summary>
         /// Generate the expression tree for throwing an error.
         /// </summary>
+        /// <param name="error">The error to throw.</param>
         /// <returns>An expression that throws an error.</returns>
-        internal static Expression Error()
+        internal static Expression Error(CimbolRuntimeException error)
         {
-            return Expression.Throw(
-                Expression.New(StandardFunctions.NotSupportedExceptionConstructorInfo),
-                typeof(ILocalValue));
+            return Expression.Throw(Expression.Constant(error), typeof(ILocalValue));
         }
 
         /// <summary>
@@ -134,7 +133,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
                 var ifFalse = secondBranch?.Item1?.Equals("else", StringComparison.OrdinalIgnoreCase) == true
                         ? secondBranch.Item2
-                        : Error();
+                        : Error(CimbolRuntimeException.IfConditionError(null));
 
                 return Expression.Condition(test, ifTrue, ifFalse, typeof(ILocalValue));
             }
@@ -143,7 +142,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
             {
                 var ifTrue = secondBranch?.Item1?.Equals("then", StringComparison.OrdinalIgnoreCase) == true
                     ? secondBranch.Item2
-                    : Error();
+                    : Error(CimbolRuntimeException.IfConditionError(null));
 
                 var ifFalse = firstBranch.Item2;
 
@@ -303,7 +302,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     new Position(0, 0));
             }
 
-            var head = arguments.Length % 2 == 1 ? arguments.Last().Item2 : Error();
+            var head = arguments.Length % 2 == 1
+                ? arguments.Last().Item2
+                : Error(CimbolRuntimeException.WhereConditionError(null));
 
             var conditionCount = arguments.Length / 2;
             for (var i = conditionCount - 1; i >= 0; --i)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 
@@ -24,35 +25,35 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         {
             var innerDictionary = new Dictionary<string, ILocalValue> { ["x"] = new BooleanValue(true) };
             var objectValue = new ObjectValue(innerDictionary);
-            Assert.Throws<NotSupportedException>(() => objectValue.Access("y"));
+            Assert.Throws<CimbolRuntimeException>(() => objectValue.Access("y"));
         }
 
         [Test]
         public void Should_ThrowException_When_ConvertingToBoolean()
         {
             var objectValue = new ObjectValue(new Dictionary<string, ILocalValue>());
-            Assert.Throws<NotSupportedException>(() => objectValue.CastBoolean());
+            Assert.Throws<CimbolRuntimeException>(() => objectValue.CastBoolean());
         }
 
         [Test]
         public void Should_ThrowException_When_ConvertingToNumber()
         {
             var objectValue = new ObjectValue(new Dictionary<string, ILocalValue>());
-            Assert.Throws<NotSupportedException>(() => objectValue.CastNumber());
+            Assert.Throws<CimbolRuntimeException>(() => objectValue.CastNumber());
         }
 
         [Test]
         public void Should_ThrowException_When_ConvertingToString()
         {
             var objectValue = new ObjectValue(new Dictionary<string, ILocalValue>());
-            Assert.Throws<NotSupportedException>(() => objectValue.CastString());
+            Assert.Throws<CimbolRuntimeException>(() => objectValue.CastString());
         }
 
         [Test]
         public void Should_ThrowException_When_Invoked()
         {
             var objectValue = new ObjectValue(new Dictionary<string, ILocalValue>());
-            Assert.Throws<NotSupportedException>(() => objectValue.Invoke());
+            Assert.Throws<CimbolRuntimeException>(() => objectValue.Invoke());
         }
 
         [Test]

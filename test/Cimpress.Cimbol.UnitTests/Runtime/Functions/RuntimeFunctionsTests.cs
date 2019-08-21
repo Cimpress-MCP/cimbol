@@ -325,7 +325,6 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         private static IEnumerable<TestCaseData> ConstructorInfoTestCases()
         {
             yield return new TestCaseData(LocalValueFunctions.ListValueConstructorInfo);
-            yield return new TestCaseData(StandardFunctions.NotSupportedExceptionConstructorInfo);
             yield return new TestCaseData(LocalValueFunctions.ObjectValueConstructorInfo);
             yield return new TestCaseData(StandardFunctions.DictionaryConstructorInfo);
         }

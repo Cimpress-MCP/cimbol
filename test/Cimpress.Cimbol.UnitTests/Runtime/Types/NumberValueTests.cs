@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 
@@ -11,14 +12,14 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         public void Should_ThrowException_When_AccessingAnElement()
         {
             var numberValue = new NumberValue(1);
-            Assert.Throws<NotSupportedException>(() => numberValue.Access("test"));
+            Assert.Throws<CimbolRuntimeException>(() => numberValue.Access("test"));
         }
 
         [Test]
         public void Should_ThrowException_When_ConvertingToBoolean()
         {
             var numberValue = new NumberValue(1);
-            Assert.Throws<NotSupportedException>(() => numberValue.CastBoolean());
+            Assert.Throws<CimbolRuntimeException>(() => numberValue.CastBoolean());
         }
 
         [Test]
@@ -48,7 +49,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         public void Should_ThrowException_When_Invoked()
         {
             var numberValue = new NumberValue(1);
-            Assert.Throws<NotSupportedException>(() => numberValue.Invoke());
+            Assert.Throws<CimbolRuntimeException>(() => numberValue.Invoke());
         }
 
         [Test]

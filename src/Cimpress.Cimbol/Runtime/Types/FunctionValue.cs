@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Runtime.Types
 {
@@ -43,33 +44,25 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode054");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.AccessError(null);
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode055");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.CastBooleanError(null, typeof(FunctionValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode056");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.CastNumberError(null, typeof(FunctionValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode057");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.CastStringError(null, typeof(FunctionValue));
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
@@ -86,9 +79,7 @@ namespace Cimpress.Cimbol.Runtime.Types
 #pragma warning disable CA1062
             if (arguments.Length != _argumentCount)
             {
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode058");
-#pragma warning restore CA1303
+                throw CimbolRuntimeException.ArgumentCountError(null, _argumentCount, arguments.Length);
             }
 #pragma warning restore CA1062
 
@@ -122,9 +113,7 @@ namespace Cimpress.Cimbol.Runtime.Types
                     return tValue;
 
                 default:
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode059");
-#pragma warning restore CA1303
+                    throw CimbolRuntimeException.ArgumentTypeError(null, typeof(T), localValue.GetType());
             }
         }
 

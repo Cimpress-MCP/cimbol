@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 
@@ -11,7 +12,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         public void Should_ThrowException_When_AccessingAnElement()
         {
             var booleanValue = new BooleanValue(true);
-            Assert.Throws<NotSupportedException>(() => booleanValue.Access("test"));
+            Assert.Throws<CimbolRuntimeException>(() => booleanValue.Access("test"));
         }
 
         [Test]
@@ -29,21 +30,21 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         public void Should_ThrowException_When_ConvertingToNumber()
         {
             var booleanValue = new BooleanValue(true);
-            Assert.Throws<NotSupportedException>(() => booleanValue.CastNumber());
+            Assert.Throws<CimbolRuntimeException>(() => booleanValue.CastNumber());
         }
 
         [Test]
         public void Should_ThrowException_When_ConvertingToString()
         {
             var booleanValue = new BooleanValue(true);
-            Assert.Throws<NotSupportedException>(() => booleanValue.CastString());
+            Assert.Throws<CimbolRuntimeException>(() => booleanValue.CastString());
         }
 
         [Test]
         public void Should_ThrowException_When_Invoked()
         {
             var booleanValue = new BooleanValue(true);
-            Assert.Throws<NotSupportedException>(() => booleanValue.Invoke());
+            Assert.Throws<CimbolRuntimeException>(() => booleanValue.Invoke());
         }
 
         [Test]

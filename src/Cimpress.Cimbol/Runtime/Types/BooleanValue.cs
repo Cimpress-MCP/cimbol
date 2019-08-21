@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Functions;
 
 namespace Cimpress.Cimbol.Runtime.Types
@@ -35,9 +35,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode050");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.AccessError(null);
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
@@ -49,17 +47,13 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode051");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.CastNumberError(null, typeof(BooleanValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode052");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.CastStringError(null, typeof(BooleanValue));
         }
 
         /// <inheritdoc cref="ILocalValue.EqualTo"/>
@@ -78,9 +72,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode053");
-#pragma warning restore CA1303
+            throw CimbolRuntimeException.InvocationError(null);
         }
     }
 }
