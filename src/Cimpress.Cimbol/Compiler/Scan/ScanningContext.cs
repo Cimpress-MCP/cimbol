@@ -92,7 +92,7 @@ namespace Cimpress.Cimbol.Compiler.Scan
                 // Unexpected end of file reached.
                 // Currently still processing a token.
                 // This is an error in the lexer, not in the input string.
-                throw CimbolCompilationException.UnexpectedEndOfFileError(FormulaName, Start(), End());
+                throw new CimbolInternalException("An error occurred while parsing the formula.");
             }
 
             return Consume(TokenType.EndOfFile);

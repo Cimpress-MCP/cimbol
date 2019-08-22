@@ -82,5 +82,35 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Utilities
             var expected = new ISyntaxNode[] { node1, node2, node3, node4, node5 };
             CollectionAssert.AreEqual(expected, traversal.TraversePostOrder());
         }
+
+        [Test]
+        public void Should_CallAllEnterHandlers_When_TraversingGraph()
+        {
+            bool hitFirst = false, hitSecond = false;
+            var node1 = new LiteralNode(null);
+            var traversal = new TreeWalker(node1);
+            traversal.OnEnter<LiteralNode>(node => hitFirst = true);
+            traversal.OnEnter<LiteralNode>(node => hitSecond = true);
+
+            traversal.Visit();
+
+            Assert.That(hitFirst, Is.True);
+            Assert.That(hitSecond, Is.True);
+        }
+
+        [Test]
+        public void Should_CallAllExitHandlers_When_TraversingGraph()
+        {
+            bool hitFirst = false, hitSecond = false;
+            var node1 = new LiteralNode(null);
+            var traversal = new TreeWalker(node1);
+            traversal.OnExit<LiteralNode>(node => hitFirst = true);
+            traversal.OnExit<LiteralNode>(node => hitSecond = true);
+
+            traversal.Visit();
+
+            Assert.That(hitFirst, Is.True);
+            Assert.That(hitSecond, Is.True);
+        }
     }
 }

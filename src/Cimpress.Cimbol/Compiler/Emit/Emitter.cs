@@ -270,9 +270,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 return Expression.Assign(importSymbol.Variable, variable);
             }
 
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode005");
-#pragma warning restore CA1303
+            throw new CimbolInternalException("Unrecognized import type.");
         }
 
         /// <summary>
@@ -315,9 +313,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     return EmitUnaryOpNode(unaryOpNode, symbolTable);
 
                 default:
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode006");
-#pragma warning restore CA1303
+                    throw new CimbolInternalException("Unrecognized expression node type.");
             }
         }
 
@@ -394,7 +390,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     return CodeGen.BinaryOp(RuntimeFunctions.MathSubtractInfo, left, right, typeof(NumberValue));
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(binaryOpNode));
+                    throw new CimbolInternalException("Unrecognized binary operation type.");
             }
         }
 
@@ -488,9 +484,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     return CodeGen.WhereMacro(arguments);
 
                 default:
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode007");
-#pragma warning restore CA1303
+                    throw new CimbolInternalException("Unrecognized macro type.");
             }
         }
 
@@ -517,7 +511,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     return CodeGen.UnaryOp(RuntimeFunctions.BooleanNotInfo, operand, typeof(BooleanValue));
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(unaryOpNode));
+                    throw new CimbolInternalException("Unrecognized unary operation type.");
             }
         }
     }

@@ -50,9 +50,9 @@ namespace Cimpress.Cimbol.Utilities
                 if (!_vertices.Contains(edge.Item1) || !_vertices.Contains(edge.Item2))
                 {
                     // All edges must reference vertices in the vertex set.
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode079");
-#pragma warning restore CA1303
+                    throw new ArgumentException(
+                        "One or more edges connect vertices not in the list vertices.",
+                        nameof(edges));
                 }
             }
 
@@ -308,54 +308,6 @@ namespace Cimpress.Cimbol.Utilities
         public Graph<T> Transpose()
         {
             return new Graph<T>(_vertices, _edges, _edgesOut, _edgesIn, _comparer);
-        }
-
-        private List<Tuple<T, int>> MeasureDepths()
-        {
-            var visited = new HashSet<T>(_comparer);
-
-            // Find all vertices that have no inbound edges. These make up the first set in the partial order.
-            var ordering = new List<Tuple<T, int>>(_vertices.Count);
-            foreach (var vertex in _vertices)
-            {
-                var hasVertex = _edgesIn.TryGetValue(vertex, out var adjacentVertices);
-
-                if (!hasVertex || adjacentVertices == null || adjacentVertices.Count == 0)
-                {
-                    ordering.Add(Tuple.Create(vertex, 0));
-                }
-            }
-
-            // Perform a breadth-first traversal of the graph, where the first breadth is every node at a depth of 0.
-            var orderingIndex = 0;
-            while (orderingIndex < ordering.Count)
-            {
-                var vertexOrder = ordering[orderingIndex];
-                orderingIndex += 1;
-
-                var vertex = vertexOrder.Item1;
-                var order = vertexOrder.Item2;
-                visited.Add(vertex);
-
-                var adjacentVertices = _edgesOut[vertex];
-                foreach (var adjacentVertex in adjacentVertices)
-                {
-                    if (!visited.Contains(adjacentVertex))
-                    {
-                        ordering.Add(Tuple.Create(adjacentVertex, order + 1));
-                    }
-                }
-            }
-
-            if (!visited.SetEquals(_vertices))
-            {
-                // The graph contains cycles.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode080");
-#pragma warning restore CA1303
-            }
-
-            return ordering;
         }
     }
 }

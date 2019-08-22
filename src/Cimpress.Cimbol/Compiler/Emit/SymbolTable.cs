@@ -87,9 +87,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 symbolTable = symbolTable.Parent;
             }
 
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode011");
-#pragma warning restore CA1303
+            throw new KeyNotFoundException("Identifier not found in the symbol table.");
         }
 
         /// <summary>

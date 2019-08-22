@@ -29,6 +29,25 @@ namespace Cimpress.Cimbol.Runtime.Types
                 throw new ArgumentNullException(nameof(value));
             }
 
+            // Validate that the function return type implements ILocalValue.
+            if (!typeof(ILocalValue).IsAssignableFrom(value.Method.ReturnType))
+            {
+                throw new ArgumentException("Delegate must return a type that implements ILocalValue.", nameof(value));
+            }
+
+            // Validate that each parameter type implements ILocalValue.
+            foreach (var parameterInfo in value.Method.GetParameters())
+            {
+                var parameterType = parameterInfo.ParameterType;
+
+                if (!typeof(ILocalValue).IsAssignableFrom(parameterType))
+                {
+                    throw new ArgumentException(
+                        "Delegate must only accept arguments of types that implements ILocalValue.",
+                        nameof(value));
+                }
+            }
+
             _argumentCount = value.Method.GetParameters().Length;
 
             _argumentMapper = argumentMapper ?? BuildArgumentMapper(value.Method);
@@ -119,27 +138,6 @@ namespace Cimpress.Cimbol.Runtime.Types
 
         private Func<ILocalValue[], object[]> BuildArgumentMapper(MethodInfo methodInfo)
         {
-            // Validate that the function return type implements ILocalValue.
-            if (!typeof(ILocalValue).IsAssignableFrom(methodInfo.ReturnType))
-            {
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode060");
-#pragma warning restore CA1303
-            }
-
-            // Validate that each parameter type implements ILocalValue.
-            foreach (var parameterInfo in methodInfo.GetParameters())
-            {
-                var parameterType = parameterInfo.ParameterType;
-
-                if (!typeof(ILocalValue).IsAssignableFrom(parameterType))
-                {
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode061");
-#pragma warning restore CA1303
-                }
-            }
-
             // Build an array of functions that convert their corresponding argument to the correct type.
             var castFunctions = methodInfo
                 .GetParameters()

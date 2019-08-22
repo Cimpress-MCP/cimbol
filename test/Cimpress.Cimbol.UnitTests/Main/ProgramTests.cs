@@ -78,7 +78,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             program.AddArgument("argument");
 
-            Assert.Throws<NotSupportedException>(() => program.AddArgument(resourceName));
+            Assert.Throws<ArgumentException>(() => program.AddArgument(resourceName));
         }
 
         [Test]
@@ -153,7 +153,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             program.AddConstant("constant", new NumberValue(1));
 
-            Assert.Throws<NotSupportedException>(() => program.AddConstant(resourceName, new NumberValue(1)));
+            Assert.Throws<ArgumentException>(() => program.AddConstant(resourceName, new NumberValue(1)));
         }
 
         [Test]
@@ -217,7 +217,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             program.AddModule("module");
 
-            Assert.Throws<NotSupportedException>(() => program.AddModule(resourceName));
+            Assert.Throws<ArgumentException>(() => program.AddModule(resourceName));
         }
 
         [Test]

@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
 
@@ -36,7 +37,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Utilities
         [TestCase("\"\n")]
         public void ShouldNot_DeserializeToString_When_NotString(string given)
         {
-            Assert.Throws<NotSupportedException>(() => StringSerializer.DeserializeString(given));
+            Assert.Throws<CimbolInternalException>(() => StringSerializer.DeserializeString(given));
         }
 
         [Test]

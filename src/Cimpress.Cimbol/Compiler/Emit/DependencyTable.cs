@@ -56,8 +56,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
             {
                 if (currentFormula == null || currentModule == null)
                 {
-                    // If this is reached, something has gone wrong.
-                    throw new NotSupportedException("ErrorCode001");
+                    throw new CimbolInternalException("An error occurred while generating the dependency tree.");
                 }
 
                 if (!dependencyTable.TryGetValue(currentFormula, out var dependencies))
@@ -91,7 +90,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 {
                     if (moduleName == null || formulaName == null || importDeclarationNode.ImportPath.Count != 2)
                     {
-                        throw new NotSupportedException("ErrorCode002");
+                        throw new CimbolInternalException("An error occurred while generating the dependency tree.");
                     }
 
                     if (!programNode.TryGetModuleDeclaration(moduleName, out var moduleNode))
@@ -113,7 +112,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 {
                     if (moduleName == null || importDeclarationNode.ImportPath.Count != 1)
                     {
-                        throw new NotSupportedException("ErrorCode003");
+                        throw new CimbolInternalException("An error occurred while generating the dependency tree.");
                     }
 
                     if (!programNode.TryGetModuleDeclaration(moduleName, out var moduleNode))

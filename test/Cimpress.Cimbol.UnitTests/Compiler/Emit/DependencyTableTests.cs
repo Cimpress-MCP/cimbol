@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.Emit;
@@ -325,7 +324,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1 });
 
-            Assert.Throws<NotSupportedException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolInternalException>(() => DependencyTable.Build(programNode));
         }
 
         [Test]
@@ -341,7 +340,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1 });
 
-            Assert.Throws<NotSupportedException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolInternalException>(() => DependencyTable.Build(programNode));
         }
     }
 }

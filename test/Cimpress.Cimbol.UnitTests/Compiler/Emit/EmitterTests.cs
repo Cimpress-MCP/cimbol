@@ -30,7 +30,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             var node = (IExpressionNode)null;
 
-            Assert.Throws<NotSupportedException>(() => _emitter.EmitExpression(node, _symbolTable));
+            Assert.Throws<CimbolInternalException>(() => _emitter.EmitExpression(node, _symbolTable));
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var value2 = new NumberValue(3);
             var node = new BinaryOpNode((BinaryOpType)(-1), new LiteralNode(value1), new LiteralNode(value2));
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => _emitter.EmitExpression(node, _symbolTable));
+            Assert.Throws<CimbolInternalException>(() => _emitter.EmitExpression(node, _symbolTable));
         }
 
         [Test]
@@ -573,7 +573,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var arguments = Array.Empty<IArgument>();
             var node = new MacroNode("cat", arguments);
 
-            Assert.Throws<NotSupportedException>(() => _emitter.EmitExpression(node, _symbolTable));
+            Assert.Throws<CimbolInternalException>(() => _emitter.EmitExpression(node, _symbolTable));
         }
 
         [Test]
@@ -600,7 +600,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var value1 = new NumberValue(5);
             var node = new UnaryOpNode((UnaryOpType)(-1), new LiteralNode(value1));
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => _emitter.EmitExpression(node, _symbolTable));
+            Assert.Throws<CimbolInternalException>(() => _emitter.EmitExpression(node, _symbolTable));
         }
 
         private static IEnumerable<TestCaseData> BinaryOpNodeTestCases()

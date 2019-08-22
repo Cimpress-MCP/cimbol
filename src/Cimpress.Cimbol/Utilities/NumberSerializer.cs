@@ -1,5 +1,5 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Utilities
 {
@@ -11,19 +11,16 @@ namespace Cimpress.Cimbol.Utilities
         /// <summary>
         /// Deserialize a string containing a number into a number value.
         /// </summary>
-        /// <param name="numberSource">A string container a number.</param>
+        /// <param name="source">A string container a number.</param>
         /// <returns>A number value.</returns>
-        public static decimal DeserializeNumber(string numberSource)
+        public static decimal DeserializeNumber(string source)
         {
-            if (decimal.TryParse(numberSource, out var number))
+            if (TryDeserializeNumber(source, out var result))
             {
-                return number;
+                return result;
             }
 
-            // Expected a number but received something else.
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode082");
-#pragma warning restore CA1303
+            throw new CimbolInternalException("There was an error deserializing a number.");
         }
 
         /// <summary>
@@ -34,6 +31,17 @@ namespace Cimpress.Cimbol.Utilities
         public static string SerializeNumber(decimal numberSource)
         {
             return numberSource.ToString(CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Try to deserialize a some source into a number value.
+        /// </summary>
+        /// <param name="source">The source to deserialize.</param>
+        /// <param name="result">The result of deserializing the provided source.</param>
+        /// <returns>True if the deserialization was success and false otherwise.</returns>
+        public static bool TryDeserializeNumber(string source, out decimal result)
+        {
+            return decimal.TryParse(source, out result);
         }
     }
 }

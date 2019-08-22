@@ -493,7 +493,7 @@ namespace Cimpress.Cimbol.Exceptions
             Position end,
             string branchName)
         {
-            const string message = "An unrecognized branch was found in a a where-expression: {0}.";
+            const string message = "An unrecognized branch was found in a where-expression: {0}.";
 
             var formattedMessage = string.Format(
                 CultureInfo.InvariantCulture,

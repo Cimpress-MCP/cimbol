@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Utilities
 {
@@ -13,26 +14,16 @@ namespace Cimpress.Cimbol.Utilities
         /// <summary>
         /// Deserialize a string containing a string into a string value.
         /// </summary>
-        /// <param name="stringSource">A string container a string.</param>
-        /// <returns>A string value.</returns>
-        public static string DeserializeString(string stringSource)
+        /// <param name="source">The source to deserialize.</param>
+        /// <returns>The result fo deserializing the provided source.</returns>
+        public static string DeserializeString(string source)
         {
-            if (stringSource == null)
+            if (TryDeserializeString(source, out var result))
             {
-                throw new ArgumentNullException(nameof(stringSource));
+                return result;
             }
 
-            if (!StringRegex.IsMatch(stringSource))
-            {
-#pragma warning disable CA1303
-                // Expected a number but received something else.
-                throw new NotSupportedException("ErrorCode083");
-#pragma warning restore CA1303
-            }
-
-            var unquoted = stringSource.Substring(1, stringSource.Length - 2);
-            var unescaped = StringEscaper.UnescapeString(unquoted);
-            return unescaped;
+            throw new CimbolInternalException("There was an error deserializing a string.");
         }
 
         /// <summary>
@@ -47,9 +38,32 @@ namespace Cimpress.Cimbol.Utilities
                 throw new ArgumentNullException(nameof(stringSource));
             }
 
-            var escaped = StringEscaper.EscapeString(stringSource);
-            var quoted = $"\"{escaped}\"";
-            return quoted;
+            return $"\"{StringEscaper.EscapeString(stringSource)}\"";
+        }
+
+        /// <summary>
+        /// Try to deserialize a some source into a string value.
+        /// </summary>
+        /// <param name="source">The source to deserialize.</param>
+        /// <param name="result">The result of deserializing the provided source.</param>
+        /// <returns>True if the deserialization was success and false otherwise.</returns>
+        public static bool TryDeserializeString(string source, out string result)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (!StringRegex.IsMatch(source))
+            {
+                result = null;
+
+                return false;
+            }
+
+            result = StringEscaper.UnescapeString(source.Substring(1, source.Length - 2));
+
+            return true;
         }
     }
 }

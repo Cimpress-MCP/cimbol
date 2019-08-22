@@ -54,9 +54,7 @@ namespace Cimpress.Cimbol
             if (_arguments.ContainsKey(argumentName))
             {
                 // Disallow duplicate resource names.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode047");
-#pragma warning restore CA1303
+                throw new ArgumentException("Duplicate argument name added to program.", nameof(argumentName));
             }
 
             var argument = new Argument(this, argumentName);
@@ -82,9 +80,7 @@ namespace Cimpress.Cimbol
             if (_constants.ContainsKey(constantName))
             {
                 // Disallow duplicate resource names.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode048");
-#pragma warning restore CA1303
+                throw new ArgumentException("Duplicate constant name added to program.", nameof(constantName));
             }
 
             var constant = new Constant(this, constantName, constantValue);
@@ -109,9 +105,7 @@ namespace Cimpress.Cimbol
             if (_modules.ContainsKey(moduleName))
             {
                 // Disallow duplicate resource names.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode049");
-#pragma warning restore CA1303
+                throw new ArgumentException("Duplicate module name added to program.", nameof(moduleName));
             }
 
             var module = new Module(this, moduleName);

@@ -114,9 +114,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
                 return argument;
             }
 
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode035");
-#pragma warning restore CA1303
+            throw new KeyNotFoundException("Argument declaration not found in the program.");
         }
 
         /// <summary>
@@ -131,9 +129,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
                 return constant;
             }
 
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode036");
-#pragma warning restore CA1303
+            throw new KeyNotFoundException("Constant declaration not found in the program.");
         }
 
         /// <summary>
@@ -147,10 +143,8 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
             {
                 return module;
             }
-
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode037");
-#pragma warning restore CA1303
+            
+            throw new KeyNotFoundException("Module declaration not found in the program.");
         }
 
         /// <inheritdoc cref="object.ToString"/>

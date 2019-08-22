@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Compiler.Parse
 {
@@ -155,9 +156,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                     return BinaryOpType.NotEqual;
 
                 default:
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode015");
-#pragma warning restore CA1303
+                    throw new CimbolInternalException("Unrecognized token type.");
             }
         }
     }

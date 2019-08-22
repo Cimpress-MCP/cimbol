@@ -83,7 +83,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var module = program.AddModule("module");
             module.AddFormula("formula", "1 + 2");
-            Assert.Throws<NotSupportedException>(() => module.AddFormula("formula", "2 + 3"));
+            Assert.Throws<ArgumentException>(() => module.AddFormula("formula", "2 + 3"));
         }
 
         [Test]
@@ -92,7 +92,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var module = program.AddModule("module");
             module.AddFormula("formula", "1 + 2");
-            Assert.Throws<NotSupportedException>(() => module.AddFormula("FORMULA", "2 + 3"));
+            Assert.Throws<ArgumentException>(() => module.AddFormula("FORMULA", "2 + 3"));
         }
 
         [Test]
@@ -170,7 +170,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
         {
             var program = new Program();
             var module = program.AddModule("module");
-            Assert.Throws<NotSupportedException>(() => module.AddReference("x", module));
+            Assert.Throws<ArgumentException>(() => module.AddReference("x", module));
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var resource = programA.AddArgument("argument");
             var programB = new Program();
             var module = programB.AddModule("module");
-            Assert.Throws<NotSupportedException>(() => module.AddReference("resource", resource));
+            Assert.Throws<ArgumentException>(() => module.AddReference("resource", resource));
         }
 
         [Test]
@@ -191,7 +191,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var resourceB = program.AddArgument("argument b");
             var module = program.AddModule("module");
             module.AddReference("argument", resourceA);
-            Assert.Throws<NotSupportedException>(() => module.AddReference("argument", resourceB));
+            Assert.Throws<ArgumentException>(() => module.AddReference("argument", resourceB));
         }
 
         [Test]
@@ -200,7 +200,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var module = program.AddModule("module");
             var resource = module.AddFormula("formula", "1 + 2");
-            Assert.Throws<NotSupportedException>(() => module.AddReference("output", resource));
+            Assert.Throws<ArgumentException>(() => module.AddReference("output", resource));
         }
 
         [Test]
@@ -210,7 +210,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var moduleA = program.AddModule("module a");
             var moduleB = program.AddModule("module b");
             var resource = moduleB.AddFormula("formula", "1 + 2", FormulaFlags.Private);
-            Assert.Throws<NotSupportedException>(() => moduleA.AddReference("output", resource));
+            Assert.Throws<ArgumentException>(() => moduleA.AddReference("output", resource));
         }
 
         [Test]
@@ -220,7 +220,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var resource = program.AddArgument("argument");
             var module = program.AddModule("module");
             module.AddReference("formula", resource);
-            Assert.Throws<NotSupportedException>(() => module.AddFormula("formula", "1 + 2"));
+            Assert.Throws<ArgumentException>(() => module.AddFormula("formula", "1 + 2"));
         }
 
         [Test]
@@ -230,7 +230,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var resource = program.AddArgument("argument");
             var module = program.AddModule("module");
             module.AddFormula("formula", "1 + 2");
-            Assert.Throws<NotSupportedException>(() => module.AddReference("formula", resource));
+            Assert.Throws<ArgumentException>(() => module.AddReference("formula", resource));
         }
 
         [Test]

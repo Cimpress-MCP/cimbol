@@ -1,4 +1,5 @@
 ﻿using System;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
 
@@ -27,7 +28,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Utilities
         [TestCase("frog1.2")]
         public void ShouldNot_SerializeToNumber_When_NotNumber(string given)
         {
-            Assert.Throws<NotSupportedException>(() => NumberSerializer.DeserializeNumber(given));
+            Assert.Throws<CimbolInternalException>(() => NumberSerializer.DeserializeNumber(given));
         }
 
         [Test]

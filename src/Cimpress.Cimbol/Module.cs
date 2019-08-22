@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol
 {
@@ -49,12 +50,22 @@ namespace Cimpress.Cimbol
         /// <returns>The newly created formula.</returns>
         public Formula AddFormula(string formulaName, string formulaValue, FormulaFlags flags = FormulaFlags.Public)
         {
+            if (formulaName == null)
+            {
+                // Formula names cannot be null.
+                throw new ArgumentNullException(nameof(formulaName));
+            }
+
+            if (formulaValue == null)
+            {
+                // Formulas cannot be null.
+                throw new ArgumentNullException(nameof(formulaValue));
+            }
+
             if (_formulas.ContainsKey(formulaName) || _references.ContainsKey(formulaName))
             {
                 // Disallow adding duplicate references to a module.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode039");
-#pragma warning restore CA1303
+                throw new ArgumentException("Duplicate formula name added to module.", nameof(formulaName));
             }
 
             var formula = new Formula(this, formulaName, formulaValue, flags);
@@ -81,23 +92,20 @@ namespace Cimpress.Cimbol
 
             if (resource == null)
             {
+                // Resources cannot be null.
                 throw new ArgumentNullException(nameof(resource));
             }
 
             if (!ReferenceEquals(Program, resource.Program))
             {
-                // Disallow adding a reference to a resource outside of the program.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode040");
-#pragma warning restore CA1303
+                // Disallow adding duplicate references to a module.
+                throw new ArgumentException("Duplicate reference name added to module.", nameof(referenceName));
             }
 
             if (ReferenceEquals(this, resource))
             {
                 // Disallow adding a self-reference to a module within that module.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode041");
-#pragma warning restore CA1303
+                throw new ArgumentException("Cannot add a module as a reference to itself.", nameof(resource));
             }
 
             if (resource is Formula formula)
@@ -105,26 +113,26 @@ namespace Cimpress.Cimbol
                 if (ReferenceEquals(this, formula.Module))
                 {
                     // Disallow adding a reference to a formula within the module that owns the formula.
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode042");
-#pragma warning restore CA1303
+                    throw new ArgumentException(
+                        "Cannot add a reference to a formula within the module that owns the formula.",
+                        nameof(resource));
                 }
 
                 if (!formula.IsReferenceable)
                 {
                     // Disallow adding a reference to a formula when that formula is not referenceable.
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode043");
-#pragma warning restore CA1303
+                    throw new ArgumentException(
+                        "Cannot add a reference to a formula that is not referenceable.",
+                        nameof(resource));
                 }
             }
 
             if (_references.ContainsKey(referenceName))
             {
                 // Disallow adding duplicate references to a module.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode044");
-#pragma warning restore CA1303
+                throw new ArgumentException(
+                    "Cannot add a duplicate reference to a resource within a module.",
+                    nameof(resource));
             }
 
             _references[referenceName] = resource;
@@ -185,9 +193,7 @@ namespace Cimpress.Cimbol
                     return new[] { module.Name };
 
                 default:
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode045");
-#pragma warning restore CA1303
+                    throw new CimbolInternalException("Unrecognized resource type.");
             }
         }
 
@@ -208,9 +214,7 @@ namespace Cimpress.Cimbol
                     return ImportType.Module;
 
                 default:
-#pragma warning disable CA1303
-                    throw new NotSupportedException("ErrorCode046");
-#pragma warning restore CA1303
+                    throw new CimbolInternalException("Unrecognized resource type.");
             }
         }
     }

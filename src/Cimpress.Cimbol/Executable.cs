@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 
 namespace Cimpress.Cimbol
@@ -40,9 +41,7 @@ namespace Cimpress.Cimbol
 
             if (arguments.Length != _argumentCount)
             {
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode038");
-#pragma warning restore CA1303
+                throw new ArgumentCountException(_argumentCount, arguments.Length);
             }
 
             var castArguments = arguments.Cast<object>().ToArray();

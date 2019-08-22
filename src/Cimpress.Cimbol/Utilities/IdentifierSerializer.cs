@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol.Utilities
 {
@@ -15,30 +16,16 @@ namespace Cimpress.Cimbol.Utilities
         /// <summary>
         /// Deserialize a string containing an identifier into an identifier value.
         /// </summary>
-        /// <param name="identifierSource">A string container an identifier.</param>
+        /// <param name="source">A string container an identifier.</param>
         /// <returns>An identifier value.</returns>
-        public static string DeserializeIdentifier(string identifierSource)
+        public static string DeserializeIdentifier(string source)
         {
-            if (identifierSource == null)
+            if (TryDeserializeIdentifier(source, out var result))
             {
-                throw new ArgumentNullException(nameof(identifierSource));
+                return result;
             }
 
-            if (BareIdentifierRegex.IsMatch(identifierSource))
-            {
-                return identifierSource;
-            }
-
-            if (EscapedIdentifierRegex.IsMatch(identifierSource))
-            {
-                var unquoted = identifierSource.Substring(1, identifierSource.Length - 2);
-                var unescaped = StringEscaper.UnescapeString(unquoted);
-                return unescaped;
-            }
-
-#pragma warning disable CA1303
-            throw new NotSupportedException("ErrorCode081");
-#pragma warning restore CA1303
+            throw new CimbolInternalException("There was an error deserializing an identifier.");
         }
 
         /// <summary>
@@ -61,6 +48,38 @@ namespace Cimpress.Cimbol.Utilities
             var escaped = StringEscaper.EscapeString(identifierSource);
             var quoted = $"'{escaped}'";
             return quoted;
+        }
+
+        /// <summary>
+        /// Try to deserialize a some source into an identifier.
+        /// </summary>
+        /// <param name="source">The source to deserialize.</param>
+        /// <param name="result">The result of deserializing the provided source.</param>
+        /// <returns>True if the deserialization was success and false otherwise.</returns>
+        public static bool TryDeserializeIdentifier(string source, out string result)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (BareIdentifierRegex.IsMatch(source))
+            {
+                result = source;
+
+                return true;
+            }
+
+            if (EscapedIdentifierRegex.IsMatch(source))
+            {
+                result = StringEscaper.UnescapeString(source.Substring(1, source.Length - 2));
+
+                return true;
+            }
+
+            result = null;
+
+            return false;
         }
     }
 }

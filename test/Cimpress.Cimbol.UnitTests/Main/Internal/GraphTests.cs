@@ -13,7 +13,7 @@ namespace Cimpress.Cimbol.UnitTests.Main.Internal
             var vertices = new[] { 0 };
             var edges = new[] { Tuple.Create(0, 1) };
 
-            Assert.Throws<NotSupportedException>(() =>
+            Assert.Throws<ArgumentException>(() =>
             {
                 var graph = new Graph<int>(vertices, edges);
             });

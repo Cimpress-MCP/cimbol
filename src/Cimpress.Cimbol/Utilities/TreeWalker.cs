@@ -10,9 +10,9 @@ namespace Cimpress.Cimbol.Utilities
     /// </summary>
     public class TreeWalker
     {
-        private readonly IDictionary<Type, Action<ISyntaxNode>> _enterFunctions;
+        private readonly IDictionary<Type, List<Action<ISyntaxNode>>> _enterFunctions;
 
-        private readonly IDictionary<Type, Action<ISyntaxNode>> _exitFunctions;
+        private readonly IDictionary<Type, List<Action<ISyntaxNode>>> _exitFunctions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TreeWalker"/> class.
@@ -20,9 +20,9 @@ namespace Cimpress.Cimbol.Utilities
         /// <param name="rootNode">The node to start the traversal at.</param>
         public TreeWalker(ISyntaxNode rootNode)
         {
-            _enterFunctions = new Dictionary<Type, Action<ISyntaxNode>>();
+            _enterFunctions = new Dictionary<Type, List<Action<ISyntaxNode>>>();
 
-            _exitFunctions = new Dictionary<Type, Action<ISyntaxNode>>();
+            _exitFunctions = new Dictionary<Type, List<Action<ISyntaxNode>>>();
 
             RootNode = rootNode;
         }
@@ -102,15 +102,18 @@ namespace Cimpress.Cimbol.Utilities
         {
             var nodeType = typeof(T);
 
-            if (_enterFunctions.ContainsKey(nodeType))
-            {
-                // Disallow adding duplicate handlers for the same node type.
-#pragma warning disable CA1303
-                throw new NotSupportedException("ErrorCode084");
-#pragma warning restore CA1303
-            }
+            void Handler(ISyntaxNode node) => enterFunction(node as T);
 
-            _enterFunctions[nodeType] = node => enterFunction(node as T);
+            if (_enterFunctions.TryGetValue(nodeType, out var handlers))
+            {
+                handlers.Add(Handler);
+            }
+            else
+            {
+                handlers = new List<Action<ISyntaxNode>> { Handler };
+
+                _enterFunctions[nodeType] = handlers;
+            }
 
             return this;
         }
@@ -126,15 +129,18 @@ namespace Cimpress.Cimbol.Utilities
         {
             var nodeType = typeof(T);
 
-            if (_exitFunctions.ContainsKey(nodeType))
-            {
-#pragma warning disable CA1303
-                // Disallow adding duplicate handlers for the same node type.
-                throw new NotSupportedException("ErrorCode085");
-#pragma warning restore CA1303
-            }
+            void Handler(ISyntaxNode node) => exitFunction(node as T);
 
-            _exitFunctions[nodeType] = node => exitFunction(node as T);
+            if (_exitFunctions.TryGetValue(nodeType, out var handlers))
+            {
+                handlers.Add(Handler);
+            }
+            else
+            {
+                handlers = new List<Action<ISyntaxNode>> { Handler };
+
+                _exitFunctions[nodeType] = handlers;
+            }
 
             return this;
         }
@@ -142,8 +148,6 @@ namespace Cimpress.Cimbol.Utilities
         /// <summary>
         /// Visit each node in the syntax tree, calling functions whenever a node is entered or exited.
         /// </summary>
-        /// <param name="onEnter">The callback for when a node is entered.</param>
-        /// <param name="onExit">The callback for when a node is exited.</param>
         public void Visit()
         {
             var nodeStack = new Stack<Tuple<ISyntaxNode, TreeAction>>();
@@ -159,9 +163,9 @@ namespace Cimpress.Cimbol.Utilities
 
                 if (action == TreeAction.Enter)
                 {
-                    if (_enterFunctions.TryGetValue(nodeType, out var handler))
+                    if (_enterFunctions.TryGetValue(nodeType, out var handlers))
                     {
-                        handler(node);
+                        handlers.ForEach(handler => handler(node));
                     }
 
                     foreach (var childNode in node.ChildrenReverse())
@@ -170,9 +174,9 @@ namespace Cimpress.Cimbol.Utilities
                         nodeStack.Push(Tuple.Create(childNode, TreeAction.Enter));
                     }
                 }
-                else if (_exitFunctions.TryGetValue(nodeType, out var handler))
+                else if (_exitFunctions.TryGetValue(nodeType, out var handlers))
                 {
-                    handler(node);
+                    handlers.ForEach(handler => handler(node));
                 }
             }
         }
