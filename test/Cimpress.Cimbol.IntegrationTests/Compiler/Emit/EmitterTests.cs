@@ -18,9 +18,10 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             });
             var emitter = new Emitter();
             var node = new AccessNode(new LiteralNode(value), "x");
-
-            var expression = emitter.EmitExpression(node, new SymbolTable());
+            var symbolRegistry = new SymbolRegistry();
+            var expression = emitter.EmitExpression(node, new SymbolTable(symbolRegistry));
             var function = EmitTestUtilities.WrapAndCompile(expression);
+
             var result = function() as NumberValue;
 
             Assert.That(result, Is.Not.Null);
@@ -34,9 +35,10 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var value2 = new NumberValue(3);
             var emitter = new Emitter();
             var node = new BinaryOpNode(BinaryOpType.Add, new LiteralNode(value1), new LiteralNode(value2));
-
-            var expression = emitter.EmitExpression(node, new SymbolTable());
+            var symbolRegistry = new SymbolRegistry();
+            var expression = emitter.EmitExpression(node, new SymbolTable(symbolRegistry));
             var function = EmitTestUtilities.WrapAndCompile(expression);
+
             var result = function() as NumberValue;
 
             Assert.That(result, Is.Not.Null);
@@ -48,9 +50,10 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
         {
             var emitter = new Emitter();
             var node = new LiteralNode(new NumberValue(5));
-
-            var expression = emitter.EmitExpression(node, new SymbolTable());
+            var symbolRegistry = new SymbolRegistry();
+            var expression = emitter.EmitExpression(node, new SymbolTable(symbolRegistry));
             var function = EmitTestUtilities.WrapAndCompile(expression);
+
             var result = function() as NumberValue;
 
             Assert.That(result, Is.Not.Null);

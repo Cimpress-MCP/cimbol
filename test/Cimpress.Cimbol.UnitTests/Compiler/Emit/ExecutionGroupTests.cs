@@ -12,7 +12,13 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void Should_BeMarkedAsAsynchronous_When_ContainsAsynchronousStep()
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
-            var executionStep1 = new ExecutionStep(formulaNode1, ExecutionStepType.Asynchronous);
+            var symbolTable = new SymbolTable(new SymbolRegistry());
+            var executionStep1 = new ExecutionStep(
+                1,
+                formulaNode1,
+                ExecutionStepType.Asynchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
             var executionGroup = new ExecutionGroup(new[] { executionStep1 });
 
             var result = executionGroup.IsAsynchronous;
@@ -24,7 +30,13 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void ShouldNot_BeMarkedAsAsynchronous_When_ContainsSynchronousStep()
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
-            var executionStep1 = new ExecutionStep(formulaNode1, ExecutionStepType.Synchronous);
+            var symbolTable = new SymbolTable(new SymbolRegistry());
+            var executionStep1 = new ExecutionStep(
+                1,
+                formulaNode1,
+                ExecutionStepType.Synchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
             var executionGroup = new ExecutionGroup(new[] { executionStep1 });
 
             var result = executionGroup.IsAsynchronous;
@@ -37,8 +49,19 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
             var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
-            var executionStep1 = new ExecutionStep(formulaNode1, ExecutionStepType.Synchronous);
-            var executionStep2 = new ExecutionStep(formulaNode2, ExecutionStepType.Synchronous);
+            var symbolTable = new SymbolTable(new SymbolRegistry());
+            var executionStep1 = new ExecutionStep(
+                1,
+                formulaNode1,
+                ExecutionStepType.Synchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
+            var executionStep2 = new ExecutionStep(
+                2,
+                formulaNode2,
+                ExecutionStepType.Synchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
             var executionGroup1 = new ExecutionGroup(new[] { executionStep1 });
             var executionGroup2 = new ExecutionGroup(new[] { executionStep2 });
 
@@ -55,8 +78,20 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
             var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
-            var executionStep1 = new ExecutionStep(formulaNode1, ExecutionStepType.Synchronous);
-            var executionStep2 = new ExecutionStep(formulaNode2, ExecutionStepType.Asynchronous);
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
+            var executionStep1 = new ExecutionStep(
+                1,
+                formulaNode1,
+                ExecutionStepType.Synchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
+            var executionStep2 = new ExecutionStep(
+                2,
+                formulaNode2,
+                ExecutionStepType.Asynchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
             var executionGroup1 = new ExecutionGroup(new[] { executionStep1 });
             var executionGroup2 = new ExecutionGroup(new[] { executionStep2 });
 
@@ -73,8 +108,20 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
             var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
-            var executionStep1 = new ExecutionStep(formulaNode1, ExecutionStepType.Asynchronous);
-            var executionStep2 = new ExecutionStep(formulaNode2, ExecutionStepType.Synchronous);
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
+            var executionStep1 = new ExecutionStep(
+                1,
+                formulaNode1,
+                ExecutionStepType.Asynchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
+            var executionStep2 = new ExecutionStep(
+                2,
+                formulaNode2,
+                ExecutionStepType.Synchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
             var executionGroup1 = new ExecutionGroup(new[] { executionStep1 });
             var executionGroup2 = new ExecutionGroup(new[] { executionStep2 });
 
@@ -94,8 +141,20 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
             var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
-            var executionStep1 = new ExecutionStep(formulaNode1, ExecutionStepType.Asynchronous);
-            var executionStep2 = new ExecutionStep(formulaNode2, ExecutionStepType.Asynchronous);
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
+            var executionStep1 = new ExecutionStep(
+                1,
+                formulaNode1,
+                ExecutionStepType.Asynchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
+            var executionStep2 = new ExecutionStep(
+                2,
+                formulaNode2,
+                ExecutionStepType.Asynchronous,
+                Enumerable.Empty<ExecutionStep>(),
+                symbolTable);
             var executionGroup1 = new ExecutionGroup(new[] { executionStep1 });
             var executionGroup2 = new ExecutionGroup(new[] { executionStep2 });
 

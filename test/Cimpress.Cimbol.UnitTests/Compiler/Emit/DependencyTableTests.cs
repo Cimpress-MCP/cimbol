@@ -20,7 +20,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 Enumerable.Empty<ModuleDeclarationNode>());
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = Enumerable.Empty<ISet<IDeclarationNode>>();
             Assert.That(result.MinimalPartialOrder(), Is.EqualTo(expected));
@@ -39,7 +39,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = new[] { new[] { formulaNode }.ToImmutableHashSet() };
             Assert.That(result.MinimalPartialOrder(), Is.EqualTo(expected));
@@ -59,7 +59,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = new[] { new[] { formulaNode1, formulaNode2 }.ToImmutableHashSet() };
             Assert.That(result.MinimalPartialOrder(), Is.EqualTo(expected));
@@ -79,7 +79,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = new[]
             {
@@ -105,7 +105,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1, moduleNode2 });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = new[]
             {
@@ -132,7 +132,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1, moduleNode2 });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = new[]
             {
@@ -156,7 +156,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = new[] { new[] { formulaNode1 }.ToImmutableHashSet() };
             Assert.That(result.MinimalPartialOrder(), Is.EqualTo(expected));
@@ -175,7 +175,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1 });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = new[] { new[] { importNode1 }.ToImmutableHashSet() };
             Assert.That(result.MinimalPartialOrder(), Is.EqualTo(expected));
@@ -198,7 +198,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1, moduleNode2 });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = new[] { new[] { importNode1 }.ToImmutableHashSet() };
             Assert.That(result.MinimalPartialOrder(), Is.EqualTo(expected));
@@ -217,7 +217,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             var expected = new[] { new[] { importNode1 }.ToImmutableHashSet() };
             Assert.That(result.MinimalPartialOrder(), Is.EqualTo(expected));
@@ -237,7 +237,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1, moduleNode2 });
 
-            var result = DependencyTable.Build(programNode);
+            var result = new DependencyTable(programNode);
 
             Assert.That(result, Is.Not.Null);
         }
@@ -256,7 +256,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
 
-            Assert.Throws<CimbolCompilationException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolCompilationException>(() => new DependencyTable(programNode));
         }
 
         [Test]
@@ -274,7 +274,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
 
-            Assert.Throws<CimbolCompilationException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolCompilationException>(() => new DependencyTable(programNode));
         }
 
         [Test]
@@ -291,7 +291,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1, moduleNode2 });
 
-            Assert.Throws<CimbolCompilationException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolCompilationException>(() => new DependencyTable(programNode));
         }
 
         [Test]
@@ -308,7 +308,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1, moduleNode2 });
 
-            Assert.Throws<CimbolCompilationException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolCompilationException>(() => new DependencyTable(programNode));
         }
 
         [Test]
@@ -324,7 +324,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1 });
 
-            Assert.Throws<CimbolInternalException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolInternalException>(() => new DependencyTable(programNode));
         }
 
         [Test]
@@ -340,7 +340,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode1 });
 
-            Assert.Throws<CimbolInternalException>(() => DependencyTable.Build(programNode));
+            Assert.Throws<CimbolInternalException>(() => new DependencyTable(programNode));
         }
     }
 }

@@ -17,18 +17,61 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <summary>
         /// Initializes a new instance of the <see cref="DependencyTable"/> class.
         /// </summary>
+        /// <param name="programNode">The program node to build the dependency table from.</param>
+        public DependencyTable(ProgramNode programNode)
+        {
+            if (programNode == null)
+            {
+                throw new ArgumentNullException(nameof(programNode));
+            }
+
+            _dependencyGraph = BuildDependencyGraph(programNode);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependencyTable"/> class.
+        /// </summary>
         /// <param name="dependencyGraph">The graph of dependencies between declarations.</param>
-        public DependencyTable(Graph<IDeclarationNode> dependencyGraph)
+        internal DependencyTable(Graph<IDeclarationNode> dependencyGraph)
         {
             _dependencyGraph = dependencyGraph ?? throw new ArgumentNullException(nameof(dependencyGraph));
         }
 
         /// <summary>
-        /// Builds a execution plan from an abstract syntax tree.
+        /// Get the dependencies for a given declaration node.
         /// </summary>
-        /// <param name="programNode">The root of the abstract syntax tree.</param>
-        /// <returns>An execution plan.</returns>
-        public static DependencyTable Build(ProgramNode programNode)
+        /// <param name="declarationNode">The declaration node to get the dependencies of.</param>
+        /// <returns>Either a list of the dependencies of the given declaration node, or an empty collection.</returns>
+        public IReadOnlyCollection<IDeclarationNode> GetDependencies(IDeclarationNode declarationNode)
+        {
+            return _dependencyGraph.AdjacentsIn(declarationNode);
+        }
+
+        /// <summary>
+        /// Get the dependents for a given declaration node.
+        /// </summary>
+        /// <param name="declarationNode">The declaration node to get the dependents of.</param>
+        /// <returns>Either a list of the dependents of the given declaration node, or an empty collection.</returns>
+        public IReadOnlyCollection<IDeclarationNode> GetDependents(IDeclarationNode declarationNode)
+        {
+            return _dependencyGraph.AdjacentsOut(declarationNode);
+        }
+
+        /// <summary>
+        /// Determines the partial ordering of the given declarations such that there are as few partial orderings as
+        /// possible.
+        /// A partial ordering of dependencies is a partial ordering where each declaration that is a dependent of
+        /// another declaration is considered less than the declaration that depends on it.
+        /// </summary>
+        /// <returns>
+        /// A list of sets of declarations, where each set has elements less than the elements after it.
+        /// </returns>
+        public IReadOnlyCollection<ISet<IDeclarationNode>> MinimalPartialOrder()
+        {
+            return _dependencyGraph.MinimalPartialOrder();
+        }
+
+        private static Graph<IDeclarationNode> BuildDependencyGraph(ProgramNode programNode)
         {
             var dependencyTable = new Dictionary<IDeclarationNode, HashSet<IDeclarationNode>>();
 
@@ -161,21 +204,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 throw CimbolCompilationException.CycleError(null);
             }
 
-            return new DependencyTable(graph);
-        }
-
-        /// <summary>
-        /// Determines the partial ordering of the given declarations such that there are as few partial orderings as
-        /// possible.
-        /// A partial ordering of dependencies is a partial ordering where each declaration that is a dependent of
-        /// another declaration is considered less than the declaration that depends on it.
-        /// </summary>
-        /// <returns>
-        /// A list of sets of declarations, where each set has elements less than the elements after it.
-        /// </returns>
-        public IReadOnlyCollection<ISet<IDeclarationNode>> MinimalPartialOrder()
-        {
-            return _dependencyGraph.MinimalPartialOrder();
+            return graph;
         }
     }
 }

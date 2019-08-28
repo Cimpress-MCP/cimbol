@@ -228,7 +228,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
             for (var i = 0; i < modules.Length; ++i)
             {
                 var key = Expression.Constant(modules[i].Name);
-                var value = symbolRegistry.Modules[modules[i].Name].Variable;
+                var value = symbolRegistry.Modules.Resolve(modules[i].Name).Variable;
                 elements[i] = Expression.ElementInit(StandardFunctions.DictionaryAddInfo, key, value);
             }
 

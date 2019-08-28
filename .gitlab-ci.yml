@@ -89,7 +89,7 @@ test:prd:
 
 release:prd:
   <<: *tags-common
-  image:
+  image: mcr.microsoft.com/dotnet/core/sdk:2.1
   stage: release
   dependencies:
     - build:prd

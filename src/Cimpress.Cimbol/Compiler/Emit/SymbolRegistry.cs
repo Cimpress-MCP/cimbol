@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Runtime.Types;
 using Cimpress.Cimbol.Utilities;
@@ -12,106 +11,191 @@ namespace Cimpress.Cimbol.Compiler.Emit
     /// </summary>
     public class SymbolRegistry
     {
+        private readonly Dictionary<IDeclarationNode, Symbol> _exportSymbols;
+
+        private readonly Dictionary<IDeclarationNode, SymbolTable> _symbolTables;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SymbolRegistry"/> class.
         /// </summary>
-        /// <param name="arguments">The arguments in the program.</param>
-        /// <param name="constants">The constants in the program.</param>
-        /// <param name="modules">The modules in the program.</param>
-        /// <param name="symbolTables">The symbol tables in the program.</param>
-        public SymbolRegistry(
-            IDictionary<string, Symbol> arguments,
-            IDictionary<string, Symbol> constants,
-            IDictionary<string, Symbol> modules,
-            IDictionary<IDeclarationNode, SymbolTable> symbolTables)
+        public SymbolRegistry()
         {
-            Arguments = arguments.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+            Arguments = new SymbolTable(this);
 
-            Constants = constants.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+            Constants = new SymbolTable(this);
 
-            Modules = modules.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+            Modules = new SymbolTable(this);
 
-            SymbolTables = symbolTables.ToImmutableDictionary();
+            SkipList = new Symbol("skipList", typeof(bool[]));
+
+            _exportSymbols = new Dictionary<IDeclarationNode, Symbol>();
+
+            _symbolTables = new Dictionary<IDeclarationNode, SymbolTable>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SymbolRegistry"/> class.
+        /// </summary>
+        /// <param name="programNode">The program node to initialize the symbol registry from.</param>
+        public SymbolRegistry(ProgramNode programNode)
+        {
+            if (programNode == null)
+            {
+                throw new ArgumentNullException(nameof(programNode));
+            }
+
+            Arguments = new SymbolTable(this);
+
+            Constants = new SymbolTable(this);
+
+            Modules = new SymbolTable(this);
+
+            SkipList = new Symbol("skipList", typeof(bool[]));
+
+            _exportSymbols = new Dictionary<IDeclarationNode, Symbol>();
+
+            _symbolTables = new Dictionary<IDeclarationNode, SymbolTable>();
+
+            Symbol exportSymbol = null;
+
+            var tableStack = new Stack<SymbolTable>();
+
+            var treeWalker = new TreeWalker(programNode);
+
+            tableStack.Push(new SymbolTable(this));
+
+            treeWalker
+                .OnEnter<ArgumentDeclarationNode>(argumentDeclarationNode =>
+                {
+                    var name = argumentDeclarationNode.Name;
+
+                    Arguments.Define(name, typeof(ILocalValue));
+                })
+                .OnEnter<ConstantDeclarationNode>(constantDeclarationNode =>
+                {
+                    var name = constantDeclarationNode.Name;
+
+                    Constants.Define(name, typeof(ILocalValue));
+                })
+                .OnEnter<FormulaDeclarationNode>(formulaDeclarationNode =>
+                {
+                    var symbolTable = tableStack.Peek();
+
+                    symbolTable.Define(formulaDeclarationNode.Name, typeof(ILocalValue));
+
+                    _exportSymbols.Add(formulaDeclarationNode, exportSymbol);
+
+                    _symbolTables.Add(formulaDeclarationNode, symbolTable);
+                })
+                .OnEnter<ImportDeclarationNode>(importDeclarationNode =>
+                {
+                    var symbolTable = tableStack.Peek();
+
+                    symbolTable.Define(importDeclarationNode.Name, typeof(ILocalValue));
+
+                    _exportSymbols.Add(importDeclarationNode, exportSymbol);
+
+                    _symbolTables.Add(importDeclarationNode, symbolTable);
+                })
+                .OnEnter<ModuleDeclarationNode>(moduleDeclarationNode =>
+                {
+                    var name = moduleDeclarationNode.Name;
+
+                    Modules.Define(name, typeof(ObjectValue));
+
+                    var parentSymbolTable = tableStack.Peek();
+
+                    var symbolTable = new SymbolTable(this, parentSymbolTable);
+
+                    tableStack.Push(symbolTable);
+
+                    exportSymbol = Modules.Resolve(name);
+
+                    _symbolTables.Add(moduleDeclarationNode, symbolTable);
+                })
+                .OnExit<ModuleDeclarationNode>(moduleDeclarationNode =>
+                {
+                    tableStack.Pop();
+                });
+
+            treeWalker.Visit();
         }
 
         /// <summary>
         /// The arguments in the program.
         /// </summary>
-        public IReadOnlyDictionary<string, Symbol> Arguments { get; }
+        public SymbolTable Arguments { get; }
 
         /// <summary>
         /// The constants in the program.
         /// </summary>
-        public IReadOnlyDictionary<string, Symbol> Constants { get; }
+        public SymbolTable Constants { get; }
 
         /// <summary>
         /// The modules in the program.
         /// </summary>
-        public IReadOnlyDictionary<string, Symbol> Modules { get; }
+        public SymbolTable Modules { get; }
+
+        /// <summary>
+        /// The symbol for the program's skip list.
+        /// </summary>
+        public Symbol SkipList { get; }
 
         /// <summary>
         /// The symbol tables in the program.
         /// </summary>
-        public IReadOnlyDictionary<IDeclarationNode, SymbolTable> SymbolTables { get; }
+        public IReadOnlyDictionary<IDeclarationNode, SymbolTable> SymbolTables => _symbolTables;
 
         /// <summary>
-        /// Builds a <see cref="SymbolRegistry"/> object from an abstract syntax tree.
+        /// Get the export symbol for a given declaration node.
         /// </summary>
-        /// <param name="rootNode">The root of the abstract syntax tree.</param>
-        /// <returns>A complete set of symbols in the program.</returns>
-        public static SymbolRegistry Build(ProgramNode rootNode)
+        /// <param name="declarationNode">The declaration node.</param>
+        /// <returns>The export symbol for the declaration node.</returns>
+        public Symbol GetExportSymbol(IDeclarationNode declarationNode)
         {
-            var arguments = new Dictionary<string, Symbol>(StringComparer.OrdinalIgnoreCase);
-            var constants = new Dictionary<string, Symbol>(StringComparer.OrdinalIgnoreCase);
-            var modules = new Dictionary<string, Symbol>(StringComparer.OrdinalIgnoreCase);
-            var symbolTables = new Dictionary<IDeclarationNode, SymbolTable>();
+            if (_exportSymbols.TryGetValue(declarationNode, out var exportSymbol))
+            {
+                return exportSymbol;
+            }
 
-            var tableStack = new Stack<SymbolTable>();
-            tableStack.Push(new SymbolTable());
+            throw new ArgumentException("The provided declaration node does not have a corresponding export symbol.");
+        }
 
-            var treeWalker = new TreeWalker(rootNode);
+        /// <summary>
+        /// Get the symbol table for a given declaration node.
+        /// </summary>
+        /// <param name="declarationNode">The declaration node.</param>
+        /// <returns>The symbol table for the declaration node.</returns>
+        public SymbolTable GetSymbolTable(IDeclarationNode declarationNode)
+        {
+            if (_symbolTables.TryGetValue(declarationNode, out var symbolTable))
+            {
+                return symbolTable;
+            }
 
-            treeWalker
-                .OnExit<ArgumentDeclarationNode>(argumentDeclarationNode =>
-                {
-                    var name = argumentDeclarationNode.Name;
-                    arguments[name] = new Symbol(name, typeof(ILocalValue));
-                })
-                .OnExit<ConstantDeclarationNode>(constantDeclarationNode =>
-                {
-                    var name = constantDeclarationNode.Name;
-                    constants[name] = new Symbol(name, typeof(ILocalValue));
-                })
-                .OnExit<FormulaDeclarationNode>(formulaDeclarationNode =>
-                {
-                    var symbolTable = tableStack.Peek();
-                    symbolTable.Define(formulaDeclarationNode.Name, typeof(ILocalValue));
-                })
-                .OnExit<ImportDeclarationNode>(importStatementNode =>
-                {
-                    var symbolTable = tableStack.Peek();
-                    symbolTable.Define(importStatementNode.Name, typeof(ILocalValue));
-                })
-                .OnEnter<ModuleDeclarationNode>(moduleDeclarationNode =>
-                {
-                    var parentSymbolTable = tableStack.Peek();
+            throw new ArgumentException("The provided declaration node does not have a corresponding symbol table.");
+        }
 
-                    var symbolTable = new SymbolTable(parentSymbolTable);
-                    tableStack.Push(symbolTable);
+        /// <summary>
+        /// Try to get an export symbol for a given declaration node.
+        /// </summary>
+        /// <param name="declarationNode">The declaration node.</param>
+        /// <param name="exportSymbol">The export symbol for the declaration node.</param>
+        /// <returns>True if the export symbol was retrieved, false otherwise.</returns>
+        public bool TryGetExportSymbol(IDeclarationNode declarationNode, out Symbol exportSymbol)
+        {
+            return _exportSymbols.TryGetValue(declarationNode, out exportSymbol);
+        }
 
-                    symbolTables[moduleDeclarationNode] = symbolTable;
-                })
-                .OnExit<ModuleDeclarationNode>(moduleDeclarationNode =>
-                {
-                    modules[moduleDeclarationNode.Name] =
-                        new Symbol(moduleDeclarationNode.Name, typeof(ObjectValue));
-
-                    tableStack.Pop();
-                });
-
-            treeWalker.Visit();
-
-            return new SymbolRegistry(arguments, constants, modules, symbolTables);
+        /// <summary>
+        /// Try to get a symbol table for a given declaration node.
+        /// </summary>
+        /// <param name="declarationNode">The declaration node.</param>
+        /// <param name="symbolTable">The symbol table for the declaration node.</param>
+        /// <returns>True if the symbol table was retrieved, false otherwise.</returns>
+        public bool TryGetSymbolTable(IDeclarationNode declarationNode, out SymbolTable symbolTable)
+        {
+            return _symbolTables.TryGetValue(declarationNode, out symbolTable);
         }
     }
 }

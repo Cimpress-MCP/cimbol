@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 
 namespace Cimpress.Cimbol.Runtime.Functions
@@ -158,7 +159,12 @@ namespace Cimpress.Cimbol.Runtime.Functions
         /// <returns>The result of dividing the left number with the right number.</returns>
         internal static NumberValue Divide(NumberValue leftValue, NumberValue rightValue)
         {
-            return new NumberValue(leftValue.Value / rightValue.Value);
+            if (rightValue.Value != 0)
+            {
+                return new NumberValue(leftValue.Value / rightValue.Value);
+            }
+
+            throw CimbolRuntimeException.DivideByZeroError(null);
         }
 
         /// <summary>

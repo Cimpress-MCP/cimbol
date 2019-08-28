@@ -11,33 +11,72 @@ namespace Cimpress.Cimbol.Compiler.Emit
     /// </summary>
     public class ExecutionPlan
     {
+        private readonly Dictionary<IDeclarationNode, ExecutionStep> _declarationMapping =
+            new Dictionary<IDeclarationNode, ExecutionStep>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionPlan"/> from a dependency table.
         /// </summary>
-        /// <param name="dependencyTable">The dependency table.</param>
-        public ExecutionPlan(DependencyTable dependencyTable)
+        /// <param name="dependencyTable">The dependency table used by the execution plan.</param>
+        /// <param name="symbolRegistry">The symbol registry used by the execution plan.</param>
+        public ExecutionPlan(DependencyTable dependencyTable, SymbolRegistry symbolRegistry)
         {
             if (dependencyTable == null)
             {
                 throw new ArgumentNullException(nameof(dependencyTable));
             }
 
+            if (symbolRegistry == null)
+            {
+                throw new ArgumentNullException(nameof(symbolRegistry));
+            }
+
+            var executionStepId = 0;
+
             var partialOrdering = dependencyTable.MinimalPartialOrder();
 
-            var executionGroups = partialOrdering.Select(declarationGroup =>
+            var executionGroups = new ExecutionGroup[partialOrdering.Count];
+
+            for (var i = 0; i < partialOrdering.Count; ++i)
             {
-                var executionEvents = declarationGroup.Select(declaration =>
+                var index = partialOrdering.Count - i - 1;
+
+                // The execution groups are iterated in reverse order because the dependencies need to be processed
+                // before the formula that depends on them.
+                var declarationGroup = partialOrdering.ElementAt(index);
+
+                var executionEvents = new List<ExecutionStep>(declarationGroup.Count);
+
+                foreach (var declarationNode in declarationGroup)
                 {
-                    if (declaration is FormulaDeclarationNode formulaDeclaration && formulaDeclaration.IsAsynchronous)
-                    {
-                        return new ExecutionStep(declaration, ExecutionStepType.Asynchronous);
-                    }
+                    var currentId = executionStepId;
 
-                    return new ExecutionStep(declaration, ExecutionStepType.Synchronous);
-                });
+                    var dependents = dependencyTable.GetDependents(declarationNode);
 
-                return new ExecutionGroup(executionEvents);
-            });
+                    var dependentExecutionSteps = dependents.Select(dependency => _declarationMapping[dependency]);
+
+                    executionStepId += 1;
+
+                    var isAsynchronous = (declarationNode as FormulaDeclarationNode)?.IsAsynchronous ?? false;
+
+                    var symbolTable = symbolRegistry.GetSymbolTable(declarationNode);
+
+                    var executionStep = new ExecutionStep(
+                        currentId,
+                        declarationNode,
+                        isAsynchronous ? ExecutionStepType.Asynchronous : ExecutionStepType.Synchronous,
+                        dependentExecutionSteps,
+                        symbolTable);
+
+                    executionEvents.Add(executionStep);
+
+                    _declarationMapping.Add(declarationNode, executionStep);
+                }
+
+                var executionGroup = new ExecutionGroup(executionEvents);
+
+                executionGroups[index] = executionGroup;
+            }
 
             ExecutionGroups = ExecutionGroup.Merge(executionGroups).ToImmutableArray();
         }

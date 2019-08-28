@@ -12,10 +12,17 @@ namespace Cimpress.Cimbol.Runtime.Functions
     internal static class EvaluationFunctions
     {
         /// <summary>
-        /// The method info for the <see cref="AsyncEval"/> method.
+        /// The method info for the <see cref="EvaluateAsynchronous"/> method.
         /// </summary>
-        internal static MethodInfo AsyncEvalInfo { get; } = typeof(EvaluationFunctions).GetMethod(
-            nameof(AsyncEval),
+        internal static MethodInfo EvaluateAsynchronousInfo { get; } = typeof(EvaluationFunctions).GetMethod(
+            nameof(EvaluateAsynchronous),
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        /// <summary>
+        /// The method info for the <see cref="EvaluateSynchronous"/> method.
+        /// </summary>
+        internal static MethodInfo EvaluateSynchronousInfo { get; } = typeof(EvaluationFunctions).GetMethod(
+            nameof(EvaluateSynchronous),
             BindingFlags.NonPublic | BindingFlags.Static);
 
         /// <summary>
@@ -33,21 +40,108 @@ namespace Cimpress.Cimbol.Runtime.Functions
             BindingFlags.NonPublic | BindingFlags.Static);
 
         /// <summary>
-        /// Take a promise value, await it, and then execute the associated callback.
+        /// Execute an asynchronous formula.
         /// </summary>
-        /// <param name="awaitedValue">The promise value to await.</param>
-        /// <param name="callback">The callback to call on success.</param>
-        /// <returns>A task that resolves when the callback has been handled.</returns>
-        internal static async Task AsyncEval(ILocalValue awaitedValue, Action<ILocalValue> callback)
+        /// <param name="id">The ID of the formula.</param>
+        /// <param name="dependents">The collection of IDs of formulas dependent on this execution.</param>
+        /// <param name="skips">The collection of formulas to not execute. </param>
+        /// <param name="executeCallback">The callback to run to execute the formula.</param>
+        /// <param name="resultCallback">The callback to run to save the result of the formula's execution.</param>
+        /// <returns>A task the completes the formula is evaluated and saved.</returns>
+        internal static async Task EvaluateAsynchronous(
+            int id,
+            int[] dependents,
+            bool[] skips,
+            Func<ILocalValue> executeCallback,
+            Action<ILocalValue> resultCallback)
         {
-            if (!(awaitedValue is PromiseValue promiseValue))
+            ILocalValue result;
+
+            CimbolRuntimeException error;
+
+            if (!skips[id])
             {
-                throw CimbolRuntimeException.AwaitError(null);
+                error = null;
+                goto evaluationFailure;
             }
 
-            var taskResult = await promiseValue.Value;
+            try
+            {
+                result = executeCallback();
+            }
+            catch (CimbolRuntimeException runtimeException)
+            {
+                error = runtimeException;
+                goto evaluationFailure;
+            }
 
-            callback(taskResult);
+            if (!(result is PromiseValue promiseValue))
+            {
+                error = CimbolRuntimeException.AwaitError(null);
+                goto evaluationFailure;
+            }
+
+            try
+            {
+                var awaitedResult = await promiseValue.Value;
+                resultCallback(awaitedResult);
+            }
+            catch (CimbolRuntimeException runtimeException)
+            {
+                error = runtimeException;
+                goto evaluationFailure;
+            }
+
+            return;
+
+            evaluationFailure:
+            foreach (var dependent in dependents)
+            {
+                skips[dependent] = false;
+            }
+
+            resultCallback(new ErrorValue(error));
+        }
+
+        /// <summary>
+        /// Execute a synchronous formula.
+        /// </summary>
+        /// <param name="id">The ID of the formula.</param>
+        /// <param name="dependents">The collection of IDs of formulas dependent on this execution.</param>
+        /// <param name="skips">The collection of formulas to not execute. </param>
+        /// <param name="executeCallback">The callback to run to execute the formula.</param>
+        /// <returns>The result of evaluating the formula.</returns>
+        internal static ILocalValue EvaluateSynchronous(
+            int id,
+            int[] dependents,
+            bool[] skips,
+            Func<ILocalValue> executeCallback)
+        {
+            CimbolRuntimeException error;
+
+            if (!skips[id])
+            {
+                error = null;
+                goto evaluationFailure;
+            }
+
+            try
+            {
+                return executeCallback();
+            }
+            catch (CimbolRuntimeException runtimeException)
+            {
+                error = runtimeException;
+                goto evaluationFailure;
+            }
+
+            evaluationFailure:
+            foreach (var dependent in dependents)
+            {
+                skips[dependent] = false;
+            }
+
+            return new ErrorValue(error);
         }
 
         /// <summary>

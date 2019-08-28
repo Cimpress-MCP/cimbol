@@ -83,47 +83,65 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
-        /// Generate the expression tree for evaluating and persisting the result of an asynchronous executions step.
+        /// Generates the expression that evaluates an asynchronous execution step with partial evaluation.
         /// </summary>
-        /// <param name="step">The execution step's expression.</param>
-        /// <param name="stepVariable">The variable to assign the execution step to.</param>
-        /// <returns>An expression that evaluates and persists an execution step.</returns>
-        internal static Expression ExecutionStepAsync(Expression step, ParameterExpression stepVariable)
+        /// <param name="step">The expression tree for the execution step.</param>
+        /// <param name="resultCallback">The lambda expression to run when the result is computed.</param>
+        /// <param name="stepId">The ID of the execution step.</param>
+        /// <param name="dependentStepIds">The list of dependent execution step IDs.</param>
+        /// <param name="skipList">The list of execution steps to skip the evaluation of.</param>
+        /// <returns>An expression that evaluates an asynchronous execution step.</returns>
+        internal static Expression ExecutionStepAsync(
+            Expression step,
+            LambdaExpression resultCallback,
+            int stepId,
+            int[] dependentStepIds,
+            ParameterExpression skipList)
         {
-            var assignmentParameter = Expression.Parameter(typeof(ILocalValue));
-
-            var assignmentLambda = Expression.Lambda(
-                Expression.Assign(stepVariable, assignmentParameter),
-                assignmentParameter);
-
-            return Expression.Call(EvaluationFunctions.AsyncEvalInfo, step, assignmentLambda);
+            return Expression.Call(
+                EvaluationFunctions.EvaluateAsynchronousInfo,
+                Expression.Constant(stepId),
+                Expression.Constant(dependentStepIds),
+                skipList,
+                Expression.Lambda(step),
+                resultCallback);
         }
 
         /// <summary>
-        /// Generate the expression tree for evaluating, persisting, and exporting an asynchronous execution step.
+        /// Generates the expression that handles the result of an asynchronous execution step evaluation.
         /// </summary>
-        /// <param name="step">The execution step's expression.</param>
-        /// <param name="stepVariable">The variable to assign the execution step to.</param>
+        /// <param name="stepVariable">The variable to assign the result to.</param>
+        /// <returns>An expression that handles the result of an asynchronous evaluation.</returns>
+        internal static LambdaExpression ExecutionStepAsyncHandler(ParameterExpression stepVariable)
+        {
+            var assignmentParameter = Expression.Parameter(typeof(ILocalValue));
+
+            return Expression.Lambda(
+                Expression.Assign(stepVariable, assignmentParameter),
+                assignmentParameter);
+        }
+
+        /// <summary>
+        /// Generates the expression that handles the result of an asynchronous execution step evaluation with exporting.
+        /// </summary>
+        /// <param name="stepVariable">The variable to assign the result to.</param>
         /// <param name="stepName">The name of the execution step.</param>
         /// <param name="moduleVariable">The variable for the module to export the result to.</param>
-        /// <returns>An expression that evaluates, persists, and exports an asynchronous execution step.</returns>
-        internal static Expression ExecutionStepAsyncExported(
-            Expression step,
+        /// <returns>An expression that handles the result of an asynchronous evaluation.</returns>
+        internal static LambdaExpression ExecutionStepAsyncHandlerExported(
             ParameterExpression stepVariable,
             string stepName,
             ParameterExpression moduleVariable)
         {
             var assignmentParameter = Expression.Parameter(typeof(ILocalValue));
 
-            var assignmentLambda = Expression.Lambda(
+            return Expression.Lambda(
                 Expression.Call(
                     EvaluationFunctions.ExportValueInfo,
                     Expression.Assign(stepVariable, assignmentParameter),
                     Expression.Constant(stepName),
                     moduleVariable),
                 assignmentParameter);
-
-            return Expression.Call(EvaluationFunctions.AsyncEvalInfo, step, assignmentLambda);
         }
 
         /// <summary>
@@ -132,7 +150,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <param name="step">The execution step's expression.</param>
         /// <param name="stepVariable">The variable to assign the execution step to.</param>
         /// <returns>An expression that evaluates and persists an execution step.</returns>
-        internal static Expression ExecutionStepSync(Expression step, ParameterExpression stepVariable)
+        internal static Expression ExecutionStepSync(
+            Expression step,
+            ParameterExpression stepVariable)
         {
             return Expression.Assign(stepVariable, step);
         }
@@ -156,6 +176,28 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 Expression.Assign(stepVariable, step),
                 Expression.Constant(stepName),
                 moduleVariable);
+        }
+
+        /// <summary>
+        /// Generates the expression tree for evaluating a synchronous execution step with partial evaluation.
+        /// </summary>
+        /// <param name="step">The execution step's expression.</param>
+        /// <param name="stepId">The ID of the execution step.</param>
+        /// <param name="dependentStepIds">The list of dependent execution step IDs.</param>
+        /// <param name="skipList">The list of execution steps to skip the evaluation of.</param>
+        /// <returns>An expression that evaluates a synchronous execution step.</returns>
+        internal static Expression ExecutionStepSyncEvaluation(
+            Expression step,
+            int stepId,
+            int[] dependentStepIds,
+            ParameterExpression skipList)
+        {
+            return Expression.Call(
+                EvaluationFunctions.EvaluateSynchronousInfo,
+                Expression.Constant(stepId),
+                Expression.Constant(dependentStepIds),
+                skipList,
+                Expression.Lambda(step));
         }
     }
 }

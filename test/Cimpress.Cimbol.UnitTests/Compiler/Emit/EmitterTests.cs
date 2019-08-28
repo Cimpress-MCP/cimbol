@@ -22,15 +22,13 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             _emitter = new Emitter();
 
-            _symbolTable = new SymbolTable();
+            _symbolTable = new SymbolTable(new SymbolRegistry());
         }
 
         [Test]
         public void ShouldNot_EmitAnything_When_GivenNullNode()
         {
-            var node = (IExpressionNode)null;
-
-            Assert.Throws<CimbolInternalException>(() => _emitter.EmitExpression(node, _symbolTable));
+            Assert.Throws<CimbolInternalException>(() => _emitter.EmitExpression(null, _symbolTable));
         }
 
         [Test]
@@ -119,7 +117,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void Should_EmitIdentifier_When_GivenIdentifierNodeWithIdentifierInScope()
         {
             var node = new IdentifierNode("x");
-            var symbolTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
             symbolTable.Define("x", typeof(BooleanValue));
 
             var expression = _emitter.EmitExpression(node, symbolTable) as ParameterExpression;
@@ -133,8 +132,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void Should_EmitIdentifier_When_GivenIdentifierNodeWithIdentifierInParentScope()
         {
             var node = new IdentifierNode("x");
-            var symbolTable1 = new SymbolTable();
-            var symbolTable2 = new SymbolTable(symbolTable1);
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable1 = new SymbolTable(symbolRegistry);
+            var symbolTable2 = new SymbolTable(symbolRegistry, symbolTable1);
             symbolTable1.Define("x", typeof(BooleanValue));
 
             var expression = _emitter.EmitExpression(node, symbolTable2) as ParameterExpression;
@@ -148,7 +148,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void Should_EmitError_When_GivenIdentifierNodeWithIdentifierNotInScope()
         {
             var node = new IdentifierNode("x");
-            var symbolTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
 
             var expression = _emitter.EmitExpression(node, symbolTable) as UnaryExpression;
 

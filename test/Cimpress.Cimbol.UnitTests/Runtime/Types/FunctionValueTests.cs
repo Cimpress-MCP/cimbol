@@ -284,6 +284,81 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
                 functionValue.Invoke(new NumberValue(1), new NumberValue(2), new NumberValue(3)));
         }
 
+        [Test]
+        public void Should_ThrowArgumentNullException_When_ConstructedWithNullFunction()
+        {
+            var result = Assert.Throws<ArgumentNullException>(() =>
+            {
+                var functionValue = new FunctionValue(null);
+            });
+
+            Assert.That(result.ParamName, Is.EqualTo("value"));
+        }
+
+        [Test]
+        public void Should_ThrowException_When_ConstructedWithFunctionThatDoesNotReturnILocalValue()
+        {
+            decimal TestFunction(NumberValue numberValue)
+            {
+                return numberValue.Value;
+            }
+
+            var result = Assert.Throws<ArgumentException>(() =>
+            {
+                var functionValue = new FunctionValue((Func<NumberValue, decimal>)TestFunction);
+            });
+
+            Assert.That(result.ParamName, Is.EqualTo("value"));
+        }
+
+        [Test]
+        public void Should_ThrowException_When_ConstructedWithFunctionThatDoesNotAcceptILocalValue()
+        {
+            NumberValue TestFunction(decimal numberValue)
+            {
+                return new NumberValue(numberValue);
+            }
+
+            var result = Assert.Throws<ArgumentException>(() =>
+            {
+                var functionValue = new FunctionValue((Func<decimal, NumberValue>)TestFunction);
+            });
+
+            Assert.That(result.ParamName, Is.EqualTo("value"));
+        }
+
+        [Test]
+        public void Should_BeEqual_When_ComparedToSelf()
+        {
+            var value = new FunctionValue((Func<NumberValue>)MockFunction);
+
+            var result = value.EqualTo(value);
+
+            Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public void ShouldNot_BeEqual_When_ComparedToErrorValue()
+        {
+            var value = new FunctionValue((Func<NumberValue>)MockFunction);
+            var otherValue = new FunctionValue((Func<NumberValue>)MockFunction);
+
+            var result = value.EqualTo(otherValue);
+
+            Assert.That(result, Is.False);
+        }
+
+        [Test]
+        public void ShouldNot_BeEqual_When_ComparedToNonErrorValue()
+        {
+            var value = new FunctionValue((Func<NumberValue>)MockFunction);
+            var otherValue = new NumberValue(1);
+
+            var result = value.EqualTo(otherValue);
+
+            Assert.That(result, Is.False);
+        }
+
         private static NumberValue MockFunction()
         {
             return new NumberValue(1);

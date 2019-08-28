@@ -7,7 +7,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
     /// <summary>
     /// A symbol table.
     /// </summary>
-    public class SymbolTable : IEnumerable<KeyValuePair<string, Symbol>>
+    public class SymbolTable : IReadOnlyCollection<KeyValuePair<string, Symbol>>
     {
         private readonly Dictionary<string, Symbol> _table =
             new Dictionary<string, Symbol>(StringComparer.OrdinalIgnoreCase);
@@ -15,24 +15,40 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <summary>
         /// Initializes a new instance of the <see cref="SymbolTable"/> class with no parent.
         /// </summary>
-        public SymbolTable()
+        /// <param name="registry">The registry that the symbol table belongs to.</param>
+        internal SymbolTable(SymbolRegistry registry)
         {
             Parent = null;
+
+            Registry = registry ?? throw new ArgumentNullException(nameof(registry));
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SymbolTable"/> class with a parent.
         /// </summary>
+        /// <param name="registry">The registry that the symbol table belongs to.</param>
         /// <param name="parent">The parent symbol table.</param>
-        public SymbolTable(SymbolTable parent)
+        internal SymbolTable(SymbolRegistry registry, SymbolTable parent)
         {
             Parent = parent;
+
+            Registry = registry ?? throw new ArgumentNullException(nameof(registry));
         }
+
+        /// <summary>
+        /// Get the number of symbols in the symbol table.
+        /// </summary>
+        public int Count => _table.Count;
 
         /// <summary>
         /// The parent symbol table.
         /// </summary>
         public SymbolTable Parent { get; }
+
+        /// <summary>
+        /// The registry that the symbol table belongs to.
+        /// </summary>
+        public SymbolRegistry Registry { get; }
 
         /// <inheritdoc cref="IReadOnlyCollection{T}.GetEnumerator"/>
         public IEnumerator<KeyValuePair<string, Symbol>> GetEnumerator()

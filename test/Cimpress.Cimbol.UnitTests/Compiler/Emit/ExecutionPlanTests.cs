@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.Emit;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
@@ -16,7 +15,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var executionPlan = new ExecutionPlan((IEnumerable<ExecutionGroup>)null);
+                var executionPlan = new ExecutionPlan(null);
             });
         }
 
@@ -25,7 +24,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var executionPlan = new ExecutionPlan((DependencyTable)null);
+                var executionPlan = new ExecutionPlan(null, null);
             });
         }
 
@@ -43,18 +42,31 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_MergeExecutionGroups_When_InitializedWithExecutionGroups()
         {
+            var symbolRegistry = new SymbolRegistry();
             var executionStep1 = new ExecutionStep(
+                1,
                 new FormulaDeclarationNode("a", new IdentifierNode("a"), false),
-                ExecutionStepType.Synchronous);
+                ExecutionStepType.Synchronous,
+                Array.Empty<ExecutionStep>(),
+                new SymbolTable(symbolRegistry));
             var executionStep2 = new ExecutionStep(
+                2,
                 new FormulaDeclarationNode("b", new IdentifierNode("b"), false),
-                ExecutionStepType.Synchronous);
+                ExecutionStepType.Synchronous,
+                Array.Empty<ExecutionStep>(),
+                new SymbolTable(symbolRegistry));
             var executionStep3 = new ExecutionStep(
+                3,
                 new FormulaDeclarationNode("c", new IdentifierNode("c"), false),
-                ExecutionStepType.Synchronous);
+                ExecutionStepType.Synchronous,
+                Array.Empty<ExecutionStep>(),
+                new SymbolTable(symbolRegistry));
             var executionStep4 = new ExecutionStep(
+                4,
                 new FormulaDeclarationNode("d", new IdentifierNode("d"), false),
-                ExecutionStepType.Synchronous);
+                ExecutionStepType.Synchronous,
+                Array.Empty<ExecutionStep>(),
+                new SymbolTable(symbolRegistry));
             var executionGroup1 = new ExecutionGroup(new[] { executionStep1, executionStep2 });
             var executionGroup2 = new ExecutionGroup(new[] { executionStep3, executionStep4 });
             var executionPlan = new ExecutionPlan(new[] { executionGroup1, executionGroup2 });
@@ -82,8 +94,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ArgumentDeclarationNode>(),
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
-            var dependencyTable = DependencyTable.Build(programNode);
-            var executionPlan = new ExecutionPlan(dependencyTable);
+            var dependencyTable = new DependencyTable(programNode);
+            var symbolRegistry = new SymbolRegistry(programNode);
+            var executionPlan = new ExecutionPlan(dependencyTable, symbolRegistry);
 
             var result = executionPlan.ExecutionGroups.ToArray();
             

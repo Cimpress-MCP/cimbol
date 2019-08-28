@@ -1,5 +1,4 @@
-﻿using System;
-using Cimpress.Cimbol.Exceptions;
+﻿using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 

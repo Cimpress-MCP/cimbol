@@ -11,25 +11,29 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_ConstructSymbolTable_When_NotGivenParent()
         {
-            var symbolTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
 
-            Assert.That(symbolTable.Parent, Is.Null);
+            var result = new SymbolTable(symbolRegistry);
+
+            Assert.That(result.Parent, Is.Null);
         }
 
         [Test]
         public void Should_ConstructSymbolTable_When_GivenParent()
         {
-            var parentTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var parentTable = new SymbolTable(symbolRegistry);
 
-            var symbolTable = new SymbolTable(parentTable);
+            var result = new SymbolTable(symbolRegistry, parentTable);
 
-            Assert.That(symbolTable.Parent, Is.SameAs(parentTable));
+            Assert.That(result.Parent, Is.SameAs(parentTable));
         }
 
         [Test]
         public void Should_DefineSymbol_When_SymbolNotInSelf()
         {
-            var symbolTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
             symbolTable.Define("y", typeof(ILocalValue));
 
             var result = symbolTable.Define("x", typeof(ILocalValue));
@@ -40,9 +44,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_DefineSymbol_When_SymbolInParent()
         {
-            var parentTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var parentTable = new SymbolTable(symbolRegistry);
             parentTable.Define("x", typeof(ILocalValue));
-            var symbolTable = new SymbolTable(parentTable);
+            var symbolTable = new SymbolTable(symbolRegistry, parentTable);
             symbolTable.Define("y", typeof(ILocalValue));
 
             var result = symbolTable.Define("x", typeof(ILocalValue));
@@ -53,7 +58,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_DefineSymbol_When_SymbolInSelf()
         {
-            var symbolTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
             symbolTable.Define("x", typeof(ILocalValue));
 
             var result = symbolTable.Define("x", typeof(ILocalValue));
@@ -64,7 +70,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_RetrieveParameter_When_SymbolInSelf()
         {
-            var symbolTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
             symbolTable.Define("x", typeof(ILocalValue));
 
             var result = symbolTable.TryResolve("x", out var parameter);
@@ -76,9 +83,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_RetrieveParameter_When_SymbolInParent()
         {
-            var parentSymbolTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var parentSymbolTable = new SymbolTable(symbolRegistry);
             parentSymbolTable.Define("x", typeof(ILocalValue));
-            var symbolTable = new SymbolTable(parentSymbolTable);
+            var symbolTable = new SymbolTable(symbolRegistry, parentSymbolTable);
 
             var result = symbolTable.TryResolve("x", out var parameter);
 
@@ -89,7 +97,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_RetrieveParameter_When_SymbolNotInSelf()
         {
-            var symbolTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
             symbolTable.Define("y", typeof(ILocalValue));
 
             var result = symbolTable.TryResolve("x", out var parameter);
@@ -101,7 +110,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_ListSymbols_When_Enumerating()
         {
-            var symbolTable = new SymbolTable();
+            var symbolRegistry = new SymbolRegistry();
+            var symbolTable = new SymbolTable(symbolRegistry);
             symbolTable.Define("x", typeof(ILocalValue));
             symbolTable.Define("y", typeof(ILocalValue));
             symbolTable.Define("z", typeof(ILocalValue));

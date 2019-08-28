@@ -20,46 +20,191 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         }
 
         [Test]
-        public void Should_Await_When_GivenCompletedPromiseValue()
+        public async Task Should_ReturnAsyncEvaluation_When_Successful()
         {
-            var innerValue = new NumberValue(5);
-            var promiseValue = new PromiseValue(Task.FromResult((ILocalValue)innerValue));
+            var expected = new NumberValue(1);
+            var taskValue = new PromiseValue(Task.FromResult((ILocalValue)expected));
+            var dependencies = Array.Empty<int>();
+            var skipList = new[] { true };
 
             ILocalValue result = null;
-            var resultTask = EvaluationFunctions.AsyncEval(promiseValue, localValue => result = localValue);
-            
-            Assert.DoesNotThrowAsync(async () => await resultTask);
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.SameAs(innerValue));
-            Assert.That(resultTask.Status, Is.EqualTo(TaskStatus.RanToCompletion));
+            await EvaluationFunctions.EvaluateAsynchronous(0, dependencies, skipList, () => taskValue, x => result = x);
+
+            Assert.That(result, Is.SameAs(expected));
         }
 
         [Test]
-        public void Should_Fault_When_GivenFaultedPromiseValue()
+        public async Task ShouldNot_ReturnAsyncEvaluation_When_IdIsInSkipList()
         {
-            var error = new NotSupportedException();
-            var promiseValue = new PromiseValue(Task.FromException<ILocalValue>(error));
+            var expected = new NumberValue(1);
+            var taskValue = new PromiseValue(Task.FromResult((ILocalValue)expected));
+            var dependencies = Array.Empty<int>();
+            var skipList = new[] { false };
 
             ILocalValue result = null;
-            var resultTask = EvaluationFunctions.AsyncEval(promiseValue, localValue => result = localValue);
+            await EvaluationFunctions.EvaluateAsynchronous(0, dependencies, skipList, () => taskValue, x => result = x);
 
-            var resultError = Assert.ThrowsAsync<NotSupportedException>(async () => await resultTask);
-            Assert.That(resultError, Is.SameAs(error));
-            Assert.That(result, Is.Null);
-            Assert.That(resultTask.Status, Is.EqualTo(TaskStatus.Faulted));
+            Assert.That(result, Is.InstanceOf<ErrorValue>());
+            Assert.That(result, Has.Property("Value").Null);
         }
 
         [Test]
-        public void Should_Fault_When_GivenNonPromiseValueToAwait()
+        public async Task ShouldNot_ReturnAsyncEvaluation_When_ExpressionThrows()
         {
-            var promiseValue = new NumberValue(5);
+            var expected = CimbolRuntimeException.IfConditionError(null);
+            var dependencies = Array.Empty<int>();
+            var skipList = new[] { true };
 
             ILocalValue result = null;
-            var resultTask = EvaluationFunctions.AsyncEval(promiseValue, localValue => result = localValue);
+            await EvaluationFunctions.EvaluateAsynchronous(
+                0,
+                dependencies,
+                skipList,
+                () => throw expected,
+                x => result = x);
 
-            var resultError = Assert.ThrowsAsync<CimbolRuntimeException>(async () => await resultTask);
-            Assert.That(result, Is.Null);
-            Assert.That(resultTask.Status, Is.EqualTo(TaskStatus.Faulted));
+            Assert.That(result, Is.InstanceOf<ErrorValue>());
+            Assert.That(result, Has.Property("Value").SameAs(expected));
+        }
+
+        [Test]
+        public async Task ShouldNot_ReturnAsyncEvaluation_When_ResultIsNotPromiseValue()
+        {
+            var taskValue = new NumberValue(1);
+            var dependencies = Array.Empty<int>();
+            var skipList = new[] { true };
+
+            ILocalValue result = null;
+            await EvaluationFunctions.EvaluateAsynchronous(0, dependencies, skipList, () => taskValue, x => result = x);
+
+            Assert.That(result, Is.InstanceOf<ErrorValue>());
+            Assert.That(result, Has.Property("Value").Not.Null);
+        }
+
+        [Test]
+        public async Task ShouldNot_ReturnAsyncEvaluation_When_PromiseResolutionThrows()
+        {
+            var expected = CimbolRuntimeException.IfConditionError(null);
+            var taskValue = new PromiseValue(Task.FromException<ILocalValue>(expected));
+            var dependencies = Array.Empty<int>();
+            var skipList = new[] { true };
+
+            ILocalValue result = null;
+            await EvaluationFunctions.EvaluateAsynchronous(
+                0,
+                dependencies,
+                skipList,
+                () => taskValue,
+                x => result = x);
+
+            Assert.That(result, Is.InstanceOf<ErrorValue>());
+            Assert.That(result, Has.Property("Value").SameAs(expected));
+        }
+
+        [Test]
+        public async Task Should_MarkDependentsAsSkipped_When_AsyncEvaluationFails()
+        {
+            var expected = new NumberValue(1);
+            var taskValue = new PromiseValue(Task.FromResult((ILocalValue)expected));
+            var dependencies = new[] { 1, 2, 3 };
+            var skipList = new[] { false, true, true, true };
+
+            await EvaluationFunctions.EvaluateAsynchronous(
+                0,
+                dependencies,
+                skipList,
+                () => taskValue,
+                x => { });
+
+            Assert.That(skipList[1], Is.False);
+            Assert.That(skipList[2], Is.False);
+            Assert.That(skipList[3], Is.False);
+        }
+
+        [Test]
+        public async Task ShouldNot_MarkDependentsAsSkipped_When_AsyncEvaluationSucceeds()
+        {
+            var expected = new NumberValue(1);
+            var taskValue = new PromiseValue(Task.FromResult((ILocalValue)expected));
+            var dependencies = new[] { 1, 2, 3 };
+            var skipList = new[] { true, true, true, true };
+
+            await EvaluationFunctions.EvaluateAsynchronous(
+                0,
+                dependencies,
+                skipList,
+                () => taskValue,
+                x => { });
+
+            Assert.That(skipList[1], Is.True);
+            Assert.That(skipList[2], Is.True);
+            Assert.That(skipList[3], Is.True);
+        }
+
+        [Test]
+        public void Should_ReturnSyncEvaluation_When_Successful()
+        {
+            var expected = new NumberValue(1);
+            var dependencies = Array.Empty<int>();
+            var skipList = new[] { true };
+
+            var result = EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => expected);
+
+            Assert.That(result, Is.SameAs(expected));
+        }
+
+        [Test]
+        public void ShouldNot_ReturnSyncEvaluation_When_IdIsInSkipList()
+        {
+            var expected = new NumberValue(1);
+            var dependencies = Array.Empty<int>();
+            var skipList = new[] { false };
+
+            var result = EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => expected);
+
+            Assert.That(result, Is.InstanceOf<ErrorValue>());
+            Assert.That(result, Has.Property("Value").Null);
+        }
+
+        [Test]
+        public void ShouldNot_ReturnSyncEvaluation_When_ExpressionThrows()
+        {
+            var expected = CimbolRuntimeException.IfConditionError(null);
+            var dependencies = Array.Empty<int>();
+            var skipList = new[] { true };
+
+            var result = EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => throw expected);
+
+            Assert.That(result, Is.InstanceOf<ErrorValue>());
+            Assert.That(result, Has.Property("Value").SameAs(expected));
+        }
+
+        [Test]
+        public void Should_MarkDependentsAsSkipped_When_SyncEvaluationFails()
+        {
+            var expected = new NumberValue(1);
+            var dependencies = new[] { 1, 2, 3 };
+            var skipList = new[] { false, true, true, true };
+
+            EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => expected);
+
+            Assert.That(skipList[1], Is.False);
+            Assert.That(skipList[2], Is.False);
+            Assert.That(skipList[3], Is.False);
+        }
+
+        [Test]
+        public void ShouldNot_MarkDependentsAsSkipped_When_SyncEvaluationSucceeds()
+        {
+            var expected = new NumberValue(1);
+            var dependencies = new[] { 1, 2, 3 };
+            var skipList = new[] { true, true, true, true };
+
+            EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => expected);
+
+            Assert.That(skipList[1], Is.True);
+            Assert.That(skipList[2], Is.True);
+            Assert.That(skipList[3], Is.True);
         }
 
         [Test]
@@ -75,7 +220,6 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
 
         private static IEnumerable<TestCaseData> MethodInfoTestCases()
         {
-            yield return new TestCaseData(EvaluationFunctions.AsyncEvalInfo);
             yield return new TestCaseData(EvaluationFunctions.ExportValueInfo);
         }
     }
