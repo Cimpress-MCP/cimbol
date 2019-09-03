@@ -12,11 +12,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_CreateSymbolRegistryWithArgument_When_GivenProgramNodeWithArgumentDeclaration()
         {
-            var argumentDeclarationNode = new ArgumentDeclarationNode("x");
+            var argumentDeclarationNode = new ArgumentNode("x");
             var programNode = new ProgramNode(
                 new[] { argumentDeclarationNode },
-                Enumerable.Empty<ConstantDeclarationNode>(),
-                Enumerable.Empty<ModuleDeclarationNode>());
+                Enumerable.Empty<ConstantNode>(),
+                Enumerable.Empty<ModuleNode>());
 
             var result = new SymbolRegistry(programNode);
 
@@ -31,11 +31,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_CreateSymbolRegistryWithConstant_When_GivenProgramNodeWithConstantDeclaration()
         {
-            var constantDeclarationNode = new ConstantDeclarationNode("x", BooleanValue.True);
+            var constantDeclarationNode = new ConstantNode("x", BooleanValue.True);
             var programNode = new ProgramNode(
-                Enumerable.Empty<ArgumentDeclarationNode>(),
+                Enumerable.Empty<ArgumentNode>(),
                 new[] { constantDeclarationNode },
-                Enumerable.Empty<ModuleDeclarationNode>());
+                Enumerable.Empty<ModuleNode>());
 
             var result = new SymbolRegistry(programNode);
 
@@ -50,13 +50,13 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_CreateSymbolRegistryWithModule_When_GivenProgramNodeWithModuleDeclaration()
         {
-            var moduleDeclarationNode = new ModuleDeclarationNode(
+            var moduleDeclarationNode = new ModuleNode(
                 "x",
-                Enumerable.Empty<ImportDeclarationNode>(),
-                Enumerable.Empty<FormulaDeclarationNode>());
+                Enumerable.Empty<ImportNode>(),
+                Enumerable.Empty<FormulaNode>());
             var programNode = new ProgramNode(
-                Enumerable.Empty<ArgumentDeclarationNode>(),
-                Enumerable.Empty<ConstantDeclarationNode>(),
+                Enumerable.Empty<ArgumentNode>(),
+                Enumerable.Empty<ConstantNode>(),
                 new[] { moduleDeclarationNode });
 
             var result = new SymbolRegistry(programNode);
@@ -73,14 +73,14 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_CreateSymbolTableInRegistryWithSymbol_When_GivenProgramNodeWithModuleWithFormula()
         {
-            var formulaDeclarationNode = new FormulaDeclarationNode("x", new IdentifierNode("y"), true);
-            var moduleDeclarationNode = new ModuleDeclarationNode(
+            var formulaDeclarationNode = new FormulaNode("x", new IdentifierNode("y"), true);
+            var moduleDeclarationNode = new ModuleNode(
                 "x",
-                Enumerable.Empty<ImportDeclarationNode>(),
+                Enumerable.Empty<ImportNode>(),
                 new[] { formulaDeclarationNode });
             var programNode = new ProgramNode(
-                Enumerable.Empty<ArgumentDeclarationNode>(),
-                Enumerable.Empty<ConstantDeclarationNode>(),
+                Enumerable.Empty<ArgumentNode>(),
+                Enumerable.Empty<ConstantNode>(),
                 new[] { moduleDeclarationNode });
 
             var result = new SymbolRegistry(programNode).SymbolTables[moduleDeclarationNode];
@@ -94,14 +94,14 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_CreateSymbolTableInRegistryWithSymbol_When_GivenProgramNodeWithModuleWithImport()
         {
-            var importDeclarationNode = new ImportDeclarationNode("x", new[] { "y" }, ImportType.Constant);
-            var moduleDeclarationNode = new ModuleDeclarationNode(
+            var importDeclarationNode = new ImportNode("x", new[] { "y" }, ImportType.Constant);
+            var moduleDeclarationNode = new ModuleNode(
                 "x",
                 new[] { importDeclarationNode },
-                Enumerable.Empty<FormulaDeclarationNode>());
+                Enumerable.Empty<FormulaNode>());
             var programNode = new ProgramNode(
-                Enumerable.Empty<ArgumentDeclarationNode>(),
-                Enumerable.Empty<ConstantDeclarationNode>(),
+                Enumerable.Empty<ArgumentNode>(),
+                Enumerable.Empty<ConstantNode>(),
                 new[] { moduleDeclarationNode });
 
             var result = new SymbolRegistry(programNode).SymbolTables[moduleDeclarationNode];

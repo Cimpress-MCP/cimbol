@@ -34,9 +34,9 @@ namespace Cimpress.Cimbol
         /// Compile the argument into an abstract syntax tree.
         /// </summary>
         /// <returns>An abstract syntax tree.</returns>
-        internal ArgumentDeclarationNode ToSyntaxTree()
+        internal ArgumentNode ToSyntaxTree()
         {
-            return new ArgumentDeclarationNode(Name);
+            return new ArgumentNode(Name);
         }
     }
 }

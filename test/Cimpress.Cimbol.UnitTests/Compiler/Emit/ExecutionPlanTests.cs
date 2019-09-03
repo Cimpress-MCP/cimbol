@@ -23,9 +23,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void Should_ThrowError_When_InitializedWithNullDeclarationHierarchy()
         {
             var programNode = new ProgramNode(
-                Enumerable.Empty<ArgumentDeclarationNode>(),
-                Enumerable.Empty<ConstantDeclarationNode>(),
-                Enumerable.Empty<ModuleDeclarationNode>());
+                Enumerable.Empty<ArgumentNode>(),
+                Enumerable.Empty<ConstantNode>(),
+                Enumerable.Empty<ModuleNode>());
             var dependencyTable = new DependencyTable(programNode);
             var symbolRegistry = new SymbolRegistry(programNode);
 
@@ -39,9 +39,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void Should_ThrowError_When_InitializedWithNullDependencyTable()
         {
             var programNode = new ProgramNode(
-                Enumerable.Empty<ArgumentDeclarationNode>(),
-                Enumerable.Empty<ConstantDeclarationNode>(),
-                Enumerable.Empty<ModuleDeclarationNode>());
+                Enumerable.Empty<ArgumentNode>(),
+                Enumerable.Empty<ConstantNode>(),
+                Enumerable.Empty<ModuleNode>());
             var declarationHierarchy = new DeclarationHierarchy(programNode);
             var symbolRegistry = new SymbolRegistry(programNode);
 
@@ -55,9 +55,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void Should_ThrowError_When_InitializedWithNullSymbolRegistry()
         {
             var programNode = new ProgramNode(
-                Enumerable.Empty<ArgumentDeclarationNode>(),
-                Enumerable.Empty<ConstantDeclarationNode>(),
-                Enumerable.Empty<ModuleDeclarationNode>());
+                Enumerable.Empty<ArgumentNode>(),
+                Enumerable.Empty<ConstantNode>(),
+                Enumerable.Empty<ModuleNode>());
             var declarationHierarchy = new DeclarationHierarchy(programNode);
             var dependencyTable = new DependencyTable(programNode);
 
@@ -84,29 +84,29 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var symbolRegistry = new SymbolRegistry();
             var executionStep1 = new ExecutionStep(
                 1,
-                new ModuleDeclarationNode("z", Enumerable.Empty<ImportDeclarationNode>(), Enumerable.Empty<FormulaDeclarationNode>()), 
-                new FormulaDeclarationNode("a", new IdentifierNode("a"), false),
+                new ModuleNode("z", Enumerable.Empty<ImportNode>(), Enumerable.Empty<FormulaNode>()), 
+                new FormulaNode("a", new IdentifierNode("a"), false),
                 ExecutionStepType.Synchronous,
                 Array.Empty<ExecutionStep>(),
                 new SymbolTable(symbolRegistry));
             var executionStep2 = new ExecutionStep(
                 2,
-                new ModuleDeclarationNode("z", Enumerable.Empty<ImportDeclarationNode>(), Enumerable.Empty<FormulaDeclarationNode>()),
-                new FormulaDeclarationNode("b", new IdentifierNode("b"), false),
+                new ModuleNode("z", Enumerable.Empty<ImportNode>(), Enumerable.Empty<FormulaNode>()),
+                new FormulaNode("b", new IdentifierNode("b"), false),
                 ExecutionStepType.Synchronous,
                 Array.Empty<ExecutionStep>(),
                 new SymbolTable(symbolRegistry));
             var executionStep3 = new ExecutionStep(
                 3,
-                new ModuleDeclarationNode("z", Enumerable.Empty<ImportDeclarationNode>(), Enumerable.Empty<FormulaDeclarationNode>()),
-                new FormulaDeclarationNode("c", new IdentifierNode("c"), false),
+                new ModuleNode("z", Enumerable.Empty<ImportNode>(), Enumerable.Empty<FormulaNode>()),
+                new FormulaNode("c", new IdentifierNode("c"), false),
                 ExecutionStepType.Synchronous,
                 Array.Empty<ExecutionStep>(),
                 new SymbolTable(symbolRegistry));
             var executionStep4 = new ExecutionStep(
                 4,
-                new ModuleDeclarationNode("z", Enumerable.Empty<ImportDeclarationNode>(), Enumerable.Empty<FormulaDeclarationNode>()),
-                new FormulaDeclarationNode("d", new IdentifierNode("d"), false),
+                new ModuleNode("z", Enumerable.Empty<ImportNode>(), Enumerable.Empty<FormulaNode>()),
+                new FormulaNode("d", new IdentifierNode("d"), false),
                 ExecutionStepType.Synchronous,
                 Array.Empty<ExecutionStep>(),
                 new SymbolTable(symbolRegistry));
@@ -125,17 +125,17 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_BuildExecutionGroupsFromDependencyTable_When_InitializedWithDependencyTable()
         {
-            var formulaNode1 = new FormulaDeclarationNode("a", new LiteralNode(BooleanValue.True), true);
-            var formulaNode2 = new FormulaDeclarationNode("b", new IdentifierNode("a"), true);
-            var formulaNode3 = new FormulaDeclarationNode("c", new IdentifierNode("b"), true);
-            var formulaNode4 = new FormulaDeclarationNode("d", new IdentifierNode("c"), true);
-            var moduleNode = new ModuleDeclarationNode(
+            var formulaNode1 = new FormulaNode("a", new LiteralNode(BooleanValue.True), true);
+            var formulaNode2 = new FormulaNode("b", new IdentifierNode("a"), true);
+            var formulaNode3 = new FormulaNode("c", new IdentifierNode("b"), true);
+            var formulaNode4 = new FormulaNode("d", new IdentifierNode("c"), true);
+            var moduleNode = new ModuleNode(
                 "x",
-                Enumerable.Empty<ImportDeclarationNode>(),
+                Enumerable.Empty<ImportNode>(),
                 new[] { formulaNode1, formulaNode2, formulaNode3, formulaNode4 });
             var programNode = new ProgramNode(
-                Enumerable.Empty<ArgumentDeclarationNode>(),
-                Enumerable.Empty<ConstantDeclarationNode>(),
+                Enumerable.Empty<ArgumentNode>(),
+                Enumerable.Empty<ConstantNode>(),
                 new[] { moduleNode });
             var declarationHierarchy = new DeclarationHierarchy(programNode);
             var dependencyTable = new DependencyTable(programNode);

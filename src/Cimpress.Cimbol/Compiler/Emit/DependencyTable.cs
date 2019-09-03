@@ -70,23 +70,23 @@ namespace Cimpress.Cimbol.Compiler.Emit
         {
             var dependencyTable = new Dictionary<IDeclarationNode, HashSet<IDeclarationNode>>();
 
-            ModuleDeclarationNode currentModule = null;
-            FormulaDeclarationNode currentFormula = null;
+            ModuleNode currentModule = null;
+            FormulaNode currentFormula = null;
 
             var treeWalker = new TreeWalker(programNode);
 
-            treeWalker.OnEnter<FormulaDeclarationNode>(formulaDeclarationNode =>
+            treeWalker.OnEnter<FormulaNode>(formulaNode =>
             {
-                currentFormula = formulaDeclarationNode;
+                currentFormula = formulaNode;
             });
 
-            treeWalker.OnExit<FormulaDeclarationNode>(formulaDeclarationNode =>
+            treeWalker.OnExit<FormulaNode>(formulaNode =>
             {
                 currentFormula = null;
 
-                if (!dependencyTable.ContainsKey(formulaDeclarationNode))
+                if (!dependencyTable.ContainsKey(formulaNode))
                 {
-                    dependencyTable[formulaDeclarationNode] = new HashSet<IDeclarationNode>();
+                    dependencyTable[formulaNode] = new HashSet<IDeclarationNode>();
                 }
             });
 
@@ -103,41 +103,41 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     dependencyTable[currentFormula] = dependencies;
                 }
 
-                if (currentModule.TryGetFormulaDeclaration(identifierNode.Identifier, out var formula))
+                if (currentModule.TryGetFormula(identifierNode.Identifier, out var formula))
                 {
                     dependencies.Add(formula);
                 }
 
-                if (currentModule.TryGetImportDeclaration(identifierNode.Identifier, out var import))
+                if (currentModule.TryGetImport(identifierNode.Identifier, out var import))
                 {
                     dependencies.Add(import);
                 }
             });
 
-            treeWalker.OnExit<ImportDeclarationNode>(importDeclarationNode =>
+            treeWalker.OnExit<ImportNode>(importNode =>
             {
-                var moduleName = importDeclarationNode.ImportPath.ElementAtOrDefault(0);
+                var moduleName = importNode.ImportPath.ElementAtOrDefault(0);
 
-                var formulaName = importDeclarationNode.ImportPath.ElementAtOrDefault(1);
+                var formulaName = importNode.ImportPath.ElementAtOrDefault(1);
 
                 var dependencies = new HashSet<IDeclarationNode>();
 
-                dependencyTable[importDeclarationNode] = dependencies;
+                dependencyTable[importNode] = dependencies;
 
-                if (importDeclarationNode.ImportType == ImportType.Formula)
+                if (importNode.ImportType == ImportType.Formula)
                 {
-                    if (moduleName == null || formulaName == null || importDeclarationNode.ImportPath.Count != 2)
+                    if (moduleName == null || formulaName == null || importNode.ImportPath.Count != 2)
                     {
                         throw new CimbolInternalException("An error occurred while generating the dependency tree.");
                     }
 
-                    if (!programNode.TryGetModuleDeclaration(moduleName, out var moduleNode))
+                    if (!programNode.TryGetModule(moduleName, out var moduleNode))
                     {
                         // The imported module was not found in the program.
                         return;
                     }
 
-                    if (!moduleNode.TryGetFormulaDeclaration(formulaName, out var formulaNode))
+                    if (!moduleNode.TryGetFormula(formulaName, out var formulaNode))
                     {
                         // The imported formula was not found in the module.
                         return;
@@ -146,14 +146,14 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     dependencies.Add(formulaNode);
                 }
 
-                if (importDeclarationNode.ImportType == ImportType.Module)
+                if (importNode.ImportType == ImportType.Module)
                 {
-                    if (moduleName == null || importDeclarationNode.ImportPath.Count != 1)
+                    if (moduleName == null || importNode.ImportPath.Count != 1)
                     {
                         throw new CimbolInternalException("An error occurred while generating the dependency tree.");
                     }
 
-                    if (!programNode.TryGetModuleDeclaration(moduleName, out var moduleNode))
+                    if (!programNode.TryGetModule(moduleName, out var moduleNode))
                     {
                         // The imported module was not found in the program.
                         return;
@@ -169,12 +169,12 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 }
             });
 
-            treeWalker.OnEnter<ModuleDeclarationNode>(moduleDeclarationNode =>
+            treeWalker.OnEnter<ModuleNode>(moduleNode =>
             {
-                currentModule = moduleDeclarationNode;
+                currentModule = moduleNode;
             });
 
-            treeWalker.OnExit<ModuleDeclarationNode>(moduleDeclarationNode =>
+            treeWalker.OnExit<ModuleNode>(moduleNode =>
             {
                 currentModule = null;
             });

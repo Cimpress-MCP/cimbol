@@ -10,7 +10,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
     /// </summary>
     public class DeclarationHierarchy
     {
-        private readonly Dictionary<IDeclarationNode, ModuleDeclarationNode> _hierarchy;
+        private readonly Dictionary<IDeclarationNode, ModuleNode> _hierarchy;
 
         /// <summary>
         /// Initialize a new instance of the <see cref="DeclarationHierarchy"/> class.
@@ -26,37 +26,37 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="declarationNode">The declaration node to get the parent module declaration of.</param>
         /// <returns>The parent module of the given declaration node if it exists, or null otherwise.</returns>
-        internal ModuleDeclarationNode GetParentModule(IDeclarationNode declarationNode)
+        internal ModuleNode GetParentModule(IDeclarationNode declarationNode)
         {
             return _hierarchy.TryGetValue(declarationNode, out var moduleDeclarationNode)
                 ? moduleDeclarationNode
                 : null;
         }
 
-        private static Dictionary<IDeclarationNode, ModuleDeclarationNode> BuildHierarchy(ProgramNode programNode)
+        private static Dictionary<IDeclarationNode, ModuleNode> BuildHierarchy(ProgramNode programNode)
         {
-            ModuleDeclarationNode parentModule = null;
+            ModuleNode parentModule = null;
 
-            var hierarchy = new Dictionary<IDeclarationNode, ModuleDeclarationNode>();
+            var hierarchy = new Dictionary<IDeclarationNode, ModuleNode>();
 
             var treeWalker = new TreeWalker(programNode);
 
-            treeWalker.OnEnter<FormulaDeclarationNode>(formulaDeclarationNode =>
+            treeWalker.OnEnter<FormulaNode>(formulaNode =>
             {
-                hierarchy[formulaDeclarationNode] = parentModule;
+                hierarchy[formulaNode] = parentModule;
             });
 
-            treeWalker.OnEnter<ImportDeclarationNode>(importDeclarationNode =>
+            treeWalker.OnEnter<ImportNode>(importNode =>
             {
-                hierarchy[importDeclarationNode] = parentModule;
+                hierarchy[importNode] = parentModule;
             });
 
-            treeWalker.OnEnter<ModuleDeclarationNode>(moduleDeclarationNode =>
+            treeWalker.OnEnter<ModuleNode>(moduleNode =>
             {
-                parentModule = moduleDeclarationNode;
+                parentModule = moduleNode;
             });
 
-            treeWalker.OnExit<ModuleDeclarationNode>(moduleDeclarationNode =>
+            treeWalker.OnExit<ModuleNode>(moduleNode =>
             {
                 parentModule = null;
             });

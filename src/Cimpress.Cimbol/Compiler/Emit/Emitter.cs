@@ -51,7 +51,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 var symbol = symbolRegistry.Constants.Resolve(constantNode.Name);
                 variables.Add(symbol.Variable);
 
-                var constant = EmitConstantDeclaration(constantNode, symbol);
+                var constant = EmitConstantInitialization(constantNode, symbol);
                 expressions.Add(constant);
             }
 
@@ -66,18 +66,18 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     variables.Add(childSymbol.Value.Variable);
                 }
 
-                var module = EmitModuleDeclaration(symbol);
+                var module = EmitModuleInitialization(symbol);
                 expressions.Add(module);
             }
 
             {
-                expressions.Add(EmitErrorListDeclaration(symbolRegistry.ErrorList));
+                expressions.Add(EmitErrorListInitialization(symbolRegistry.ErrorList));
 
                 variables.Add(symbolRegistry.ErrorList.Variable);
             }
 
             {
-                expressions.Add(EmitSkipListDeclaration(symbolRegistry.SkipList, executionPlan));
+                expressions.Add(EmitSkipListInitialization(symbolRegistry.SkipList, executionPlan));
 
                 variables.Add(symbolRegistry.SkipList.Variable);
             }
@@ -92,12 +92,12 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
-        /// Emit an expression from a constant declaration node.
+        /// Emit an expression from a constant node.
         /// </summary>
-        /// <param name="constantNode">The constant declaration node to emit from.</param>
-        /// <param name="symbol">The symbol to assign the value of the constant declaration.</param>
+        /// <param name="constantNode">The constant node to emit from.</param>
+        /// <param name="symbol">The symbol to assign the value of the constant.</param>
         /// <returns>An expression that initializes and assigns the value of a constant.</returns>
-        internal Expression EmitConstantDeclaration(ConstantDeclarationNode constantNode, Symbol symbol)
+        internal Expression EmitConstantInitialization(ConstantNode constantNode, Symbol symbol)
         {
             return Expression.Assign(symbol.Variable, Expression.Constant(constantNode.Value));
         }
@@ -107,7 +107,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="errorListSymbol">The symbol to assign the error list to.</param>
         /// <returns>An expression that initializes the error list with an empty array with some allocated space.</returns>
-        internal Expression EmitErrorListDeclaration(Symbol errorListSymbol)
+        internal Expression EmitErrorListInitialization(Symbol errorListSymbol)
         {
             const int DefaultErrorAllocation = 4;
 
@@ -119,11 +119,11 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
-        /// Emit an expression from a module declaration node.
+        /// Emit an expression from a module node.
         /// </summary>
-        /// <param name="symbol">The symbol to assign the value of the module declaration.</param>
+        /// <param name="symbol">The symbol to assign the value of the module.</param>
         /// <returns>An expression that initializes the container for the exports of a module.</returns>
-        internal Expression EmitModuleDeclaration(Symbol symbol)
+        internal Expression EmitModuleInitialization(Symbol symbol)
         {
             var innerInitialization = Expression.New(
                 StandardFunctions.DictionaryConstructorInfo,
@@ -140,7 +140,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <param name="skipListSymbol">The symbol to assign the skip list to.</param>
         /// <param name="executionPlan">The execution plan for the program.</param>
         /// <returns>An expression that initializes the skip list with an array of true values.</returns>
-        internal Expression EmitSkipListDeclaration(Symbol skipListSymbol, ExecutionPlan executionPlan)
+        internal Expression EmitSkipListInitialization(Symbol skipListSymbol, ExecutionPlan executionPlan)
         {
             var executionStepCount = executionPlan.ExecutionGroups
                 .SelectMany(executionGroup => executionGroup.ExecutionSteps)
@@ -237,15 +237,15 @@ namespace Cimpress.Cimbol.Compiler.Emit
             var symbolTable = executionStep.SymbolTable;
             var symbolRegistry = symbolTable.Registry;
 
-            if (executionStep.DeclarationNode is FormulaDeclarationNode formulaDeclarationNode)
+            if (executionStep.DeclarationNode is FormulaNode formulaNode)
             {
-                internalExpression = EmitFormulaDeclaration(formulaDeclarationNode, symbolTable);
+                internalExpression = EmitFormula(formulaNode, symbolTable);
 
-                isExported = formulaDeclarationNode.IsExported;
+                isExported = formulaNode.IsExported;
             }
-            else if (executionStep.DeclarationNode is ImportDeclarationNode importDeclarationNode)
+            else if (executionStep.DeclarationNode is ImportNode importNode)
             {
-                internalExpression = EmitImportDeclaration(importDeclarationNode, programNode, symbolRegistry);
+                internalExpression = EmitImport(importNode, programNode, symbolRegistry);
 
                 isExported = false;
             }
@@ -296,13 +296,13 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
-        /// Emit an expression from a formula declaration node.
+        /// Emit an expression from a formula node.
         /// </summary>
-        /// <param name="formulaNode">The formula declaration node to emit from.</param>
+        /// <param name="formulaNode">The formula node to emit from.</param>
         /// <param name="symbolTable">The symbol table for the current scope.</param>
         /// <returns>An expression that encompasses evaluating and assigning a formula.</returns>
-        internal Expression EmitFormulaDeclaration(
-            FormulaDeclarationNode formulaNode,
+        internal Expression EmitFormula(
+            FormulaNode formulaNode,
             SymbolTable symbolTable)
         {
             return EmitExpression(formulaNode.Body, symbolTable);
@@ -315,8 +315,8 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <param name="programNode">The parent program node of the import declaration node.</param>
         /// <param name="symbolRegistry">The symbol registry for the program.</param>
         /// <returns>An expression that performs an import.</returns>
-        internal Expression EmitImportDeclaration(
-            ImportDeclarationNode importNode,
+        internal Expression EmitImport(
+            ImportNode importNode,
             ProgramNode programNode,
             SymbolRegistry symbolRegistry)
         {
@@ -333,7 +333,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
                 case ImportType.Formula:
                 {
-                    var moduleNode = programNode.GetModuleDeclaration(firstName);
+                    var moduleNode = programNode.GetModule(firstName);
 
                     var externalSymbolTable = symbolRegistry.GetSymbolTable(moduleNode);
 

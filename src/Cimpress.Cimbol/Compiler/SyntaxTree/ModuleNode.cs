@@ -8,23 +8,22 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
     /// <summary>
     /// The syntax tree node for declaring a module.
     /// </summary>
-    public class ModuleDeclarationNode : IDeclarationNode
+    public class ModuleNode : ISyntaxNode
     {
-        private readonly ImmutableDictionary<string, FormulaDeclarationNode> _formulaTable;
+        private readonly ImmutableDictionary<string, FormulaNode> _formulaTable;
 
-        private readonly ImmutableDictionary<string, ImportDeclarationNode> _importTable;
+        private readonly ImmutableDictionary<string, ImportNode> _importTable;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModuleDeclarationNode"/> class.
+        /// Initializes a new instance of the <see cref="ModuleNode"/> class.
         /// </summary>
         /// <param name="name">The name of the module.</param>
         /// <param name="imports">The list of imports in the module.</param>
-        /// <param name="exports">The list of exports in the module.</param>
         /// <param name="formulas">The list of formulas in the module.</param>
-        public ModuleDeclarationNode(
+        public ModuleNode(
             string name,
-            IEnumerable<ImportDeclarationNode> imports,
-            IEnumerable<FormulaDeclarationNode> formulas)
+            IEnumerable<ImportNode> imports,
+            IEnumerable<FormulaNode> formulas)
         {
             Formulas = formulas?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(formulas));
 
@@ -46,14 +45,16 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <summary>
         /// The list of formulas in the module.
         /// </summary>
-        public IEnumerable<FormulaDeclarationNode> Formulas { get; }
+        public IEnumerable<FormulaNode> Formulas { get; }
 
         /// <summary>
         /// The list of imports in the module.
         /// </summary>
-        public IEnumerable<ImportDeclarationNode> Imports { get; }
+        public IEnumerable<ImportNode> Imports { get; }
 
-        /// <inheritdoc cref="IDeclarationNode.Name"/>
+        /// <summary>
+        /// The name to assign to the module.
+        /// </summary>
         public string Name { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>
@@ -87,27 +88,27 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {
-            return $"{{{nameof(ModuleDeclarationNode)} {Name}}}";
+            return $"{{{nameof(ModuleNode)} {Name}}}";
         }
 
         /// <summary>
-        /// Try and retrieve a formula declaration by name from the module.
+        /// Try and retrieve a formula by name from the module.
         /// </summary>
         /// <param name="formulaName">The name of the formula to retrieve.</param>
         /// <param name="formula">The retrieved formula.</param>
         /// <returns>Whether or not the formula was retrieved.</returns>
-        public bool TryGetFormulaDeclaration(string formulaName, out FormulaDeclarationNode formula)
+        public bool TryGetFormula(string formulaName, out FormulaNode formula)
         {
             return _formulaTable.TryGetValue(formulaName, out formula);
         }
 
         /// <summary>
-        /// Try and retrieve an import declaration by name from the module.
+        /// Try and retrieve an import by name from the module.
         /// </summary>
         /// <param name="importName">The name of the import to retrieve.</param>
-        /// <param name="import">The retrieved imort.</param>
+        /// <param name="import">The retrieved import.</param>
         /// <returns>Whether or not the import was retrieved.</returns>
-        public bool TryGetImportDeclaration(string importName, out ImportDeclarationNode import)
+        public bool TryGetImport(string importName, out ImportNode import)
         {
             return _importTable.TryGetValue(importName, out import);
         }

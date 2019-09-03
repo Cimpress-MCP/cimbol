@@ -6,22 +6,22 @@ using NUnit.Framework;
 namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
 {
     [TestFixture]
-    public class ConstantDeclarationNodeTests
+    public class ConstantNodeTests
     {
         [Test]
         public void Should_SerializeToString_When_Valid()
         {
-            var node = new ConstantDeclarationNode("x", BooleanValue.True);
+            var node = new ConstantNode("x", BooleanValue.True);
 
             var result = node.ToString();
 
-            Assert.That(result, Is.EqualTo("{ConstantDeclarationNode x}"));
+            Assert.That(result, Is.EqualTo("{ConstantNode x}"));
         }
 
         [Test]
         public void Should_ReturnEmptyEnumerable_When_IteratingChildren()
         {
-            var node = new ConstantDeclarationNode("x", BooleanValue.True);
+            var node = new ConstantNode("x", BooleanValue.True);
 
             var result = node.Children();
 
@@ -31,7 +31,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnEmptyEnumerable_When_IteratingChildrenReverse()
         {
-            var node = new ConstantDeclarationNode("x", BooleanValue.True);
+            var node = new ConstantNode("x", BooleanValue.True);
 
             var result = node.ChildrenReverse();
 

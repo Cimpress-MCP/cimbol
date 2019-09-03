@@ -22,7 +22,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <param name="symbolTable">The symbol table used by the execution step.</param>
         public ExecutionStep(
             int id,
-            ModuleDeclarationNode moduleNode,
+            ModuleNode moduleNode,
             IDeclarationNode declarationNode,
             ExecutionStepType type,
             IEnumerable<ExecutionStep> dependents,
@@ -75,7 +75,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <summary>
         /// The name of the module containing the execution step.
         /// </summary>
-        public ModuleDeclarationNode ModuleNode { get; }
+        public ModuleNode ModuleNode { get; }
 
         /// <summary>
         /// The symbol table that the execution step should use.

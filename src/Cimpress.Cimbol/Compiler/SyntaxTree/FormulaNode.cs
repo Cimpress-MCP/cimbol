@@ -6,15 +6,15 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
     /// <summary>
     /// A syntax node representing an entire formula.
     /// </summary>
-    public class FormulaDeclarationNode : IDeclarationNode
+    public class FormulaNode : IDeclarationNode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FormulaDeclarationNode"/> class.
+        /// Initializes a new instance of the <see cref="FormulaNode"/> class.
         /// </summary>
         /// <param name="name">The name to assign to the formula's result.</param>
         /// <param name="body">The body of the formula.</param>
         /// <param name="isExported">Whether or not the formula is exported.</param>
-        public FormulaDeclarationNode(string name, IExpressionNode body, bool isExported)
+        public FormulaNode(string name, IExpressionNode body, bool isExported)
         {
             Body = body ?? throw new ArgumentNullException(nameof(body));
 
@@ -58,7 +58,7 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <inheritdoc cref="object.ToString"/>
         public override string ToString()
         {
-            return $"{{{nameof(FormulaDeclarationNode)} {Name}}}";
+            return $"{{{nameof(FormulaNode)} {Name}}}";
         }
     }
 }

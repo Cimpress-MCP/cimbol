@@ -11,10 +11,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_BeMarkedAsAsynchronous_When_ContainsAsynchronousStep()
         {
-            var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
-            var moduleNode = new ModuleDeclarationNode(
+            var formulaNode1 = new FormulaNode("x", new LiteralNode(null), false);
+            var moduleNode = new ModuleNode(
                 "a",
-                Enumerable.Empty<ImportDeclarationNode>(),
+                Enumerable.Empty<ImportNode>(),
                 new[] { formulaNode1 });
             var symbolTable = new SymbolTable(new SymbolRegistry());
             var executionStep1 = new ExecutionStep(
@@ -34,10 +34,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_BeMarkedAsAsynchronous_When_ContainsSynchronousStep()
         {
-            var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
-            var moduleNode = new ModuleDeclarationNode(
+            var formulaNode1 = new FormulaNode("x", new LiteralNode(null), false);
+            var moduleNode = new ModuleNode(
                 "a",
-                Enumerable.Empty<ImportDeclarationNode>(),
+                Enumerable.Empty<ImportNode>(),
                 new[] { formulaNode1 });
             var symbolTable = new SymbolTable(new SymbolRegistry());
             var executionStep1 = new ExecutionStep(
@@ -57,11 +57,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_MergeTwoExecutionGroups_When_NeitherAreAsynchronous()
         {
-            var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
-            var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
-            var moduleNode = new ModuleDeclarationNode(
+            var formulaNode1 = new FormulaNode("x", new LiteralNode(null), false);
+            var formulaNode2 = new FormulaNode("y", new LiteralNode(null), false);
+            var moduleNode = new ModuleNode(
                 "a",
-                Enumerable.Empty<ImportDeclarationNode>(),
+                Enumerable.Empty<ImportNode>(),
                 new[] { formulaNode1, formulaNode2 });
             var symbolTable = new SymbolTable(new SymbolRegistry());
             var executionStep1 = new ExecutionStep(
@@ -92,11 +92,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_MergeTwoExecutionGroups_When_SecondIsAsynchronous()
         {
-            var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
-            var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
-            var moduleNode = new ModuleDeclarationNode(
+            var formulaNode1 = new FormulaNode("x", new LiteralNode(null), false);
+            var formulaNode2 = new FormulaNode("y", new LiteralNode(null), false);
+            var moduleNode = new ModuleNode(
                 "a",
-                Enumerable.Empty<ImportDeclarationNode>(),
+                Enumerable.Empty<ImportNode>(),
                 new[] { formulaNode1, formulaNode2 });
             var symbolRegistry = new SymbolRegistry();
             var symbolTable = new SymbolTable(symbolRegistry);
@@ -128,11 +128,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_MergeTwoExecutionGroups_When_FirstIsAsynchronous()
         {
-            var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
-            var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
-            var moduleNode = new ModuleDeclarationNode(
+            var formulaNode1 = new FormulaNode("x", new LiteralNode(null), false);
+            var formulaNode2 = new FormulaNode("y", new LiteralNode(null), false);
+            var moduleNode = new ModuleNode(
                 "a",
-                Enumerable.Empty<ImportDeclarationNode>(),
+                Enumerable.Empty<ImportNode>(),
                 new[] { formulaNode1, formulaNode2 });
             var symbolRegistry = new SymbolRegistry();
             var symbolTable = new SymbolTable(symbolRegistry);
@@ -167,11 +167,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_MergeTwoExecutionGroups_When_BothAreAsynchronous()
         {
-            var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
-            var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
-            var moduleNode = new ModuleDeclarationNode(
+            var formulaNode1 = new FormulaNode("x", new LiteralNode(null), false);
+            var formulaNode2 = new FormulaNode("y", new LiteralNode(null), false);
+            var moduleNode = new ModuleNode(
                 "a",
-                Enumerable.Empty<ImportDeclarationNode>(),
+                Enumerable.Empty<ImportNode>(),
                 new[] { formulaNode1, formulaNode2 });
             var symbolRegistry = new SymbolRegistry();
             var symbolTable = new SymbolTable(symbolRegistry);

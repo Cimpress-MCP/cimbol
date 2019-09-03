@@ -12,9 +12,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         public void Should_SerializeToString_When_Valid()
         {
             var node = new ProgramNode(
-                Enumerable.Empty<ArgumentDeclarationNode>(),
-                Enumerable.Empty<ConstantDeclarationNode>(),
-                Enumerable.Empty<ModuleDeclarationNode>());
+                Enumerable.Empty<ArgumentNode>(),
+                Enumerable.Empty<ConstantNode>(),
+                Enumerable.Empty<ModuleNode>());
 
             var result = node.ToString();
 
@@ -24,12 +24,12 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildren()
         {
-            var child1 = new ArgumentDeclarationNode("a");
-            var child2 = new ConstantDeclarationNode("b", BooleanValue.True);
-            var child3 = new ModuleDeclarationNode(
+            var child1 = new ArgumentNode("a");
+            var child2 = new ConstantNode("b", BooleanValue.True);
+            var child3 = new ModuleNode(
                 "c",
-                Enumerable.Empty<ImportDeclarationNode>(),
-                Enumerable.Empty<FormulaDeclarationNode>());
+                Enumerable.Empty<ImportNode>(),
+                Enumerable.Empty<FormulaNode>());
             var node = new ProgramNode(new[] { child1 }, new[] { child2 }, new[] { child3 });
 
             var result = node.Children();
@@ -41,12 +41,12 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildrenReverse()
         {
-            var child1 = new ArgumentDeclarationNode("a");
-            var child2 = new ConstantDeclarationNode("b", BooleanValue.True);
-            var child3 = new ModuleDeclarationNode(
+            var child1 = new ArgumentNode("a");
+            var child2 = new ConstantNode("b", BooleanValue.True);
+            var child3 = new ModuleNode(
                 "c",
-                Enumerable.Empty<ImportDeclarationNode>(),
-                Enumerable.Empty<FormulaDeclarationNode>());
+                Enumerable.Empty<ImportNode>(),
+                Enumerable.Empty<FormulaNode>());
             var node = new ProgramNode(new[] { child1 }, new[] { child2 }, new[] { child3 });
 
             var result = node.ChildrenReverse();

@@ -5,22 +5,22 @@ using NUnit.Framework;
 namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
 {
     [TestFixture]
-    public class ArgumentDeclarationNodeTests
+    public class ArgumentNodeTests
     {
         [Test]
         public void Should_SerializeToString_When_Valid()
         {
-            var node = new ArgumentDeclarationNode("x");
+            var node = new ArgumentNode("x");
 
             var result = node.ToString();
 
-            Assert.That(result, Is.EqualTo("{ArgumentDeclarationNode x}"));
+            Assert.That(result, Is.EqualTo("{ArgumentNode x}"));
         }
 
         [Test]
         public void Should_ReturnEmptyEnumerable_When_IteratingChildren()
         {
-            var node = new ArgumentDeclarationNode("x");
+            var node = new ArgumentNode("x");
 
             var result = node.Children();
 
@@ -30,7 +30,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnEmptyEnumerable_When_IteratingChildrenReverse()
         {
-            var node = new ArgumentDeclarationNode("x");
+            var node = new ArgumentNode("x");
 
             var result = node.ChildrenReverse();
 

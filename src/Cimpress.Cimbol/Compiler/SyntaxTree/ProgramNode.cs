@@ -10,11 +10,11 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
     /// </summary>
     public class ProgramNode : ISyntaxNode
     {
-        private readonly ImmutableDictionary<string, ArgumentDeclarationNode> _argumentTable;
+        private readonly ImmutableDictionary<string, ArgumentNode> _argumentTable;
 
-        private readonly ImmutableDictionary<string, ConstantDeclarationNode> _constantTable;
+        private readonly ImmutableDictionary<string, ConstantNode> _constantTable;
 
-        private readonly ImmutableDictionary<string, ModuleDeclarationNode> _moduleTable;
+        private readonly ImmutableDictionary<string, ModuleNode> _moduleTable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgramNode"/> class.
@@ -23,9 +23,9 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <param name="constants">The list of constants in the program.</param>
         /// <param name="modules">The list of modules in the program.</param>
         public ProgramNode(
-            IEnumerable<ArgumentDeclarationNode> arguments,
-            IEnumerable<ConstantDeclarationNode> constants,
-            IEnumerable<ModuleDeclarationNode> modules)
+            IEnumerable<ArgumentNode> arguments,
+            IEnumerable<ConstantNode> constants,
+            IEnumerable<ModuleNode> modules)
         {
             Arguments = arguments?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(arguments));
 
@@ -52,17 +52,17 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         /// <summary>
         /// The list of arguments in the program.
         /// </summary>
-        public IEnumerable<ArgumentDeclarationNode> Arguments { get; }
+        public IEnumerable<ArgumentNode> Arguments { get; }
 
         /// <summary>
         /// The list of constants in the program.
         /// </summary>
-        public IEnumerable<ConstantDeclarationNode> Constants { get; }
+        public IEnumerable<ConstantNode> Constants { get; }
 
         /// <summary>
         /// The list of modules in the program.
         /// </summary>
-        public IEnumerable<ModuleDeclarationNode> Modules { get; }
+        public IEnumerable<ModuleNode> Modules { get; }
 
         /// <inheritdoc cref="ISyntaxNode.Children"/>
         public IEnumerable<ISyntaxNode> Children()
@@ -103,48 +103,48 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         }
 
         /// <summary>
-        /// Retrieve an argument declaration by name from the program.
+        /// Retrieve an argument by name from the program.
         /// </summary>
         /// <param name="argumentName">The name of the argument to retrieve.</param>
         /// <returns>The retrieved argument.</returns>
-        public ArgumentDeclarationNode GetArgumentDeclaration(string argumentName)
+        public ArgumentNode GetArgument(string argumentName)
         {
             if (_argumentTable.TryGetValue(argumentName, out var argument))
             {
                 return argument;
             }
 
-            throw new KeyNotFoundException("Argument declaration not found in the program.");
+            throw new KeyNotFoundException("Argument not found in the program.");
         }
 
         /// <summary>
-        /// Retrieve a constant declaration by name from the program.
+        /// Retrieve a constant by name from the program.
         /// </summary>
         /// <param name="constantName">The name of the constant to retrieve.</param>
         /// <returns>The retrieved constant.</returns>
-        public ConstantDeclarationNode GetConstantDeclaration(string constantName)
+        public ConstantNode GetConstant(string constantName)
         {
             if (_constantTable.TryGetValue(constantName, out var constant))
             {
                 return constant;
             }
 
-            throw new KeyNotFoundException("Constant declaration not found in the program.");
+            throw new KeyNotFoundException("Constant not found in the program.");
         }
 
         /// <summary>
-        /// Retrieve a module declaration by name from the program.
+        /// Retrieve a module by name from the program.
         /// </summary>
         /// <param name="moduleName">The name of the module to retrieve.</param>
         /// <returns>The retrieved module.</returns>
-        public ModuleDeclarationNode GetModuleDeclaration(string moduleName)
+        public ModuleNode GetModule(string moduleName)
         {
             if (_moduleTable.TryGetValue(moduleName, out var module))
             {
                 return module;
             }
             
-            throw new KeyNotFoundException("Module declaration not found in the program.");
+            throw new KeyNotFoundException("Module not found in the program.");
         }
 
         /// <inheritdoc cref="object.ToString"/>
@@ -154,34 +154,34 @@ namespace Cimpress.Cimbol.Compiler.SyntaxTree
         }
 
         /// <summary>
-        /// Try and retrieve an argument declaration by name from the program.
+        /// Try and retrieve an argument by name from the program.
         /// </summary>
         /// <param name="argumentName">The name of the argument to retrieve.</param>
         /// <param name="argument">The retrieved argument.</param>
         /// <returns>Whether or not the argument was retrieved.</returns>
-        public bool TryGetArgumentDeclaration(string argumentName, out ArgumentDeclarationNode argument)
+        public bool TryGetArgument(string argumentName, out ArgumentNode argument)
         {
             return _argumentTable.TryGetValue(argumentName, out argument);
         }
 
         /// <summary>
-        /// Try and retrieve a constant declaration by name from the program.
+        /// Try and retrieve a constant by name from the program.
         /// </summary>
         /// <param name="constantName">The name of the constant to retrieve.</param>
         /// <param name="constant">The retrieved constant.</param>
         /// <returns>Whether or not the argument was retrieved.</returns>
-        public bool TryGetConstantDeclaration(string constantName, out ConstantDeclarationNode constant)
+        public bool TryGetConstant(string constantName, out ConstantNode constant)
         {
             return _constantTable.TryGetValue(constantName, out constant);
         }
 
         /// <summary>
-        /// Try and retrieve a module declaration by name from the program.
+        /// Try and retrieve a module by name from the program.
         /// </summary>
         /// <param name="moduleName">The name of the module to retrieve.</param>
         /// <param name="module">The retrieved module.</param>
         /// <returns>Whether or not the module was retrieved.</returns>
-        public bool TryGetModuleDeclaration(string moduleName, out ModuleDeclarationNode module)
+        public bool TryGetModule(string moduleName, out ModuleNode module)
         {
             return _moduleTable.TryGetValue(moduleName, out module);
         }

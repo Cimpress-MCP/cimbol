@@ -153,9 +153,9 @@ namespace Cimpress.Cimbol
         /// Compile the module into an abstract syntax tree.
         /// </summary>
         /// <returns>An abstract syntax tree.</returns>
-        internal ModuleDeclarationNode ToSyntaxTree()
+        internal ModuleNode ToSyntaxTree()
         {
-            var imports = new List<ImportDeclarationNode>();
+            var imports = new List<ImportNode>();
 
             foreach (var referenceEntry in _references)
             {
@@ -168,12 +168,12 @@ namespace Cimpress.Cimbol
                 var importPath = GetImportPath(referenceEntry.Value);
                 var importType = GetImportType(referenceEntry.Value);
 
-                imports.Add(new ImportDeclarationNode(referenceEntry.Key, importPath, importType));
+                imports.Add(new ImportNode(referenceEntry.Key, importPath, importType));
             }
 
             var formulas = _formulas.Values.Select(formula => formula.ToSyntaxTree());
 
-            return new ModuleDeclarationNode(Name, imports, formulas);
+            return new ModuleNode(Name, imports, formulas);
         }
 
         private static IEnumerable<string> GetImportPath(IResource resource)

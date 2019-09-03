@@ -12,10 +12,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_Initialize_When_GivenValidParameters()
         {
-            var formulaDeclarationNode = new FormulaDeclarationNode("x", new IdentifierNode("y"), false);
-            var moduleDeclarationNode = new ModuleDeclarationNode(
+            var formulaDeclarationNode = new FormulaNode("x", new IdentifierNode("y"), false);
+            var moduleDeclarationNode = new ModuleNode(
                 "a",
-                Array.Empty<ImportDeclarationNode>(),
+                Array.Empty<ImportNode>(),
                 new[] { formulaDeclarationNode });
 
             var result = new ExecutionStep(
@@ -33,10 +33,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_BeMarkedAsAsynchronous_When_GivenAsynchronousType()
         {
-            var formulaDeclarationNode = new FormulaDeclarationNode("x", new IdentifierNode("y"), false);
-            var moduleDeclarationNode = new ModuleDeclarationNode(
+            var formulaDeclarationNode = new FormulaNode("x", new IdentifierNode("y"), false);
+            var moduleDeclarationNode = new ModuleNode(
                 "a",
-                Array.Empty<ImportDeclarationNode>(),
+                Array.Empty<ImportNode>(),
                 new[] { formulaDeclarationNode });
             var executionStep = new ExecutionStep(
                 0,
@@ -54,10 +54,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_BeMarkedAsAsynchronous_When_GivenSynchronousType()
         {
-            var formulaDeclarationNode = new FormulaDeclarationNode("x", new IdentifierNode("y"), false);
-            var moduleDeclarationNode = new ModuleDeclarationNode(
+            var formulaDeclarationNode = new FormulaNode("x", new IdentifierNode("y"), false);
+            var moduleDeclarationNode = new ModuleNode(
                 "a",
-                Array.Empty<ImportDeclarationNode>(),
+                Array.Empty<ImportNode>(),
                 new[] { formulaDeclarationNode });
             var executionStep = new ExecutionStep(
                 0,

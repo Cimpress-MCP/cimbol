@@ -43,9 +43,9 @@ namespace Cimpress.Cimbol
         /// Compile the constant into an abstract syntax tree.
         /// </summary>
         /// <returns>An abstract syntax tree.</returns>
-        internal ConstantDeclarationNode ToSyntaxTree()
+        internal ConstantNode ToSyntaxTree()
         {
-            return new ConstantDeclarationNode(Name, Value);
+            return new ConstantNode(Name, Value);
         }
     }
 }

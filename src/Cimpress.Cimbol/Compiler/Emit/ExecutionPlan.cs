@@ -66,7 +66,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
                     executionStepId += 1;
 
-                    var isAsynchronous = (declarationNode as FormulaDeclarationNode)?.IsAsynchronous ?? false;
+                    var isAsynchronous = (declarationNode as FormulaNode)?.IsAsynchronous ?? false;
 
                     var symbolTable = symbolRegistry.GetSymbolTable(declarationNode);
 

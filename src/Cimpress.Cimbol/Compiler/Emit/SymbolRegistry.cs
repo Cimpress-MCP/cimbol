@@ -14,7 +14,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
     {
         private readonly Dictionary<IDeclarationNode, Symbol> _exportSymbols;
 
-        private readonly Dictionary<IDeclarationNode, SymbolTable> _symbolTables;
+        private readonly Dictionary<ISyntaxNode, SymbolTable> _symbolTables;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SymbolRegistry"/> class.
@@ -33,7 +33,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             _exportSymbols = new Dictionary<IDeclarationNode, Symbol>();
 
-            _symbolTables = new Dictionary<IDeclarationNode, SymbolTable>();
+            _symbolTables = new Dictionary<ISyntaxNode, SymbolTable>();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             _exportSymbols = new Dictionary<IDeclarationNode, Symbol>();
 
-            _symbolTables = new Dictionary<IDeclarationNode, SymbolTable>();
+            _symbolTables = new Dictionary<ISyntaxNode, SymbolTable>();
 
             Symbol exportSymbol = null;
 
@@ -70,41 +70,41 @@ namespace Cimpress.Cimbol.Compiler.Emit
             tableStack.Push(new SymbolTable(this));
 
             treeWalker
-                .OnEnter<ArgumentDeclarationNode>(argumentDeclarationNode =>
+                .OnEnter<ArgumentNode>(argumentNode =>
                 {
-                    var name = argumentDeclarationNode.Name;
+                    var name = argumentNode.Name;
 
                     Arguments.Define(name, typeof(ILocalValue));
                 })
-                .OnEnter<ConstantDeclarationNode>(constantDeclarationNode =>
+                .OnEnter<ConstantNode>(constantNode =>
                 {
-                    var name = constantDeclarationNode.Name;
+                    var name = constantNode.Name;
 
                     Constants.Define(name, typeof(ILocalValue));
                 })
-                .OnEnter<FormulaDeclarationNode>(formulaDeclarationNode =>
+                .OnEnter<FormulaNode>(formulaNode =>
                 {
                     var symbolTable = tableStack.Peek();
 
-                    symbolTable.Define(formulaDeclarationNode.Name, typeof(ILocalValue));
+                    symbolTable.Define(formulaNode.Name, typeof(ILocalValue));
 
-                    _exportSymbols.Add(formulaDeclarationNode, exportSymbol);
+                    _exportSymbols.Add(formulaNode, exportSymbol);
 
-                    _symbolTables.Add(formulaDeclarationNode, symbolTable);
+                    _symbolTables.Add(formulaNode, symbolTable);
                 })
-                .OnEnter<ImportDeclarationNode>(importDeclarationNode =>
+                .OnEnter<ImportNode>(importNode =>
                 {
                     var symbolTable = tableStack.Peek();
 
-                    symbolTable.Define(importDeclarationNode.Name, typeof(ILocalValue));
+                    symbolTable.Define(importNode.Name, typeof(ILocalValue));
 
-                    _exportSymbols.Add(importDeclarationNode, exportSymbol);
+                    _exportSymbols.Add(importNode, exportSymbol);
 
-                    _symbolTables.Add(importDeclarationNode, symbolTable);
+                    _symbolTables.Add(importNode, symbolTable);
                 })
-                .OnEnter<ModuleDeclarationNode>(moduleDeclarationNode =>
+                .OnEnter<ModuleNode>(moduleNode =>
                 {
-                    var name = moduleDeclarationNode.Name;
+                    var name = moduleNode.Name;
 
                     Modules.Define(name, typeof(ObjectValue));
 
@@ -116,9 +116,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
                     exportSymbol = Modules.Resolve(name);
 
-                    _symbolTables.Add(moduleDeclarationNode, symbolTable);
+                    _symbolTables.Add(moduleNode, symbolTable);
                 })
-                .OnExit<ModuleDeclarationNode>(moduleDeclarationNode =>
+                .OnExit<ModuleNode>(moduleNode =>
                 {
                     tableStack.Pop();
                 });
@@ -156,7 +156,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <summary>
         /// The symbol tables in the program.
         /// </summary>
-        public IReadOnlyDictionary<IDeclarationNode, SymbolTable> SymbolTables => _symbolTables;
+        public IReadOnlyDictionary<ISyntaxNode, SymbolTable> SymbolTables => _symbolTables;
 
         /// <summary>
         /// Get the export symbol for a given declaration node.
@@ -178,7 +178,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="declarationNode">The declaration node.</param>
         /// <returns>The symbol table for the declaration node.</returns>
-        public SymbolTable GetSymbolTable(IDeclarationNode declarationNode)
+        public SymbolTable GetSymbolTable(ISyntaxNode declarationNode)
         {
             if (_symbolTables.TryGetValue(declarationNode, out var symbolTable))
             {
@@ -186,28 +186,6 @@ namespace Cimpress.Cimbol.Compiler.Emit
             }
 
             throw new ArgumentException("The provided declaration node does not have a corresponding symbol table.");
-        }
-
-        /// <summary>
-        /// Try to get an export symbol for a given declaration node.
-        /// </summary>
-        /// <param name="declarationNode">The declaration node.</param>
-        /// <param name="exportSymbol">The export symbol for the declaration node.</param>
-        /// <returns>True if the export symbol was retrieved, false otherwise.</returns>
-        public bool TryGetExportSymbol(IDeclarationNode declarationNode, out Symbol exportSymbol)
-        {
-            return _exportSymbols.TryGetValue(declarationNode, out exportSymbol);
-        }
-
-        /// <summary>
-        /// Try to get a symbol table for a given declaration node.
-        /// </summary>
-        /// <param name="declarationNode">The declaration node.</param>
-        /// <param name="symbolTable">The symbol table for the declaration node.</param>
-        /// <returns>True if the symbol table was retrieved, false otherwise.</returns>
-        public bool TryGetSymbolTable(IDeclarationNode declarationNode, out SymbolTable symbolTable)
-        {
-            return _symbolTables.TryGetValue(declarationNode, out symbolTable);
         }
     }
 }
