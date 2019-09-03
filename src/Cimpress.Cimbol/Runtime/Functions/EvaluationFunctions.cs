@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Cimpress.Cimbol.Exceptions;
@@ -42,16 +43,16 @@ namespace Cimpress.Cimbol.Runtime.Functions
         /// <summary>
         /// Execute an asynchronous formula.
         /// </summary>
-        /// <param name="id">The ID of the formula.</param>
-        /// <param name="dependents">The collection of IDs of formulas dependent on this execution.</param>
-        /// <param name="skips">The collection of formulas to not execute. </param>
+        /// <param name="executionStepContext">Metadata about the execution step.</param>
+        /// <param name="errorList">The list of errors encountered in the program.</param>
+        /// <param name="skipList">The collection of formulas to not execute. </param>
         /// <param name="executeCallback">The callback to run to execute the formula.</param>
         /// <param name="resultCallback">The callback to run to save the result of the formula's execution.</param>
         /// <returns>A task the completes the formula is evaluated and saved.</returns>
         internal static async Task EvaluateAsynchronous(
-            int id,
-            int[] dependents,
-            bool[] skips,
+            ExecutionStepContext executionStepContext,
+            List<CimbolRuntimeException> errorList,
+            bool[] skipList,
             Func<ILocalValue> executeCallback,
             Action<ILocalValue> resultCallback)
         {
@@ -59,9 +60,9 @@ namespace Cimpress.Cimbol.Runtime.Functions
 
             CimbolRuntimeException error;
 
-            if (!skips[id])
+            if (!skipList[executionStepContext.Id])
             {
-                error = null;
+                error = new CimbolRuntimeSkipException();
                 goto evaluationFailure;
             }
 
@@ -77,7 +78,7 @@ namespace Cimpress.Cimbol.Runtime.Functions
 
             if (!(result is PromiseValue promiseValue))
             {
-                error = CimbolRuntimeException.AwaitError(null);
+                error = CimbolRuntimeException.AwaitError(executionStepContext.FormulaName);
                 goto evaluationFailure;
             }
 
@@ -95,33 +96,38 @@ namespace Cimpress.Cimbol.Runtime.Functions
             return;
 
             evaluationFailure:
-            foreach (var dependent in dependents)
+
+            foreach (var dependent in executionStepContext.Dependents)
             {
-                skips[dependent] = false;
+                skipList[dependent] = false;
             }
 
-            resultCallback(new ErrorValue(error));
+            error.Formula = executionStepContext.FormulaName;
+            error.Module = executionStepContext.ModuleName;
+            errorList.Add(error);
+
+            resultCallback(null);
         }
 
         /// <summary>
         /// Execute a synchronous formula.
         /// </summary>
-        /// <param name="id">The ID of the formula.</param>
-        /// <param name="dependents">The collection of IDs of formulas dependent on this execution.</param>
-        /// <param name="skips">The collection of formulas to not execute. </param>
+        /// <param name="executionStepContext">Metadata about the execution step.</param>
+        /// <param name="errorList">The list of errors encountered in the program.</param>
+        /// <param name="skipList">The collection of formulas to not execute. </param>
         /// <param name="executeCallback">The callback to run to execute the formula.</param>
         /// <returns>The result of evaluating the formula.</returns>
         internal static ILocalValue EvaluateSynchronous(
-            int id,
-            int[] dependents,
-            bool[] skips,
+            ExecutionStepContext executionStepContext,
+            List<CimbolRuntimeException> errorList,
+            bool[] skipList,
             Func<ILocalValue> executeCallback)
         {
             CimbolRuntimeException error;
 
-            if (!skips[id])
+            if (!skipList[executionStepContext.Id])
             {
-                error = null;
+                error = new CimbolRuntimeSkipException();
                 goto evaluationFailure;
             }
 
@@ -136,12 +142,16 @@ namespace Cimpress.Cimbol.Runtime.Functions
             }
 
             evaluationFailure:
-            foreach (var dependent in dependents)
+            foreach (var dependent in executionStepContext.Dependents)
             {
-                skips[dependent] = false;
+                skipList[dependent] = false;
             }
 
-            return new ErrorValue(error);
+            error.Formula = executionStepContext.FormulaName;
+            error.Module = executionStepContext.ModuleName;
+            errorList.Add(error);
+
+            return null;
         }
 
         /// <summary>
@@ -161,7 +171,9 @@ namespace Cimpress.Cimbol.Runtime.Functions
         /// <param name="closer">The function to combine all of the outputs together.</param>
         /// <param name="executionGroups">The list of execution groups.</param>
         /// <returns>A task that resolves to the final program output.</returns>
-        internal static async Task<ObjectValue> RunExecutionGroups(Func<ObjectValue> closer, Func<Task>[] executionGroups)
+        internal static async Task<EvaluationResult> RunExecutionGroups(
+            Func<EvaluationResult> closer,
+            Func<Task>[] executionGroups)
         {
             foreach (var executionGroup in executionGroups)
             {

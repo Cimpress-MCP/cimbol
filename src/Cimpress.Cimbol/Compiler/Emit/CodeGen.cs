@@ -229,15 +229,18 @@ namespace Cimpress.Cimbol.Compiler.Emit
             {
                 var key = Expression.Constant(modules[i].Name);
                 var value = symbolRegistry.Modules.Resolve(modules[i].Name).Variable;
-                elements[i] = Expression.ElementInit(StandardFunctions.DictionaryAddInfo, key, value);
+                elements[i] = Expression.ElementInit(StandardFunctions.ModuleDictionaryAddInfo, key, value);
             }
 
-            var init = Expression.New(
-                StandardFunctions.DictionaryConstructorInfo,
+            var moduleInit = Expression.New(
+                StandardFunctions.ModuleDictionaryConstructorInfo,
                 Expression.Constant(StringComparer.OrdinalIgnoreCase));
-            var dictionary = Expression.ListInit(init, elements);
+            var moduleDictionary = Expression.ListInit(moduleInit, elements);
 
-            return Expression.New(LocalValueFunctions.ObjectValueConstructorInfo, dictionary);
+            return Expression.New(
+                LocalValueFunctions.EvaluationResultConstructorInfo,
+                moduleDictionary,
+                symbolRegistry.ErrorList.Variable);
         }
 
         /// <summary>

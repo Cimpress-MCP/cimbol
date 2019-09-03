@@ -26,11 +26,13 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 throw new ArgumentNullException(nameof(programNode));
             }
 
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+
             var dependencyTable = new DependencyTable(programNode);
 
             var symbolRegistry = new SymbolRegistry(programNode);
 
-            var executionPlan = new ExecutionPlan(dependencyTable, symbolRegistry);
+            var executionPlan = new ExecutionPlan(declarationHierarchy, dependencyTable, symbolRegistry);
 
             var arguments = new List<ParameterExpression>(programNode.Arguments.Count());
 
@@ -68,13 +70,21 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 expressions.Add(module);
             }
 
-            expressions.Add(EmitSkipListDeclaration(symbolRegistry.SkipList, executionPlan));
+            {
+                expressions.Add(EmitErrorListDeclaration(symbolRegistry.ErrorList));
 
-            variables.Add(symbolRegistry.SkipList.Variable);
+                variables.Add(symbolRegistry.ErrorList.Variable);
+            }
+
+            {
+                expressions.Add(EmitSkipListDeclaration(symbolRegistry.SkipList, executionPlan));
+
+                variables.Add(symbolRegistry.SkipList.Variable);
+            }
 
             var programOutput = CodeGen.ProgramReturn(programNode, symbolRegistry);
 
-            var programBody = EmitExecutionPlan(executionPlan, programNode, symbolRegistry.SkipList, programOutput);
+            var programBody = EmitExecutionPlan(executionPlan, programNode, programOutput);
 
             expressions.Add(programBody);
 
@@ -90,6 +100,22 @@ namespace Cimpress.Cimbol.Compiler.Emit
         internal Expression EmitConstantDeclaration(ConstantDeclarationNode constantNode, Symbol symbol)
         {
             return Expression.Assign(symbol.Variable, Expression.Constant(constantNode.Value));
+        }
+
+        /// <summary>
+        /// Emit an expression that declares and initializes the error list.
+        /// </summary>
+        /// <param name="errorListSymbol">The symbol to assign the error list to.</param>
+        /// <returns>An expression that initializes the error list with an empty array with some allocated space.</returns>
+        internal Expression EmitErrorListDeclaration(Symbol errorListSymbol)
+        {
+            const int DefaultErrorAllocation = 4;
+
+            var errorListInit = Expression.New(
+                StandardFunctions.ExceptionListConstructorInfo,
+                Expression.Constant(DefaultErrorAllocation));
+
+            return Expression.Assign(errorListSymbol.Variable, errorListInit);
         }
 
         /// <summary>
@@ -134,20 +160,18 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="executionPlan">The execution plan.</param>
         /// <param name="programNode">The program that the execution plan belongs to.</param>
-        /// <param name="skipListSymbol">The symbol containing the skip list.</param>
         /// <param name="outputBuilder">The expression that builds the program output.</param>
         /// <returns>An expression that executes an execution plan.</returns>
         internal Expression EmitExecutionPlan(
             ExecutionPlan executionPlan,
             ProgramNode programNode,
-            Symbol skipListSymbol,
             Expression outputBuilder)
         {
             var executionGroupExpressions = new List<LambdaExpression>(executionPlan.ExecutionGroups.Count);
 
             foreach (var executionGroup in executionPlan.ExecutionGroups)
             {
-                var executionGroupExpression = EmitExecutionGroup(executionGroup, programNode, skipListSymbol);
+                var executionGroupExpression = EmitExecutionGroup(executionGroup, programNode);
 
                 executionGroupExpressions.Add(executionGroupExpression);
             }
@@ -162,12 +186,10 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="executionGroup">The execution group.</param>
         /// <param name="programNode">The program node that the execution group belongs to.</param>
-        /// <param name="skipListSymbol">The symbol for the program's skip list.</param>
         /// <returns>An expression that executes an execution group.</returns>
         internal LambdaExpression EmitExecutionGroup(
             ExecutionGroup executionGroup,
-            ProgramNode programNode,
-            Symbol skipListSymbol)
+            ProgramNode programNode)
         {
             var asynchronousStepExpressions = new List<Expression>(executionGroup.ExecutionSteps.Count);
 
@@ -175,9 +197,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             foreach (var executionStep in executionGroup.ExecutionSteps)
             {
-                var exportSymbol = executionStep.SymbolTable.Registry.GetExportSymbol(executionStep.Node);
+                var exportSymbol = executionStep.SymbolTable.Registry.GetExportSymbol(executionStep.DeclarationNode);
 
-                var executionStepExpression = EmitExecutionStep(executionStep, programNode, skipListSymbol, exportSymbol);
+                var executionStepExpression = EmitExecutionStep(executionStep, programNode, exportSymbol);
 
                 if (executionStep.IsAsynchronous)
                 {
@@ -201,13 +223,11 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="executionStep">The execution step being emitted.</param>
         /// <param name="programNode">The program that the execution step belongs to.</param>
-        /// <param name="skipListSymbol">The symbol containing the skip list.</param>
         /// <param name="exportSymbol">The symbol to potentially export the result of the execution step to.</param>
         /// <returns>An expression that executes an execution step.</returns>
         internal Expression EmitExecutionStep(
             ExecutionStep executionStep,
             ProgramNode programNode,
-            Symbol skipListSymbol,
             Symbol exportSymbol)
         {
             bool isExported;
@@ -217,13 +237,13 @@ namespace Cimpress.Cimbol.Compiler.Emit
             var symbolTable = executionStep.SymbolTable;
             var symbolRegistry = symbolTable.Registry;
 
-            if (executionStep.Node is FormulaDeclarationNode formulaDeclarationNode)
+            if (executionStep.DeclarationNode is FormulaDeclarationNode formulaDeclarationNode)
             {
                 internalExpression = EmitFormulaDeclaration(formulaDeclarationNode, symbolTable);
 
                 isExported = formulaDeclarationNode.IsExported;
             }
-            else if (executionStep.Node is ImportDeclarationNode importDeclarationNode)
+            else if (executionStep.DeclarationNode is ImportDeclarationNode importDeclarationNode)
             {
                 internalExpression = EmitImportDeclaration(importDeclarationNode, programNode, symbolRegistry);
 
@@ -234,38 +254,43 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 throw new CimbolInternalException("Unrecognized declaration node type.");
             }
 
-            var internalSymbol = symbolTable.Resolve(executionStep.Node.Name);
+            var internalSymbol = symbolTable.Resolve(executionStep.DeclarationNode.Name);
 
-            var dependencies = executionStep.Dependencies.Select(dependency => dependency.Id).ToArray();
-
+            // If the execution step is asynchronous, create a handler (a callback that runs once the returned task is resolved).
+            // This handler's code depends on whether or not it is exported.
+            // Once this handler exists, create the actual execution step that runs the handler once it finishes evaluating.
             if (executionStep.IsAsynchronous)
             {
                 var handler = isExported
                     ? CodeGen.ExecutionStepAsyncHandlerExported(
                         internalSymbol.Variable,
-                        executionStep.Node.Name,
+                        executionStep.DeclarationNode.Name,
                         exportSymbol.Variable)
                     : CodeGen.ExecutionStepAsyncHandler(internalSymbol.Variable);
 
                 return CodeGen.ExecutionStepAsync(
                     internalExpression,
                     handler,
-                    executionStep.Id,
-                    dependencies,
-                    skipListSymbol.Variable);
+                    executionStep.ExecutionStepContext,
+                    symbolRegistry.ErrorList.Variable,
+                    symbolRegistry.SkipList.Variable);
             }
 
+            // If the execution step is synchronous, do the inverse of the above.
+            // First, create an evaluator that performs error handling and skipping among other tasks.
+            // This is equivalent to the second step in the asynchronous case.
+            // Then, depending on if the variable is exported or not, wrap the evaluator in a handler that assigns the result correctly.
             var evaluator = CodeGen.ExecutionStepSyncEvaluation(
                 internalExpression,
-                executionStep.Id,
-                dependencies,
-                skipListSymbol.Variable);
+                executionStep.ExecutionStepContext,
+                symbolRegistry.ErrorList.Variable,
+                symbolRegistry.SkipList.Variable);
 
             return isExported
                 ? CodeGen.ExecutionStepSyncExported(
                     evaluator,
                     internalSymbol.Variable,
-                    executionStep.Node.Name,
+                    executionStep.DeclarationNode.Name,
                     exportSymbol.Variable)
                 : CodeGen.ExecutionStepSync(evaluator, internalSymbol.Variable);
         }

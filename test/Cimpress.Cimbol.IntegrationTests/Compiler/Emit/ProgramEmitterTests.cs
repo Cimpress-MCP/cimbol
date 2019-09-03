@@ -20,7 +20,9 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
 
             var result = executable.Call().Result;
 
-            var resultModule = result.Value["Main"] as ObjectValue;
+            Assert.That(result.Errors, Has.Length.EqualTo(0));
+            Assert.That(result.Modules, Has.Count.EqualTo(1));
+            var resultModule = result.Modules["Main"];
             Assert.That(resultModule, Is.Not.Null);
             Assert.That(resultModule.Value["ResultA"], Has.Property("Value").EqualTo(4302));
             Assert.That(resultModule.Value["ResultB"], Has.Property("Value").EqualTo(4000));
@@ -47,7 +49,9 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
 
             var result = executable.Call(new NumberValue(5), new NumberValue(10), new NumberValue(17)).Result;
 
-            var resultModule = result.Value["Main"] as ObjectValue;
+            Assert.That(result.Errors, Has.Length.EqualTo(0));
+            Assert.That(result.Modules, Has.Count.EqualTo(1));
+            var resultModule = result.Modules["Main"];
             Assert.That(resultModule, Is.Not.Null);
             Assert.That(resultModule.Value["ResultA"], Has.Property("Value").EqualTo(5));
             Assert.That(resultModule.Value["ResultB"], Has.Property("Value").EqualTo(100));
@@ -72,7 +76,9 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
 
             var result = executable.Call().Result;
 
-            var resultModule = result.Value["Main"] as ObjectValue;
+            Assert.That(result.Errors, Has.Length.EqualTo(0));
+            Assert.That(result.Modules, Has.Count.EqualTo(1));
+            var resultModule = result.Modules["Main"];
             Assert.That(resultModule, Is.Not.Null);
             Assert.That(resultModule.Value["ResultA"], Has.Property("Value").EqualTo(5));
             Assert.That(resultModule.Value["ResultB"], Has.Property("Value").EqualTo(100));

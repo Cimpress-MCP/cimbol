@@ -32,7 +32,7 @@ namespace Cimpress.Cimbol
         /// </summary>
         /// <param name="arguments">The list of arguments to call the executable with.</param>
         /// <returns>The result of evaluating the executable.</returns>
-        public Task<ObjectValue> Call(params ILocalValue[] arguments)
+        public Task<EvaluationResult> Call(params ILocalValue[] arguments)
         {
             if (arguments == null)
             {
@@ -48,7 +48,7 @@ namespace Cimpress.Cimbol
 
             var returnValue = _function.DynamicInvoke(castArguments);
 
-            return returnValue as Task<ObjectValue>;
+            return returnValue as Task<EvaluationResult>;
         }
     }
 }

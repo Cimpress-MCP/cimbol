@@ -17,10 +17,19 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionPlan"/> from a dependency table.
         /// </summary>
+        /// <param name="declarationHierarchy">The declaration hierarchy used by the execution plan.</param>
         /// <param name="dependencyTable">The dependency table used by the execution plan.</param>
         /// <param name="symbolRegistry">The symbol registry used by the execution plan.</param>
-        public ExecutionPlan(DependencyTable dependencyTable, SymbolRegistry symbolRegistry)
+        internal ExecutionPlan(
+            DeclarationHierarchy declarationHierarchy,
+            DependencyTable dependencyTable,
+            SymbolRegistry symbolRegistry)
         {
+            if (declarationHierarchy == null)
+            {
+                throw new ArgumentNullException(nameof(declarationHierarchy));
+            }
+
             if (dependencyTable == null)
             {
                 throw new ArgumentNullException(nameof(dependencyTable));
@@ -61,8 +70,11 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
                     var symbolTable = symbolRegistry.GetSymbolTable(declarationNode);
 
+                    var moduleNode = declarationHierarchy.GetParentModule(declarationNode);
+
                     var executionStep = new ExecutionStep(
                         currentId,
+                        moduleNode,
                         declarationNode,
                         isAsynchronous ? ExecutionStepType.Asynchronous : ExecutionStepType.Synchronous,
                         dependentExecutionSteps,
@@ -86,7 +98,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// This will optimize them by merging the synchronous groups together.
         /// </summary>
         /// <param name="executionGroups">The list of execution groups.</param>
-        public ExecutionPlan(IEnumerable<ExecutionGroup> executionGroups)
+        internal ExecutionPlan(IEnumerable<ExecutionGroup> executionGroups)
         {
             if (executionGroups == null)
             {

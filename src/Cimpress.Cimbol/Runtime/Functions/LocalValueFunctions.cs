@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 
 namespace Cimpress.Cimbol.Runtime.Functions
@@ -9,6 +10,12 @@ namespace Cimpress.Cimbol.Runtime.Functions
     /// </summary>
     internal static class LocalValueFunctions
     {
+        /// <summary>
+        /// The constructor info for the constructor for the <see cref="EvaluationResult"/> class.
+        /// </summary>
+        internal static ConstructorInfo EvaluationResultConstructorInfo { get; } = typeof(EvaluationResult)
+            .GetConstructor(new[] { typeof(Dictionary<string, ObjectValue>), typeof(List<CimbolRuntimeException>) });
+
         /// <summary>
         /// The cached <see cref="ConstructorInfo"/> for the constructor for a <see cref="ListValue"/>.
         /// </summary>

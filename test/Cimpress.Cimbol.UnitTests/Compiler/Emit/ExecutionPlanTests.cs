@@ -20,11 +20,50 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         }
 
         [Test]
-        public void Should_ThrowError_When_InitializedWithNullDependencyTable()
+        public void Should_ThrowError_When_InitializedWithNullDeclarationHierarchy()
         {
+            var programNode = new ProgramNode(
+                Enumerable.Empty<ArgumentDeclarationNode>(),
+                Enumerable.Empty<ConstantDeclarationNode>(),
+                Enumerable.Empty<ModuleDeclarationNode>());
+            var dependencyTable = new DependencyTable(programNode);
+            var symbolRegistry = new SymbolRegistry(programNode);
+
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var executionPlan = new ExecutionPlan(null, null);
+                var executionPlan = new ExecutionPlan(null, dependencyTable, symbolRegistry);
+            });
+        }
+
+        [Test]
+        public void Should_ThrowError_When_InitializedWithNullDependencyTable()
+        {
+            var programNode = new ProgramNode(
+                Enumerable.Empty<ArgumentDeclarationNode>(),
+                Enumerable.Empty<ConstantDeclarationNode>(),
+                Enumerable.Empty<ModuleDeclarationNode>());
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+            var symbolRegistry = new SymbolRegistry(programNode);
+
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var executionPlan = new ExecutionPlan(declarationHierarchy, null, symbolRegistry);
+            });
+        }
+
+        [Test]
+        public void Should_ThrowError_When_InitializedWithNullSymbolRegistry()
+        {
+            var programNode = new ProgramNode(
+                Enumerable.Empty<ArgumentDeclarationNode>(),
+                Enumerable.Empty<ConstantDeclarationNode>(),
+                Enumerable.Empty<ModuleDeclarationNode>());
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+            var dependencyTable = new DependencyTable(programNode);
+
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var executionPlan = new ExecutionPlan(declarationHierarchy, dependencyTable, null);
             });
         }
 
@@ -45,24 +84,28 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var symbolRegistry = new SymbolRegistry();
             var executionStep1 = new ExecutionStep(
                 1,
+                new ModuleDeclarationNode("z", Enumerable.Empty<ImportDeclarationNode>(), Enumerable.Empty<FormulaDeclarationNode>()), 
                 new FormulaDeclarationNode("a", new IdentifierNode("a"), false),
                 ExecutionStepType.Synchronous,
                 Array.Empty<ExecutionStep>(),
                 new SymbolTable(symbolRegistry));
             var executionStep2 = new ExecutionStep(
                 2,
+                new ModuleDeclarationNode("z", Enumerable.Empty<ImportDeclarationNode>(), Enumerable.Empty<FormulaDeclarationNode>()),
                 new FormulaDeclarationNode("b", new IdentifierNode("b"), false),
                 ExecutionStepType.Synchronous,
                 Array.Empty<ExecutionStep>(),
                 new SymbolTable(symbolRegistry));
             var executionStep3 = new ExecutionStep(
                 3,
+                new ModuleDeclarationNode("z", Enumerable.Empty<ImportDeclarationNode>(), Enumerable.Empty<FormulaDeclarationNode>()),
                 new FormulaDeclarationNode("c", new IdentifierNode("c"), false),
                 ExecutionStepType.Synchronous,
                 Array.Empty<ExecutionStep>(),
                 new SymbolTable(symbolRegistry));
             var executionStep4 = new ExecutionStep(
                 4,
+                new ModuleDeclarationNode("z", Enumerable.Empty<ImportDeclarationNode>(), Enumerable.Empty<FormulaDeclarationNode>()),
                 new FormulaDeclarationNode("d", new IdentifierNode("d"), false),
                 ExecutionStepType.Synchronous,
                 Array.Empty<ExecutionStep>(),
@@ -94,16 +137,17 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ArgumentDeclarationNode>(),
                 Enumerable.Empty<ConstantDeclarationNode>(),
                 new[] { moduleNode });
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
             var dependencyTable = new DependencyTable(programNode);
             var symbolRegistry = new SymbolRegistry(programNode);
-            var executionPlan = new ExecutionPlan(dependencyTable, symbolRegistry);
+            var executionPlan = new ExecutionPlan(declarationHierarchy, dependencyTable, symbolRegistry);
 
             var result = executionPlan.ExecutionGroups.ToArray();
             
             Assert.That(result, Has.Length.EqualTo(1));
             var resultGroup = result.First();
             var expected = new[] { formulaNode1, formulaNode2, formulaNode3, formulaNode4 };
-            Assert.That(resultGroup.ExecutionSteps.Select(x => x.Node), Is.EqualTo(expected));
+            Assert.That(resultGroup.ExecutionSteps.Select(x => x.DeclarationNode), Is.EqualTo(expected));
         }
     }
 }

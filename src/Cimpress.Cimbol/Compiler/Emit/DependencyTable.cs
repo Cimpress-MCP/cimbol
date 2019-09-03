@@ -29,16 +29,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DependencyTable"/> class.
-        /// </summary>
-        /// <param name="dependencyGraph">The graph of dependencies between declarations.</param>
-        internal DependencyTable(Graph<IDeclarationNode> dependencyGraph)
-        {
-            _dependencyGraph = dependencyGraph ?? throw new ArgumentNullException(nameof(dependencyGraph));
-        }
-
-        /// <summary>
         /// Get the dependencies for a given declaration node.
+        /// The dependencies of a declaration are the nodes that it requires for evaluation.
+        /// For example, if a formula A exists and is equal to the expression "B + 1", B is a dependency of A.
         /// </summary>
         /// <param name="declarationNode">The declaration node to get the dependencies of.</param>
         /// <returns>Either a list of the dependencies of the given declaration node, or an empty collection.</returns>
@@ -49,6 +42,8 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
         /// <summary>
         /// Get the dependents for a given declaration node.
+        /// The dependents of a declaration are the nodes that use this as a dependency.
+        /// For example, if a formula A exists and is equal to the expression "B + 1", A is a dependent of B.
         /// </summary>
         /// <param name="declarationNode">The declaration node to get the dependents of.</param>
         /// <returns>Either a list of the dependents of the given declaration node, or an empty collection.</returns>

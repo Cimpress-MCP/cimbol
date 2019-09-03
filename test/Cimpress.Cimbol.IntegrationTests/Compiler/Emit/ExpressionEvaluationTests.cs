@@ -1,5 +1,4 @@
-﻿using Cimpress.Cimbol.Runtime.Types;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
 {
@@ -37,7 +36,9 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
 
             var result = executable.Call().Result;
 
-            var resultModule = result.Value["Main"] as ObjectValue;
+            Assert.That(result.Errors, Has.Length.EqualTo(0));
+            Assert.That(result.Modules, Has.Count.EqualTo(1));
+            var resultModule = result.Modules["Main"];
             Assert.That(resultModule, Is.Not.Null);
             Assert.That(resultModule.Value["Formula"], Has.Property("Value").EqualTo(expected).Within(0.00000001m));
         }

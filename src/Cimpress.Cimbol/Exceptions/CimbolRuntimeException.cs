@@ -11,10 +11,13 @@ namespace Cimpress.Cimbol.Exceptions
     [Serializable]
     public class CimbolRuntimeException : Exception
     {
+        private const string DefaultMessage = "An error occurred while evaluating a Cimbol program.";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CimbolRuntimeException"/> class.
         /// </summary>
         public CimbolRuntimeException()
+            : base(DefaultMessage)
         {
         }
 
@@ -63,7 +66,12 @@ namespace Cimpress.Cimbol.Exceptions
         /// <summary>
         /// The formula where the exception occurred.
         /// </summary>
-        public string Formula { get; }
+        public string Formula { get; set; }
+
+        /// <summary>
+        /// The module where the exception occurred.
+        /// </summary>
+        public string Module { get; set; }
 
         /// <summary>
         /// Builds a <see cref="CimbolRuntimeException"/> class with a message about a value that does not support accessing.

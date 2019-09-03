@@ -99,5 +99,6 @@ release:prd:
     refs:
       - master
   script:
+    - dotnet restore
     - dotnet pack --no-build -p:NuspecFile=$(pwd)/Cimpress.Cimbol.nuspec -o $(pwd)/build
     - dotnet nuget push build/*.nupkg -k $CT_ARTIFACTORY_USERNAME:$CT_ARTIFACTORY_API_KEY -s $CT_ARTIFACTORY_NUGET_URL

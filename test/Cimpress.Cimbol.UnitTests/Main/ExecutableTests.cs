@@ -19,7 +19,9 @@ namespace Cimpress.Cimbol.UnitTests.Main
         [TestCase(3)]
         public async Task Should_RunToCompletion_When_InvokedCorrectly(int argumentCount)
         {
-            var returnValue = new ObjectValue(new Dictionary<string, ILocalValue>());
+            var returnValue = new EvaluationResult(
+                new Dictionary<string, ObjectValue>(),
+                new List<CimbolRuntimeException>());
             var function = CreateMockFunction(Task.FromResult(returnValue), argumentCount);
             var executable = new Executable(function);
             var arguments = Enumerable.Range(0, argumentCount).Select(_ => (ILocalValue)BooleanValue.True).ToArray();
@@ -46,7 +48,9 @@ namespace Cimpress.Cimbol.UnitTests.Main
             int argumentCount,
             int providedCount)
         {
-            var returnValue = new ObjectValue(new Dictionary<string, ILocalValue>());
+            var returnValue = new EvaluationResult(
+                new Dictionary<string, ObjectValue>(),
+                new List<CimbolRuntimeException>());
             var function = CreateMockFunction(Task.FromResult(returnValue), argumentCount);
             var executable = new Executable(function);
             var arguments = Enumerable.Range(0, providedCount).Select(_ => (ILocalValue)BooleanValue.True).ToArray();
@@ -61,7 +65,9 @@ namespace Cimpress.Cimbol.UnitTests.Main
         [TestCase(3)]
         public void ShouldNot_RunToCompletion_When_GivenNullArguments(int argumentCount)
         {
-            var returnValue = new ObjectValue(new Dictionary<string, ILocalValue>());
+            var returnValue = new EvaluationResult(
+                new Dictionary<string, ObjectValue>(),
+                new List<CimbolRuntimeException>());
             var function = CreateMockFunction(Task.FromResult(returnValue), argumentCount);
             var executable = new Executable(function);
 
@@ -70,7 +76,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
                 Throws.InstanceOf<ArgumentNullException>());
         }
 
-        private Delegate CreateMockFunction(Task<ObjectValue> returnValue, int argumentCount)
+        private Delegate CreateMockFunction(Task<EvaluationResult> returnValue, int argumentCount)
         {
             var parameters = new ParameterExpression[argumentCount];
 

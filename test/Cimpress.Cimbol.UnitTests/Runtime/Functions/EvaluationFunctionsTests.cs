@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Cimpress.Cimbol.Exceptions;
+using Cimpress.Cimbol.Runtime;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
@@ -25,12 +26,20 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var expected = new NumberValue(1);
             var taskValue = new PromiseValue(Task.FromResult((ILocalValue)expected));
             var dependencies = Array.Empty<int>();
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
-            await EvaluationFunctions.EvaluateAsynchronous(0, dependencies, skipList, () => taskValue, x => result = x);
+            await EvaluationFunctions.EvaluateAsynchronous(
+                executionStepContext,
+                errorList,
+                skipList,
+                () => taskValue,
+                x => result = x);
 
             Assert.That(result, Is.SameAs(expected));
+            Assert.That(errorList, Is.Empty);
         }
 
         [Test]
@@ -39,13 +48,21 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var expected = new NumberValue(1);
             var taskValue = new PromiseValue(Task.FromResult((ILocalValue)expected));
             var dependencies = Array.Empty<int>();
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { false };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
-            await EvaluationFunctions.EvaluateAsynchronous(0, dependencies, skipList, () => taskValue, x => result = x);
+            await EvaluationFunctions.EvaluateAsynchronous(
+                executionStepContext,
+                errorList,
+                skipList,
+                () => taskValue,
+                x => result = x);
 
-            Assert.That(result, Is.InstanceOf<ErrorValue>());
-            Assert.That(result, Has.Property("Value").Null);
+            Assert.That(result, Is.Null);
+            Assert.That(errorList, Has.Count.EqualTo(1));
+            Assert.That(errorList[0], Is.InstanceOf<CimbolRuntimeException>());
         }
 
         [Test]
@@ -53,18 +70,21 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         {
             var expected = CimbolRuntimeException.IfConditionError(null);
             var dependencies = Array.Empty<int>();
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
             await EvaluationFunctions.EvaluateAsynchronous(
-                0,
-                dependencies,
+                executionStepContext,
+                errorList,
                 skipList,
                 () => throw expected,
                 x => result = x);
 
-            Assert.That(result, Is.InstanceOf<ErrorValue>());
-            Assert.That(result, Has.Property("Value").SameAs(expected));
+            Assert.That(result, Is.Null);
+            Assert.That(errorList, Has.Count.EqualTo(1));
+            Assert.That(errorList[0], Is.SameAs(expected));
         }
 
         [Test]
@@ -72,13 +92,21 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         {
             var taskValue = new NumberValue(1);
             var dependencies = Array.Empty<int>();
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
-            await EvaluationFunctions.EvaluateAsynchronous(0, dependencies, skipList, () => taskValue, x => result = x);
+            await EvaluationFunctions.EvaluateAsynchronous(
+                executionStepContext,
+                errorList,
+                skipList,
+                () => taskValue,
+                x => result = x);
 
-            Assert.That(result, Is.InstanceOf<ErrorValue>());
-            Assert.That(result, Has.Property("Value").Not.Null);
+            Assert.That(result, Is.Null);
+            Assert.That(errorList, Has.Count.EqualTo(1));
+            Assert.That(errorList[0], Is.InstanceOf<CimbolRuntimeException>());
         }
 
         [Test]
@@ -87,18 +115,21 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var expected = CimbolRuntimeException.IfConditionError(null);
             var taskValue = new PromiseValue(Task.FromException<ILocalValue>(expected));
             var dependencies = Array.Empty<int>();
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
             await EvaluationFunctions.EvaluateAsynchronous(
-                0,
-                dependencies,
+                executionStepContext,
+                errorList,
                 skipList,
                 () => taskValue,
                 x => result = x);
 
-            Assert.That(result, Is.InstanceOf<ErrorValue>());
-            Assert.That(result, Has.Property("Value").SameAs(expected));
+            Assert.That(result, Is.Null);
+            Assert.That(errorList, Has.Count.EqualTo(1));
+            Assert.That(errorList[0], Is.SameAs(expected));
         }
 
         [Test]
@@ -107,11 +138,13 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var expected = new NumberValue(1);
             var taskValue = new PromiseValue(Task.FromResult((ILocalValue)expected));
             var dependencies = new[] { 1, 2, 3 };
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { false, true, true, true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             await EvaluationFunctions.EvaluateAsynchronous(
-                0,
-                dependencies,
+                executionStepContext,
+                errorList,
                 skipList,
                 () => taskValue,
                 x => { });
@@ -127,11 +160,13 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var expected = new NumberValue(1);
             var taskValue = new PromiseValue(Task.FromResult((ILocalValue)expected));
             var dependencies = new[] { 1, 2, 3 };
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true, true, true, true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             await EvaluationFunctions.EvaluateAsynchronous(
-                0,
-                dependencies,
+                executionStepContext,
+                errorList,
                 skipList,
                 () => taskValue,
                 x => { });
@@ -146,11 +181,18 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         {
             var expected = new NumberValue(1);
             var dependencies = Array.Empty<int>();
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            var result = EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => expected);
+            var result = EvaluationFunctions.EvaluateSynchronous(
+                executionStepContext,
+                errorList,
+                skipList,
+                () => expected);
 
             Assert.That(result, Is.SameAs(expected));
+            Assert.That(errorList, Is.Empty);
         }
 
         [Test]
@@ -158,12 +200,19 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         {
             var expected = new NumberValue(1);
             var dependencies = Array.Empty<int>();
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { false };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            var result = EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => expected);
+            var result = EvaluationFunctions.EvaluateSynchronous(
+                executionStepContext,
+                errorList,
+                skipList,
+                () => expected);
 
-            Assert.That(result, Is.InstanceOf<ErrorValue>());
-            Assert.That(result, Has.Property("Value").Null);
+            Assert.That(result, Is.Null);
+            Assert.That(errorList, Has.Count.EqualTo(1));
+            Assert.That(errorList[0], Is.InstanceOf<CimbolRuntimeException>());
         }
 
         [Test]
@@ -171,12 +220,19 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         {
             var expected = CimbolRuntimeException.IfConditionError(null);
             var dependencies = Array.Empty<int>();
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            var result = EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => throw expected);
+            var result = EvaluationFunctions.EvaluateSynchronous(
+                executionStepContext,
+                errorList,
+                skipList,
+                () => throw expected);
 
-            Assert.That(result, Is.InstanceOf<ErrorValue>());
-            Assert.That(result, Has.Property("Value").SameAs(expected));
+            Assert.That(result, Is.Null);
+            Assert.That(errorList, Has.Count.EqualTo(1));
+            Assert.That(errorList[0], Is.SameAs(expected));
         }
 
         [Test]
@@ -184,9 +240,15 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         {
             var expected = new NumberValue(1);
             var dependencies = new[] { 1, 2, 3 };
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { false, true, true, true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => expected);
+            EvaluationFunctions.EvaluateSynchronous(
+                executionStepContext,
+                errorList,
+                skipList,
+                () => expected);
 
             Assert.That(skipList[1], Is.False);
             Assert.That(skipList[2], Is.False);
@@ -198,9 +260,15 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         {
             var expected = new NumberValue(1);
             var dependencies = new[] { 1, 2, 3 };
+            var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true, true, true, true };
+            var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            EvaluationFunctions.EvaluateSynchronous(0, dependencies, skipList, () => expected);
+            EvaluationFunctions.EvaluateSynchronous(
+                executionStepContext,
+                errorList,
+                skipList,
+                () => expected);
 
             Assert.That(skipList[1], Is.True);
             Assert.That(skipList[2], Is.True);

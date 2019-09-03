@@ -12,9 +12,14 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void Should_BeMarkedAsAsynchronous_When_ContainsAsynchronousStep()
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
+            var moduleNode = new ModuleDeclarationNode(
+                "a",
+                Enumerable.Empty<ImportDeclarationNode>(),
+                new[] { formulaNode1 });
             var symbolTable = new SymbolTable(new SymbolRegistry());
             var executionStep1 = new ExecutionStep(
                 1,
+                moduleNode,
                 formulaNode1,
                 ExecutionStepType.Asynchronous,
                 Enumerable.Empty<ExecutionStep>(),
@@ -30,9 +35,14 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void ShouldNot_BeMarkedAsAsynchronous_When_ContainsSynchronousStep()
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
+            var moduleNode = new ModuleDeclarationNode(
+                "a",
+                Enumerable.Empty<ImportDeclarationNode>(),
+                new[] { formulaNode1 });
             var symbolTable = new SymbolTable(new SymbolRegistry());
             var executionStep1 = new ExecutionStep(
                 1,
+                moduleNode,
                 formulaNode1,
                 ExecutionStepType.Synchronous,
                 Enumerable.Empty<ExecutionStep>(),
@@ -49,15 +59,21 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
             var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
+            var moduleNode = new ModuleDeclarationNode(
+                "a",
+                Enumerable.Empty<ImportDeclarationNode>(),
+                new[] { formulaNode1, formulaNode2 });
             var symbolTable = new SymbolTable(new SymbolRegistry());
             var executionStep1 = new ExecutionStep(
                 1,
+                moduleNode,
                 formulaNode1,
                 ExecutionStepType.Synchronous,
                 Enumerable.Empty<ExecutionStep>(),
                 symbolTable);
             var executionStep2 = new ExecutionStep(
                 2,
+                moduleNode,
                 formulaNode2,
                 ExecutionStepType.Synchronous,
                 Enumerable.Empty<ExecutionStep>(),
@@ -70,7 +86,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             Assert.That(result, Has.Length.EqualTo(1));
             var resultGroup = result.ElementAt(0);
             Assert.That(resultGroup.ExecutionSteps.Count, Is.EqualTo(2));
-            Assert.That(resultGroup.ExecutionSteps.Select(x => x.Node.Name), Is.EqualTo(new[] { "x", "y" }));
+            Assert.That(resultGroup.ExecutionSteps.Select(x => x.DeclarationNode.Name), Is.EqualTo(new[] { "x", "y" }));
         }
 
         [Test]
@@ -78,16 +94,22 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
             var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
+            var moduleNode = new ModuleDeclarationNode(
+                "a",
+                Enumerable.Empty<ImportDeclarationNode>(),
+                new[] { formulaNode1, formulaNode2 });
             var symbolRegistry = new SymbolRegistry();
             var symbolTable = new SymbolTable(symbolRegistry);
             var executionStep1 = new ExecutionStep(
                 1,
+                moduleNode,
                 formulaNode1,
                 ExecutionStepType.Synchronous,
                 Enumerable.Empty<ExecutionStep>(),
                 symbolTable);
             var executionStep2 = new ExecutionStep(
                 2,
+                moduleNode,
                 formulaNode2,
                 ExecutionStepType.Asynchronous,
                 Enumerable.Empty<ExecutionStep>(),
@@ -100,7 +122,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             Assert.That(result, Has.Length.EqualTo(1));
             var resultGroup = result.ElementAt(0);
             Assert.That(resultGroup.ExecutionSteps.Count, Is.EqualTo(2));
-            Assert.That(resultGroup.ExecutionSteps.Select(x => x.Node.Name), Is.EqualTo(new[] { "x", "y" }));
+            Assert.That(resultGroup.ExecutionSteps.Select(x => x.DeclarationNode.Name), Is.EqualTo(new[] { "x", "y" }));
         }
 
         [Test]
@@ -108,16 +130,22 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
             var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
+            var moduleNode = new ModuleDeclarationNode(
+                "a",
+                Enumerable.Empty<ImportDeclarationNode>(),
+                new[] { formulaNode1, formulaNode2 });
             var symbolRegistry = new SymbolRegistry();
             var symbolTable = new SymbolTable(symbolRegistry);
             var executionStep1 = new ExecutionStep(
                 1,
+                moduleNode,
                 formulaNode1,
                 ExecutionStepType.Asynchronous,
                 Enumerable.Empty<ExecutionStep>(),
                 symbolTable);
             var executionStep2 = new ExecutionStep(
                 2,
+                moduleNode,
                 formulaNode2,
                 ExecutionStepType.Synchronous,
                 Enumerable.Empty<ExecutionStep>(),
@@ -130,10 +158,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             Assert.That(result, Has.Length.EqualTo(2));
             var resultGroup1 = result.ElementAt(0);
             Assert.That(resultGroup1.ExecutionSteps.Count, Is.EqualTo(1));
-            Assert.That(resultGroup1.ExecutionSteps.Select(x => x.Node.Name), Is.EqualTo(new[] { "x" }));
+            Assert.That(resultGroup1.ExecutionSteps.Select(x => x.DeclarationNode.Name), Is.EqualTo(new[] { "x" }));
             var resultGroup2 = result.ElementAt(1);
             Assert.That(resultGroup2.ExecutionSteps.Count, Is.EqualTo(1));
-            Assert.That(resultGroup2.ExecutionSteps.Select(x => x.Node.Name), Is.EqualTo(new[] { "y" }));
+            Assert.That(resultGroup2.ExecutionSteps.Select(x => x.DeclarationNode.Name), Is.EqualTo(new[] { "y" }));
         }
 
         [Test]
@@ -141,16 +169,22 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             var formulaNode1 = new FormulaDeclarationNode("x", new LiteralNode(null), false);
             var formulaNode2 = new FormulaDeclarationNode("y", new LiteralNode(null), false);
+            var moduleNode = new ModuleDeclarationNode(
+                "a",
+                Enumerable.Empty<ImportDeclarationNode>(),
+                new[] { formulaNode1, formulaNode2 });
             var symbolRegistry = new SymbolRegistry();
             var symbolTable = new SymbolTable(symbolRegistry);
             var executionStep1 = new ExecutionStep(
                 1,
+                moduleNode,
                 formulaNode1,
                 ExecutionStepType.Asynchronous,
                 Enumerable.Empty<ExecutionStep>(),
                 symbolTable);
             var executionStep2 = new ExecutionStep(
                 2,
+                moduleNode,
                 formulaNode2,
                 ExecutionStepType.Asynchronous,
                 Enumerable.Empty<ExecutionStep>(),
@@ -163,10 +197,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             Assert.That(result, Has.Length.EqualTo(2));
             var resultGroup1 = result.ElementAt(0);
             Assert.That(resultGroup1.ExecutionSteps.Count, Is.EqualTo(1));
-            Assert.That(resultGroup1.ExecutionSteps.Select(x => x.Node.Name), Is.EqualTo(new[] { "x" }));
+            Assert.That(resultGroup1.ExecutionSteps.Select(x => x.DeclarationNode.Name), Is.EqualTo(new[] { "x" }));
             var resultGroup2 = result.ElementAt(1);
             Assert.That(resultGroup2.ExecutionSteps.Count, Is.EqualTo(1));
-            Assert.That(resultGroup2.ExecutionSteps.Select(x => x.Node.Name), Is.EqualTo(new[] { "y" }));
+            Assert.That(resultGroup2.ExecutionSteps.Select(x => x.DeclarationNode.Name), Is.EqualTo(new[] { "y" }));
         }
 
         [Test]

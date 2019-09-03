@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
 using Cimpress.Cimbol.Utilities;
 
@@ -23,6 +24,8 @@ namespace Cimpress.Cimbol.Compiler.Emit
             Arguments = new SymbolTable(this);
 
             Constants = new SymbolTable(this);
+
+            ErrorList = new Symbol("errorList", typeof(List<CimbolRuntimeException>));
 
             Modules = new SymbolTable(this);
 
@@ -47,6 +50,8 @@ namespace Cimpress.Cimbol.Compiler.Emit
             Arguments = new SymbolTable(this);
 
             Constants = new SymbolTable(this);
+
+            ErrorList = new Symbol("errorList", typeof(List<CimbolRuntimeException>));
 
             Modules = new SymbolTable(this);
 
@@ -132,12 +137,19 @@ namespace Cimpress.Cimbol.Compiler.Emit
         public SymbolTable Constants { get; }
 
         /// <summary>
+        /// The symbol for the list of errors encountered while evaluating the program.
+        /// </summary>
+        public Symbol ErrorList { get; }
+
+        /// <summary>
         /// The modules in the program.
         /// </summary>
         public SymbolTable Modules { get; }
 
         /// <summary>
         /// The symbol for the program's skip list.
+        /// A skip list is an array of booleans that are true if the corresponding formula should be evaluated
+        /// Similarly, the entry in the array for a formula is false if it should be skipped.
         /// </summary>
         public Symbol SkipList { get; }
 

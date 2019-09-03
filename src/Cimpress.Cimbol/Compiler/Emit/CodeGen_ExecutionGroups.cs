@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Cimpress.Cimbol.Runtime;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
 
@@ -87,21 +88,21 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="step">The expression tree for the execution step.</param>
         /// <param name="resultCallback">The lambda expression to run when the result is computed.</param>
-        /// <param name="stepId">The ID of the execution step.</param>
-        /// <param name="dependentStepIds">The list of dependent execution step IDs.</param>
+        /// <param name="executionStepContext">The context of the execution step.</param>
+        /// <param name="errorList">The list of errors encountered while running the program.</param>
         /// <param name="skipList">The list of execution steps to skip the evaluation of.</param>
         /// <returns>An expression that evaluates an asynchronous execution step.</returns>
         internal static Expression ExecutionStepAsync(
             Expression step,
             LambdaExpression resultCallback,
-            int stepId,
-            int[] dependentStepIds,
+            ExecutionStepContext executionStepContext,
+            ParameterExpression errorList,
             ParameterExpression skipList)
         {
             return Expression.Call(
                 EvaluationFunctions.EvaluateAsynchronousInfo,
-                Expression.Constant(stepId),
-                Expression.Constant(dependentStepIds),
+                Expression.Constant(executionStepContext),
+                errorList,
                 skipList,
                 Expression.Lambda(step),
                 resultCallback);
@@ -182,20 +183,20 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// Generates the expression tree for evaluating a synchronous execution step with partial evaluation.
         /// </summary>
         /// <param name="step">The execution step's expression.</param>
-        /// <param name="stepId">The ID of the execution step.</param>
-        /// <param name="dependentStepIds">The list of dependent execution step IDs.</param>
+        /// <param name="executionStepContext">The context of the execution step.</param>
+        /// <param name="errorList">The list of errors encountered while running the program.</param>
         /// <param name="skipList">The list of execution steps to skip the evaluation of.</param>
         /// <returns>An expression that evaluates a synchronous execution step.</returns>
         internal static Expression ExecutionStepSyncEvaluation(
             Expression step,
-            int stepId,
-            int[] dependentStepIds,
+            ExecutionStepContext executionStepContext,
+            ParameterExpression errorList,
             ParameterExpression skipList)
         {
             return Expression.Call(
                 EvaluationFunctions.EvaluateSynchronousInfo,
-                Expression.Constant(stepId),
-                Expression.Constant(dependentStepIds),
+                Expression.Constant(executionStepContext),
+                errorList,
                 skipList,
                 Expression.Lambda(step));
         }
