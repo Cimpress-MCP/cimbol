@@ -60,31 +60,34 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 var symbol = symbolRegistry.Modules.Resolve(moduleNode.Name);
                 variables.Add(symbol.Variable);
 
-                var symbolTable = symbolRegistry.GetSymbolTable(moduleNode);
-                foreach (var childSymbol in symbolTable)
+                var symbolTable = symbolRegistry.GetModuleScope(moduleNode);
+                foreach (var childSymbol in symbolTable.Symbols)
                 {
-                    variables.Add(childSymbol.Value.Variable);
+                    variables.Add(childSymbol.Variable);
                 }
 
                 var module = EmitModuleInitialization(symbol);
                 expressions.Add(module);
             }
 
+            // Initialize the error list and store its variable in the list of program-scoped variables.
             {
                 expressions.Add(EmitErrorListInitialization(symbolRegistry.ErrorList));
 
                 variables.Add(symbolRegistry.ErrorList.Variable);
             }
 
+            // Initialize the skip list and store its variable in the list of program-scoped variables.
             {
                 expressions.Add(EmitSkipListInitialization(symbolRegistry.SkipList, executionPlan));
 
                 variables.Add(symbolRegistry.SkipList.Variable);
             }
 
-            var programOutput = CodeGen.ProgramReturn(programNode, symbolRegistry);
-
-            var programBody = EmitExecutionPlan(executionPlan, programNode, programOutput);
+            var programBody = EmitExecutionPlan(
+                executionPlan,
+                programNode,
+                symbolRegistry);
 
             expressions.Add(programBody);
 
@@ -160,21 +163,26 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="executionPlan">The execution plan.</param>
         /// <param name="programNode">The program that the execution plan belongs to.</param>
-        /// <param name="outputBuilder">The expression that builds the program output.</param>
+        /// <param name="symbolRegistry">The symbol registry for the program.</param>
         /// <returns>An expression that executes an execution plan.</returns>
         internal Expression EmitExecutionPlan(
             ExecutionPlan executionPlan,
             ProgramNode programNode,
-            Expression outputBuilder)
+            SymbolRegistry symbolRegistry)
         {
             var executionGroupExpressions = new List<LambdaExpression>(executionPlan.ExecutionGroups.Count);
 
             foreach (var executionGroup in executionPlan.ExecutionGroups)
             {
-                var executionGroupExpression = EmitExecutionGroup(executionGroup, programNode);
+                var executionGroupExpression = EmitExecutionGroup(
+                    executionGroup,
+                    programNode,
+                    symbolRegistry);
 
                 executionGroupExpressions.Add(executionGroupExpression);
             }
+
+            var outputBuilder = CodeGen.ProgramReturn(programNode, symbolRegistry);
 
             var executionGroupChain = CodeGen.ExecutionGroupChain(executionGroupExpressions, outputBuilder);
 
@@ -186,10 +194,12 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="executionGroup">The execution group.</param>
         /// <param name="programNode">The program node that the execution group belongs to.</param>
+        /// <param name="symbolRegistry">The symbol registry for the program.</param>
         /// <returns>An expression that executes an execution group.</returns>
         internal LambdaExpression EmitExecutionGroup(
             ExecutionGroup executionGroup,
-            ProgramNode programNode)
+            ProgramNode programNode,
+            SymbolRegistry symbolRegistry)
         {
             var asynchronousStepExpressions = new List<Expression>(executionGroup.ExecutionSteps.Count);
 
@@ -197,9 +207,10 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             foreach (var executionStep in executionGroup.ExecutionSteps)
             {
-                var exportSymbol = executionStep.SymbolTable.Registry.GetExportSymbol(executionStep.DeclarationNode);
-
-                var executionStepExpression = EmitExecutionStep(executionStep, programNode, exportSymbol);
+                var executionStepExpression = EmitExecutionStep(
+                    executionStep,
+                    programNode,
+                    symbolRegistry);
 
                 if (executionStep.IsAsynchronous)
                 {
@@ -223,19 +234,20 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="executionStep">The execution step being emitted.</param>
         /// <param name="programNode">The program that the execution step belongs to.</param>
-        /// <param name="exportSymbol">The symbol to potentially export the result of the execution step to.</param>
+        /// <param name="symbolRegistry">The symbol registry for the program.</param>
         /// <returns>An expression that executes an execution step.</returns>
         internal Expression EmitExecutionStep(
             ExecutionStep executionStep,
             ProgramNode programNode,
-            Symbol exportSymbol)
+            SymbolRegistry symbolRegistry)
         {
             bool isExported;
 
             Expression internalExpression;
 
-            var symbolTable = executionStep.SymbolTable;
-            var symbolRegistry = symbolTable.Registry;
+            var symbolTable = symbolRegistry.GetModuleScope(executionStep.ModuleNode);
+
+            var exportSymbol = symbolRegistry.Modules.Resolve(executionStep.ModuleNode.Name);
 
             if (executionStep.DeclarationNode is FormulaNode formulaNode)
             {
@@ -335,7 +347,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 {
                     var moduleNode = programNode.GetModule(firstName);
 
-                    var externalSymbolTable = symbolRegistry.GetSymbolTable(moduleNode);
+                    var externalSymbolTable = symbolRegistry.GetModuleScope(moduleNode);
 
                     return externalSymbolTable.Resolve(secondName).Variable;
                 }
@@ -489,9 +501,11 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <returns>The result of compiling the syntax tree to an expression tree.</returns>
         internal Expression EmitIdentifierNode(IdentifierNode identifierNode, SymbolTable symbolTable)
         {
-            return symbolTable.TryResolve(identifierNode.Identifier, out var variable)
-                ? variable.Variable
-                : CodeGen.Error(CimbolRuntimeException.UnresolvedIdentifier(null, identifierNode.Identifier));
+            var symbol = symbolTable.Resolve(identifierNode.Identifier);
+
+            return symbol == null
+                ? CodeGen.Error(CimbolRuntimeException.UnresolvedIdentifier(null, identifierNode.Identifier))
+                : symbol.Variable;
         }
 
         /// <summary>

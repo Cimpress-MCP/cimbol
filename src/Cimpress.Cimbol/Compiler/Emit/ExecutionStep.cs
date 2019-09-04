@@ -19,14 +19,12 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <param name="declarationNode">The declaration node to evaluate when this step is executed.</param>
         /// <param name="type">The type of the execution step.</param>
         /// <param name="dependents">The list of dependents for the execution step.</param>
-        /// <param name="symbolTable">The symbol table used by the execution step.</param>
         public ExecutionStep(
             int id,
             ModuleNode moduleNode,
             IDeclarationNode declarationNode,
             ExecutionStepType type,
-            IEnumerable<ExecutionStep> dependents,
-            SymbolTable symbolTable)
+            IEnumerable<ExecutionStep> dependents)
         {
             DeclarationNode = declarationNode;
 
@@ -35,8 +33,6 @@ namespace Cimpress.Cimbol.Compiler.Emit
             Id = id;
 
             ModuleNode = moduleNode;
-
-            SymbolTable = symbolTable;
 
             Type = type;
 
@@ -76,11 +72,6 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// The name of the module containing the execution step.
         /// </summary>
         public ModuleNode ModuleNode { get; }
-
-        /// <summary>
-        /// The symbol table that the execution step should use.
-        /// </summary>
-        public SymbolTable SymbolTable { get; }
 
         /// <summary>
         /// The type of the execution step.

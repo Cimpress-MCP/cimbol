@@ -87,29 +87,25 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 new ModuleNode("z", Enumerable.Empty<ImportNode>(), Enumerable.Empty<FormulaNode>()), 
                 new FormulaNode("a", new IdentifierNode("a"), false),
                 ExecutionStepType.Synchronous,
-                Array.Empty<ExecutionStep>(),
-                new SymbolTable(symbolRegistry));
+                Array.Empty<ExecutionStep>());
             var executionStep2 = new ExecutionStep(
                 2,
                 new ModuleNode("z", Enumerable.Empty<ImportNode>(), Enumerable.Empty<FormulaNode>()),
                 new FormulaNode("b", new IdentifierNode("b"), false),
                 ExecutionStepType.Synchronous,
-                Array.Empty<ExecutionStep>(),
-                new SymbolTable(symbolRegistry));
+                Array.Empty<ExecutionStep>());
             var executionStep3 = new ExecutionStep(
                 3,
                 new ModuleNode("z", Enumerable.Empty<ImportNode>(), Enumerable.Empty<FormulaNode>()),
                 new FormulaNode("c", new IdentifierNode("c"), false),
                 ExecutionStepType.Synchronous,
-                Array.Empty<ExecutionStep>(),
-                new SymbolTable(symbolRegistry));
+                Array.Empty<ExecutionStep>());
             var executionStep4 = new ExecutionStep(
                 4,
                 new ModuleNode("z", Enumerable.Empty<ImportNode>(), Enumerable.Empty<FormulaNode>()),
                 new FormulaNode("d", new IdentifierNode("d"), false),
                 ExecutionStepType.Synchronous,
-                Array.Empty<ExecutionStep>(),
-                new SymbolTable(symbolRegistry));
+                Array.Empty<ExecutionStep>());
             var executionGroup1 = new ExecutionGroup(new[] { executionStep1, executionStep2 });
             var executionGroup2 = new ExecutionGroup(new[] { executionStep3, executionStep4 });
             var executionPlan = new ExecutionPlan(new[] { executionGroup1, executionGroup2 });

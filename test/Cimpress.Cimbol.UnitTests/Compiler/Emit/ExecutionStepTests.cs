@@ -23,8 +23,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 moduleDeclarationNode,
                 formulaDeclarationNode,
                 ExecutionStepType.Synchronous,
-                Enumerable.Empty<ExecutionStep>(),
-                new SymbolTable(new SymbolRegistry()));
+                Enumerable.Empty<ExecutionStep>());
 
             Assert.That(result.DeclarationNode, Is.SameAs(formulaDeclarationNode));
             Assert.That(result.Type, Is.EqualTo(ExecutionStepType.Synchronous));
@@ -43,8 +42,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 moduleDeclarationNode,
                 formulaDeclarationNode,
                 ExecutionStepType.Asynchronous,
-                Enumerable.Empty<ExecutionStep>(),
-                new SymbolTable(new SymbolRegistry()));
+                Enumerable.Empty<ExecutionStep>());
 
             var result = executionStep.IsAsynchronous;
 
@@ -64,8 +62,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 moduleDeclarationNode,
                 formulaDeclarationNode,
                 ExecutionStepType.Synchronous,
-                Enumerable.Empty<ExecutionStep>(),
-                new SymbolTable(new SymbolRegistry()));
+                Enumerable.Empty<ExecutionStep>());
 
             var result = executionStep.IsAsynchronous;
 

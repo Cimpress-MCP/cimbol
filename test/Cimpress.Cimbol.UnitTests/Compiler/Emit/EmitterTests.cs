@@ -22,7 +22,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         {
             _emitter = new Emitter();
 
-            _symbolTable = new SymbolTable(new SymbolRegistry());
+            _symbolTable = new SymbolTable();
         }
 
         [Test]
@@ -117,8 +117,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         public void Should_EmitIdentifier_When_GivenIdentifierNodeWithIdentifierInScope()
         {
             var node = new IdentifierNode("x");
-            var symbolRegistry = new SymbolRegistry();
-            var symbolTable = new SymbolTable(symbolRegistry);
+            var symbolTable = new SymbolTable();
             symbolTable.Define("x", typeof(BooleanValue));
 
             var expression = _emitter.EmitExpression(node, symbolTable) as ParameterExpression;
@@ -129,27 +128,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         }
 
         [Test]
-        public void Should_EmitIdentifier_When_GivenIdentifierNodeWithIdentifierInParentScope()
-        {
-            var node = new IdentifierNode("x");
-            var symbolRegistry = new SymbolRegistry();
-            var symbolTable1 = new SymbolTable(symbolRegistry);
-            var symbolTable2 = new SymbolTable(symbolRegistry, symbolTable1);
-            symbolTable1.Define("x", typeof(BooleanValue));
-
-            var expression = _emitter.EmitExpression(node, symbolTable2) as ParameterExpression;
-
-            Assert.That(expression, Is.Not.Null);
-            Assert.That(expression, Is.InstanceOf(typeof(ParameterExpression)));
-            Assert.That(expression.Type, Is.EqualTo(typeof(BooleanValue)));
-        }
-
-        [Test]
         public void Should_EmitError_When_GivenIdentifierNodeWithIdentifierNotInScope()
         {
             var node = new IdentifierNode("x");
-            var symbolRegistry = new SymbolRegistry();
-            var symbolTable = new SymbolTable(symbolRegistry);
+            var symbolTable = new SymbolTable();
 
             var expression = _emitter.EmitExpression(node, symbolTable) as UnaryExpression;
 

@@ -68,8 +68,6 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
                     var isAsynchronous = (declarationNode as FormulaNode)?.IsAsynchronous ?? false;
 
-                    var symbolTable = symbolRegistry.GetSymbolTable(declarationNode);
-
                     var moduleNode = declarationHierarchy.GetParentModule(declarationNode);
 
                     var executionStep = new ExecutionStep(
@@ -77,8 +75,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                         moduleNode,
                         declarationNode,
                         isAsynchronous ? ExecutionStepType.Asynchronous : ExecutionStepType.Synchronous,
-                        dependentExecutionSteps,
-                        symbolTable);
+                        dependentExecutionSteps);
 
                     executionEvents.Add(executionStep);
 

@@ -18,8 +18,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             });
             var emitter = new Emitter();
             var node = new AccessNode(new LiteralNode(value), "x");
-            var symbolRegistry = new SymbolRegistry();
-            var expression = emitter.EmitExpression(node, new SymbolTable(symbolRegistry));
+            var expression = emitter.EmitExpression(node, new SymbolTable());
             var function = EmitTestUtilities.WrapAndCompile(expression);
 
             var result = function() as NumberValue;
@@ -35,8 +34,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var value2 = new NumberValue(3);
             var emitter = new Emitter();
             var node = new BinaryOpNode(BinaryOpType.Add, new LiteralNode(value1), new LiteralNode(value2));
-            var symbolRegistry = new SymbolRegistry();
-            var expression = emitter.EmitExpression(node, new SymbolTable(symbolRegistry));
+            var expression = emitter.EmitExpression(node, new SymbolTable());
             var function = EmitTestUtilities.WrapAndCompile(expression);
 
             var result = function() as NumberValue;
@@ -50,8 +48,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
         {
             var emitter = new Emitter();
             var node = new LiteralNode(new NumberValue(5));
-            var symbolRegistry = new SymbolRegistry();
-            var expression = emitter.EmitExpression(node, new SymbolTable(symbolRegistry));
+            var expression = emitter.EmitExpression(node, new SymbolTable());
             var function = EmitTestUtilities.WrapAndCompile(expression);
 
             var result = function() as NumberValue;

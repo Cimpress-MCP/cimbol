@@ -21,11 +21,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var result = new SymbolRegistry(programNode);
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Arguments, Has.Count.EqualTo(1));
-            Assert.That(result.Arguments.TryResolve("x", out _), Is.True);
-            Assert.That(result.Constants, Is.Empty);
-            Assert.That(result.Modules, Is.Empty);
-            Assert.That(result.SymbolTables, Is.Empty);
+            Assert.That(result.Arguments.Symbols, Has.Count.EqualTo(1));
+            Assert.That(result.Arguments.Resolve("x"), Is.Not.Null);
+            Assert.That(result.Constants.Symbols, Is.Empty);
+            Assert.That(result.Modules.Symbols, Is.Empty);
+            Assert.That(result.Scopes, Is.Empty);
         }
 
         [Test]
@@ -40,11 +40,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var result = new SymbolRegistry(programNode);
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Arguments, Is.Empty);
-            Assert.That(result.Constants, Has.Count.EqualTo(1));
-            Assert.That(result.Constants.TryResolve("x", out _), Is.True);
-            Assert.That(result.Modules, Is.Empty);
-            Assert.That(result.SymbolTables, Is.Empty);
+            Assert.That(result.Arguments.Symbols, Is.Empty);
+            Assert.That(result.Constants.Symbols, Has.Count.EqualTo(1));
+            Assert.That(result.Constants.Resolve("x"), Is.Not.Null);
+            Assert.That(result.Modules.Symbols, Is.Empty);
+            Assert.That(result.Scopes, Is.Empty);
         }
 
         [Test]
@@ -62,12 +62,12 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var result = new SymbolRegistry(programNode);
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Arguments, Is.Empty);
-            Assert.That(result.Constants, Is.Empty);
-            Assert.That(result.Modules, Has.Count.EqualTo(1));
-            Assert.That(result.Modules.TryResolve("x", out _), Is.True);
-            Assert.That(result.SymbolTables, Has.Count.EqualTo(1));
-            Assert.That(result.SymbolTables, Contains.Key(moduleDeclarationNode));
+            Assert.That(result.Arguments.Symbols, Is.Empty);
+            Assert.That(result.Constants.Symbols, Is.Empty);
+            Assert.That(result.Modules.Symbols, Has.Count.EqualTo(1));
+            Assert.That(result.Modules.Resolve("x"), Is.Not.Null);
+            Assert.That(result.Scopes, Has.Count.EqualTo(1));
+            Assert.That(result.Scopes, Contains.Key(moduleDeclarationNode));
         }
 
         [Test]
@@ -83,10 +83,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantNode>(),
                 new[] { moduleDeclarationNode });
 
-            var result = new SymbolRegistry(programNode).SymbolTables[moduleDeclarationNode];
+            var result = new SymbolRegistry(programNode).Scopes[moduleDeclarationNode];
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.TryResolve("x", out var resultSymbol), Is.True);
+            var resultSymbol = result.Resolve("x");
             Assert.That(resultSymbol, Is.Not.Null);
             Assert.That(resultSymbol.Name, Is.EqualTo("x"));
         }
@@ -104,10 +104,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantNode>(),
                 new[] { moduleDeclarationNode });
 
-            var result = new SymbolRegistry(programNode).SymbolTables[moduleDeclarationNode];
+            var result = new SymbolRegistry(programNode).Scopes[moduleDeclarationNode];
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.TryResolve("x", out var resultSymbol), Is.True);
+            var resultSymbol = result.Resolve("x");
             Assert.That(resultSymbol, Is.Not.Null);
             Assert.That(resultSymbol.Name, Is.EqualTo("x"));
         }

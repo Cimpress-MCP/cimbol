@@ -9,45 +9,17 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
     public class SymbolTableTests
     {
         [Test]
-        public void Should_ConstructSymbolTable_When_NotGivenParent()
+        public void Should_BeEmpty_When_Constructed()
         {
-            var symbolRegistry = new SymbolRegistry();
+            var result = new SymbolTable();
 
-            var result = new SymbolTable(symbolRegistry);
-
-            Assert.That(result.Parent, Is.Null);
-        }
-
-        [Test]
-        public void Should_ConstructSymbolTable_When_GivenParent()
-        {
-            var symbolRegistry = new SymbolRegistry();
-            var parentTable = new SymbolTable(symbolRegistry);
-
-            var result = new SymbolTable(symbolRegistry, parentTable);
-
-            Assert.That(result.Parent, Is.SameAs(parentTable));
+            Assert.That(result.Symbols, Is.Empty);
         }
 
         [Test]
         public void Should_DefineSymbol_When_SymbolNotInSelf()
         {
-            var symbolRegistry = new SymbolRegistry();
-            var symbolTable = new SymbolTable(symbolRegistry);
-            symbolTable.Define("y", typeof(ILocalValue));
-
-            var result = symbolTable.Define("x", typeof(ILocalValue));
-
-            Assert.That(result, Is.True);
-        }
-
-        [Test]
-        public void Should_DefineSymbol_When_SymbolInParent()
-        {
-            var symbolRegistry = new SymbolRegistry();
-            var parentTable = new SymbolTable(symbolRegistry);
-            parentTable.Define("x", typeof(ILocalValue));
-            var symbolTable = new SymbolTable(symbolRegistry, parentTable);
+            var symbolTable = new SymbolTable();
             symbolTable.Define("y", typeof(ILocalValue));
 
             var result = symbolTable.Define("x", typeof(ILocalValue));
@@ -58,8 +30,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_DefineSymbol_When_SymbolInSelf()
         {
-            var symbolRegistry = new SymbolRegistry();
-            var symbolTable = new SymbolTable(symbolRegistry);
+            var symbolTable = new SymbolTable();
             symbolTable.Define("x", typeof(ILocalValue));
 
             var result = symbolTable.Define("x", typeof(ILocalValue));
@@ -70,53 +41,34 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_RetrieveParameter_When_SymbolInSelf()
         {
-            var symbolRegistry = new SymbolRegistry();
-            var symbolTable = new SymbolTable(symbolRegistry);
+            var symbolTable = new SymbolTable();
             symbolTable.Define("x", typeof(ILocalValue));
 
-            var result = symbolTable.TryResolve("x", out var parameter);
+            var result = symbolTable.Resolve("x");
 
-            Assert.That(result, Is.True);
-            Assert.That(parameter, Is.Not.Null);
-        }
-
-        [Test]
-        public void Should_RetrieveParameter_When_SymbolInParent()
-        {
-            var symbolRegistry = new SymbolRegistry();
-            var parentSymbolTable = new SymbolTable(symbolRegistry);
-            parentSymbolTable.Define("x", typeof(ILocalValue));
-            var symbolTable = new SymbolTable(symbolRegistry, parentSymbolTable);
-
-            var result = symbolTable.TryResolve("x", out var parameter);
-
-            Assert.That(result, Is.True);
-            Assert.That(parameter, Is.Not.Null);
+            Assert.That(result, Is.Not.Null);
         }
 
         [Test]
         public void ShouldNot_RetrieveParameter_When_SymbolNotInSelf()
         {
-            var symbolRegistry = new SymbolRegistry();
-            var symbolTable = new SymbolTable(symbolRegistry);
-            symbolTable.Define("y", typeof(ILocalValue));
+            var symbolTable = new SymbolTable();
+            symbolTable.Define("x", typeof(ILocalValue));
 
-            var result = symbolTable.TryResolve("x", out var parameter);
+            var result = symbolTable.Resolve("y");
 
-            Assert.That(result, Is.False);
-            Assert.That(parameter, Is.Null);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
         public void Should_ListSymbols_When_Enumerating()
         {
-            var symbolRegistry = new SymbolRegistry();
-            var symbolTable = new SymbolTable(symbolRegistry);
+            var symbolTable = new SymbolTable();
             symbolTable.Define("x", typeof(ILocalValue));
             symbolTable.Define("y", typeof(ILocalValue));
             symbolTable.Define("z", typeof(ILocalValue));
 
-            var symbols = symbolTable.ToArray();
+            var symbols = symbolTable.Symbols.ToArray();
 
             Assert.That(symbols, Has.Length.EqualTo(3));
         }
