@@ -63,25 +63,25 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
-            throw CimbolRuntimeException.AccessError(null);
+            throw CimbolRuntimeException.AccessError();
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-            throw CimbolRuntimeException.CastBooleanError(null, typeof(FunctionValue));
+            throw CimbolRuntimeException.CastBooleanError(typeof(FunctionValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-            throw CimbolRuntimeException.CastNumberError(null, typeof(FunctionValue));
+            throw CimbolRuntimeException.CastNumberError(typeof(FunctionValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
-            throw CimbolRuntimeException.CastStringError(null, typeof(FunctionValue));
+            throw CimbolRuntimeException.CastStringError(typeof(FunctionValue));
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
@@ -98,7 +98,7 @@ namespace Cimpress.Cimbol.Runtime.Types
 #pragma warning disable CA1062
             if (arguments.Length != _argumentCount)
             {
-                throw CimbolRuntimeException.ArgumentCountError(null, _argumentCount, arguments.Length);
+                throw CimbolRuntimeException.ArgumentCountError(_argumentCount, arguments.Length);
             }
 #pragma warning restore CA1062
 
@@ -132,7 +132,7 @@ namespace Cimpress.Cimbol.Runtime.Types
                     return tValue;
 
                 default:
-                    throw CimbolRuntimeException.ArgumentTypeError(null, typeof(T), localValue.GetType());
+                    throw CimbolRuntimeException.ArgumentTypeError(typeof(T), localValue.GetType());
             }
         }
 

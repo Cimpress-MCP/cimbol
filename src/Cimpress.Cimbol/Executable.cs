@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cimpress.Cimbol.Exceptions;
@@ -32,7 +33,7 @@ namespace Cimpress.Cimbol
         /// </summary>
         /// <param name="arguments">The list of arguments to call the executable with.</param>
         /// <returns>The result of evaluating the executable.</returns>
-        public Task<EvaluationResult> Call(params ILocalValue[] arguments)
+        public async Task<EvaluationResult> Call(params ILocalValue[] arguments)
         {
             if (arguments == null)
             {
@@ -46,9 +47,20 @@ namespace Cimpress.Cimbol
 
             var castArguments = arguments.Cast<object>().ToArray();
 
-            var returnValue = _function.DynamicInvoke(castArguments);
+            try
+            {
+                var returnValue = _function.DynamicInvoke(castArguments) as Task<EvaluationResult>;
 
-            return returnValue as Task<EvaluationResult>;
+                return await returnValue;
+            }
+            catch (CimbolRuntimeException runtimeException)
+            {
+                var evaluationResult = new EvaluationResult(
+                    new Dictionary<string, ObjectValue>(StringComparer.OrdinalIgnoreCase),
+                    new List<CimbolRuntimeException> { runtimeException });
+
+                return evaluationResult;
+            }
         }
     }
 }

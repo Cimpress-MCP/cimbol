@@ -31,7 +31,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
-            await EvaluationFunctions.EvaluateAsynchronous(
+            await EvaluationFunctions.EvaluateAsynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -53,7 +53,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
-            await EvaluationFunctions.EvaluateAsynchronous(
+            await EvaluationFunctions.EvaluateAsynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -68,14 +68,14 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         [Test]
         public async Task ShouldNot_ReturnAsyncEvaluation_When_ExpressionThrows()
         {
-            var expected = CimbolRuntimeException.IfConditionError(null);
+            var expected = CimbolRuntimeException.IfConditionError();
             var dependencies = Array.Empty<int>();
             var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true };
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
-            await EvaluationFunctions.EvaluateAsynchronous(
+            await EvaluationFunctions.EvaluateAsynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -97,7 +97,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
-            await EvaluationFunctions.EvaluateAsynchronous(
+            await EvaluationFunctions.EvaluateAsynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -112,7 +112,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         [Test]
         public async Task ShouldNot_ReturnAsyncEvaluation_When_PromiseResolutionThrows()
         {
-            var expected = CimbolRuntimeException.IfConditionError(null);
+            var expected = CimbolRuntimeException.IfConditionError();
             var taskValue = new PromiseValue(Task.FromException<ILocalValue>(expected));
             var dependencies = Array.Empty<int>();
             var errorList = new List<CimbolRuntimeException>();
@@ -120,7 +120,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
             ILocalValue result = null;
-            await EvaluationFunctions.EvaluateAsynchronous(
+            await EvaluationFunctions.EvaluateAsynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -142,7 +142,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var skipList = new[] { false, true, true, true };
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            await EvaluationFunctions.EvaluateAsynchronous(
+            await EvaluationFunctions.EvaluateAsynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -164,7 +164,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var skipList = new[] { true, true, true, true };
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            await EvaluationFunctions.EvaluateAsynchronous(
+            await EvaluationFunctions.EvaluateAsynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -185,7 +185,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var skipList = new[] { true };
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            var result = EvaluationFunctions.EvaluateSynchronous(
+            var result = EvaluationFunctions.EvaluateSynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -204,7 +204,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var skipList = new[] { false };
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            var result = EvaluationFunctions.EvaluateSynchronous(
+            var result = EvaluationFunctions.EvaluateSynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -218,13 +218,13 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         [Test]
         public void ShouldNot_ReturnSyncEvaluation_When_ExpressionThrows()
         {
-            var expected = CimbolRuntimeException.IfConditionError(null);
+            var expected = CimbolRuntimeException.IfConditionError();
             var dependencies = Array.Empty<int>();
             var errorList = new List<CimbolRuntimeException>();
             var skipList = new[] { true };
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            var result = EvaluationFunctions.EvaluateSynchronous(
+            var result = EvaluationFunctions.EvaluateSynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -244,7 +244,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var skipList = new[] { false, true, true, true };
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            EvaluationFunctions.EvaluateSynchronous(
+            EvaluationFunctions.EvaluateSynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,
@@ -264,7 +264,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             var skipList = new[] { true, true, true, true };
             var executionStepContext = new ExecutionStepContext(0, dependencies, "x", "y");
 
-            EvaluationFunctions.EvaluateSynchronous(
+            EvaluationFunctions.EvaluateSynchronous_Verbose(
                 executionStepContext,
                 errorList,
                 skipList,

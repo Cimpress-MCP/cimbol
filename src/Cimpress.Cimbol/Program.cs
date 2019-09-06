@@ -118,12 +118,13 @@ namespace Cimpress.Cimbol
         /// <summary>
         /// Compiles a Cimbol program down to an executable.
         /// </summary>
+        /// <param name="compilationProfile">The level of error reporting to use when compiling.</param>
         /// <returns>The result of compiling the Cimbol program.</returns>
-        public Executable Compile()
+        public Executable Compile(CompilationProfile compilationProfile = CompilationProfile.Minimal)
         {
             var ast = ToSyntaxTree();
 
-            var emitter = new Emitter();
+            var emitter = new Emitter(compilationProfile);
 
             var lambda = emitter.EmitProgram(ast);
 

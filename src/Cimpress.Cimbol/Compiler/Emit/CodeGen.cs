@@ -133,7 +133,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
                 var ifFalse = secondBranch?.Item1?.Equals("else", StringComparison.OrdinalIgnoreCase) == true
                         ? secondBranch.Item2
-                        : Error(CimbolRuntimeException.IfConditionError(null));
+                        : Error(CimbolRuntimeException.IfConditionError());
 
                 return Expression.Condition(test, ifTrue, ifFalse, typeof(ILocalValue));
             }
@@ -142,7 +142,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
             {
                 var ifTrue = secondBranch?.Item1?.Equals("then", StringComparison.OrdinalIgnoreCase) == true
                     ? secondBranch.Item2
-                    : Error(CimbolRuntimeException.IfConditionError(null));
+                    : Error(CimbolRuntimeException.IfConditionError());
 
                 var ifFalse = firstBranch.Item2;
 
@@ -219,8 +219,12 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// </summary>
         /// <param name="programNode">The program.</param>
         /// <param name="symbolRegistry">The symbol registry for the program.</param>
+        /// <param name="compilationProfile">The error level for the program.</param>
         /// <returns>An expression that returns a collection of objects of exported formula results.</returns>
-        internal static Expression ProgramReturn(ProgramNode programNode, SymbolRegistry symbolRegistry)
+        internal static Expression ProgramReturn(
+            ProgramNode programNode,
+            SymbolRegistry symbolRegistry,
+            CompilationProfile compilationProfile)
         {
             var modules = programNode.Modules.ToArray();
 
@@ -237,10 +241,14 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 Expression.Constant(StringComparer.OrdinalIgnoreCase));
             var moduleDictionary = Expression.ListInit(moduleInit, elements);
 
+            var errorList = compilationProfile == CompilationProfile.Verbose
+                ? (Expression)symbolRegistry.ErrorList.Variable
+                : Expression.Constant(new List<CimbolRuntimeException>());
+
             return Expression.New(
                 LocalValueFunctions.EvaluationResultConstructorInfo,
                 moduleDictionary,
-                symbolRegistry.ErrorList.Variable);
+                errorList);
         }
 
         /// <summary>
@@ -307,7 +315,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             var head = arguments.Length % 2 == 1
                 ? arguments.Last().Item2
-                : Error(CimbolRuntimeException.WhereConditionError(null));
+                : Error(CimbolRuntimeException.WhereConditionError());
 
             var conditionCount = arguments.Length / 2;
             for (var i = conditionCount - 1; i >= 0; --i)

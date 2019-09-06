@@ -30,25 +30,25 @@ namespace Cimpress.Cimbol.Runtime.Types
                 return value;
             }
 
-            throw CimbolRuntimeException.MemberNotFoundError(null, key);
+            throw CimbolRuntimeException.MemberNotFoundError(key);
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-            throw CimbolRuntimeException.CastBooleanError(null, typeof(ObjectValue));
+            throw CimbolRuntimeException.CastBooleanError(typeof(ObjectValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-            throw CimbolRuntimeException.CastNumberError(null, typeof(ObjectValue));
+            throw CimbolRuntimeException.CastNumberError(typeof(ObjectValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
-            throw CimbolRuntimeException.CastStringError(null, typeof(ObjectValue));
+            throw CimbolRuntimeException.CastStringError(typeof(ObjectValue));
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
@@ -60,7 +60,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
-            throw CimbolRuntimeException.InvocationError(null);
+            throw CimbolRuntimeException.InvocationError();
         }
 
         /// <summary>

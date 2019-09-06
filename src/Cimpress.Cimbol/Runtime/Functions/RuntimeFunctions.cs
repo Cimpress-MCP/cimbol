@@ -164,7 +164,7 @@ namespace Cimpress.Cimbol.Runtime.Functions
                 return new NumberValue(leftValue.Value / rightValue.Value);
             }
 
-            throw CimbolRuntimeException.DivideByZeroError(null);
+            throw CimbolRuntimeException.DivideByZeroError();
         }
 
         /// <summary>

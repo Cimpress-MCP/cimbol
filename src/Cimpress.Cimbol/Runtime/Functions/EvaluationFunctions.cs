@@ -20,10 +20,31 @@ namespace Cimpress.Cimbol.Runtime.Functions
             BindingFlags.NonPublic | BindingFlags.Static);
 
         /// <summary>
-        /// The method info for the <see cref="EvaluateSynchronous"/> method.
+        /// The method info for the <see cref="EvaluateAsynchronous_Trace"/> method.
         /// </summary>
-        internal static MethodInfo EvaluateSynchronousInfo { get; } = typeof(EvaluationFunctions).GetMethod(
-            nameof(EvaluateSynchronous),
+        internal static MethodInfo EvaluateAsynchronousTraceInfo { get; } = typeof(EvaluationFunctions).GetMethod(
+            nameof(EvaluateAsynchronous_Trace),
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        /// <summary>
+        /// The method info for the <see cref="EvaluateAsynchronous_Verbose"/> method.
+        /// </summary>
+        internal static MethodInfo EvaluateAsynchronousVerboseInfo { get; } = typeof(EvaluationFunctions).GetMethod(
+            nameof(EvaluateAsynchronous_Verbose),
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        /// <summary>
+        /// The method info for the <see cref="EvaluateSynchronous_Trace"/> method.
+        /// </summary>
+        internal static MethodInfo EvaluateSynchronousTraceInfo { get; } = typeof(EvaluationFunctions).GetMethod(
+            nameof(EvaluateSynchronous_Trace),
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        /// <summary>
+        /// The method info for the <see cref="EvaluateSynchronous_Verbose"/> method.
+        /// </summary>
+        internal static MethodInfo EvaluateSynchronousVerboseInfo { get; } = typeof(EvaluationFunctions).GetMethod(
+            nameof(EvaluateSynchronous_Verbose),
             BindingFlags.NonPublic | BindingFlags.Static);
 
         /// <summary>
@@ -41,15 +62,91 @@ namespace Cimpress.Cimbol.Runtime.Functions
             BindingFlags.NonPublic | BindingFlags.Static);
 
         /// <summary>
-        /// Execute an asynchronous formula.
+        /// Execute an asynchronous formula with no enhanced error reporting.
+        /// </summary>
+        /// <param name="executeValue">The result of executing the asynchronous execution step.</param>
+        /// <param name="resultCallback">The callback to run to save the result of the formula's execution.</param>
+        /// <returns>A task that completes when the formula is evaluated and saved.</returns>
+        internal static async Task EvaluateAsynchronous(
+            ILocalValue executeValue,
+            Action<ILocalValue> resultCallback)
+        {
+            if (!(executeValue is PromiseValue promiseValue))
+            {
+                throw CimbolRuntimeException.AwaitError();
+            }
+
+            var awaitedResult = await promiseValue.Value;
+
+            resultCallback(awaitedResult);
+        }
+
+        /// <summary>
+        /// Execute an asynchronous formula with trace error reporting.
+        /// </summary>
+        /// <param name="executionStepContext">Metadata about the execution step.</param>
+        /// <param name="executeCallback">The callback to run to execute the formula.</param>
+        /// <param name="resultCallback">The callback to run to save the result of the formula's execution.</param>
+        /// <returns>A task that completes when the formula is evaluated and saved.</returns>
+        internal static async Task EvaluateAsynchronous_Trace(
+            ExecutionStepContext executionStepContext,
+            Func<ILocalValue> executeCallback,
+            Action<ILocalValue> resultCallback)
+        {
+            ILocalValue result;
+
+            CimbolRuntimeException error;
+
+            try
+            {
+                result = executeCallback();
+            }
+            catch (CimbolRuntimeException runtimeException)
+            {
+                error = runtimeException;
+                goto evaluationFailure;
+            }
+
+            if (!(result is PromiseValue promiseValue))
+            {
+                error = CimbolRuntimeException.AwaitError();
+                goto evaluationFailure;
+            }
+
+            try
+            {
+                var awaitedResult = await promiseValue.Value;
+                resultCallback(awaitedResult);
+            }
+            catch (CimbolRuntimeException runtimeException)
+            {
+                error = runtimeException;
+                goto evaluationFailure;
+            }
+
+            return;
+
+            evaluationFailure:
+
+            if (executionStepContext != null)
+            {
+                error.Formula = executionStepContext.FormulaName;
+                error.Module = executionStepContext.ModuleName;
+            }
+
+            throw error;
+        }
+
+        /// <summary>
+        /// Execute an asynchronous formula with verbose error reporting.
         /// </summary>
         /// <param name="executionStepContext">Metadata about the execution step.</param>
         /// <param name="errorList">The list of errors encountered in the program.</param>
         /// <param name="skipList">The collection of formulas to not execute. </param>
         /// <param name="executeCallback">The callback to run to execute the formula.</param>
         /// <param name="resultCallback">The callback to run to save the result of the formula's execution.</param>
-        /// <returns>A task the completes the formula is evaluated and saved.</returns>
-        internal static async Task EvaluateAsynchronous(
+        /// <returns>A task that completes when the formula is evaluated and saved.</returns>
+        internal static async Task EvaluateAsynchronous_Verbose(
             ExecutionStepContext executionStepContext,
             List<CimbolRuntimeException> errorList,
             bool[] skipList,
@@ -78,7 +175,7 @@ namespace Cimpress.Cimbol.Runtime.Functions
 
             if (!(result is PromiseValue promiseValue))
             {
-                error = CimbolRuntimeException.AwaitError(executionStepContext.FormulaName);
+                error = CimbolRuntimeException.AwaitError();
                 goto evaluationFailure;
             }
 
@@ -110,14 +207,40 @@ namespace Cimpress.Cimbol.Runtime.Functions
         }
 
         /// <summary>
-        /// Execute a synchronous formula.
+        /// Execute a synchronous formula with trace error reporting.
+        /// </summary>
+        /// <param name="executionStepContext">Metadata about the execution step.</param>
+        /// <param name="executeCallback">The callback to run to execute the formula.</param>
+        /// <returns>The result of evaluating the formula.</returns>
+        internal static ILocalValue EvaluateSynchronous_Trace(
+            ExecutionStepContext executionStepContext,
+            Func<ILocalValue> executeCallback)
+        {
+            try
+            {
+                return executeCallback();
+            }
+            catch (CimbolRuntimeException runtimeException)
+            {
+                if (executionStepContext != null)
+                {
+                    runtimeException.Formula = executionStepContext.FormulaName;
+                    runtimeException.Module = executionStepContext.ModuleName;
+                }
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Execute a synchronous formula with verbose error reporting.
         /// </summary>
         /// <param name="executionStepContext">Metadata about the execution step.</param>
         /// <param name="errorList">The list of errors encountered in the program.</param>
         /// <param name="skipList">The collection of formulas to not execute. </param>
         /// <param name="executeCallback">The callback to run to execute the formula.</param>
         /// <returns>The result of evaluating the formula.</returns>
-        internal static ILocalValue EvaluateSynchronous(
+        internal static ILocalValue EvaluateSynchronous_Verbose(
             ExecutionStepContext executionStepContext,
             List<CimbolRuntimeException> errorList,
             bool[] skipList,
@@ -138,10 +261,10 @@ namespace Cimpress.Cimbol.Runtime.Functions
             catch (CimbolRuntimeException runtimeException)
             {
                 error = runtimeException;
-                goto evaluationFailure;
             }
 
             evaluationFailure:
+
             foreach (var dependent in executionStepContext.Dependents)
             {
                 skipList[dependent] = false;

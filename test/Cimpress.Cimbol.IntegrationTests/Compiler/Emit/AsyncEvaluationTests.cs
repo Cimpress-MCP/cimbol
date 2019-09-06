@@ -9,7 +9,10 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
     public class AsyncEvaluationTests
     {
         [Test]
-        public void Should_CompileAndRun_When_GivenSmallProgramWithSingleAwait()
+        [TestCase(CompilationProfile.Minimal)]
+        [TestCase(CompilationProfile.Trace)]
+        [TestCase(CompilationProfile.Verbose)]
+        public void Should_CompileAndRun_When_GivenSmallProgramWithSingleAwait(CompilationProfile compilationProfile)
         {
             PromiseValue SomeFunction(NumberValue number)
             {
@@ -30,7 +33,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var module = program.AddModule("Main");
             module.AddReference("ConstantA", constantA);
             module.AddFormula("ResultA", "await ConstantA(2)");
-            var executable = program.Compile();
+            var executable = program.Compile(compilationProfile);
 
             var result = executable.Call().Result;
 
@@ -42,7 +45,10 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
         }
 
         [Test]
-        public void Should_CompileAndRun_When_GivenSmallProgramWithMultipleAwaits()
+        [TestCase(CompilationProfile.Minimal)]
+        [TestCase(CompilationProfile.Trace)]
+        [TestCase(CompilationProfile.Verbose)]
+        public void Should_CompileAndRun_When_GivenSmallProgramWithMultipleAwaits(CompilationProfile compilationProfile)
         {
             PromiseValue SomeFunction(NumberValue number)
             {
@@ -63,7 +69,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             module.AddFormula("ResultA", "await ConstantA(2)");
             module.AddFormula("ResultB", "await ConstantA(ResultA + 1)");
             module.AddFormula("ResultC", "ResultA + ResultB");
-            var executable = program.Compile();
+            var executable = program.Compile(compilationProfile);
 
             var result = executable.Call().Result;
 
@@ -77,7 +83,10 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
         }
 
         [Test]
-        public void Should_CompileAndRun_When_GivenSmallAsyncProgramFromBenchmarks()
+        [TestCase(CompilationProfile.Minimal)]
+        [TestCase(CompilationProfile.Trace)]
+        [TestCase(CompilationProfile.Verbose)]
+        public void Should_CompileAndRun_When_GivenSmallAsyncProgramFromBenchmarks(CompilationProfile compilationProfile)
         {
             PromiseValue AsyncFunction(NumberValue numberValue)
             {
@@ -95,7 +104,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             module.AddFormula("ResultB", "await AsyncFunction(4)");
             module.AddFormula("ResultC", "await AsyncFunction(ResultA + ResultB)");
             module.AddFormula("ResultD", "ResultA + ResultB + ResultC");
-            var executable = program.Compile();
+            var executable = program.Compile(compilationProfile);
 
             var result = executable.Call().Result;
 

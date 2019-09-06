@@ -14,10 +14,6 @@ namespace Cimpress.Cimbol.PerformanceTests.Runtime.Types
 
         private NumberValue _testNumber2;
 
-        private StringValue _testString1;
-
-        private StringValue _testString2;
-
         [GlobalSetup]
         public void GlobalSetup()
         {
@@ -28,10 +24,6 @@ namespace Cimpress.Cimbol.PerformanceTests.Runtime.Types
             _testNumber1 = new NumberValue(3);
 
             _testNumber2 = new NumberValue(5);
-
-            _testString1 = new StringValue("3");
-
-            _testString2 = new StringValue("5");
         }
 
         [Benchmark]

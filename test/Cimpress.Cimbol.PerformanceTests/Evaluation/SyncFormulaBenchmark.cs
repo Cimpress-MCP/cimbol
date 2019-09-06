@@ -9,7 +9,10 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
     {
         private Executable _executable;
 
-        [ParamsSource(nameof(FormulaListCount))]
+        [ParamsSource(nameof(CompilationProfiles))]
+        public CompilationProfile CompilationProfile { get; set; }
+
+        [ParamsSource(nameof(FormulaCounts))]
         public int FormulaCount { get; set; }
 
         [GlobalSetup]
@@ -30,7 +33,7 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
                 module.AddFormula(formulaName, "Constant1");
             }
 
-            _executable = program.Compile();
+            _executable = program.Compile(CompilationProfile);
         }
 
         [Benchmark]
@@ -39,9 +42,14 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
             return await _executable.Call();
         }
 
-        public int[] FormulaListCount()
+        public CompilationProfile[] CompilationProfiles()
         {
-            return new[] { 4, 8, 16, 32, 64, 128 };
+            return new[] { CompilationProfile.Minimal, CompilationProfile.Trace, CompilationProfile.Verbose };
+        }
+
+        public int[] FormulaCounts()
+        {
+            return new[] { 4, 8, 16, 32, 48, 64 };
         }
     }
 }

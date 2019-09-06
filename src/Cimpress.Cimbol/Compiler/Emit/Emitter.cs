@@ -15,6 +15,28 @@ namespace Cimpress.Cimbol.Compiler.Emit
     public class Emitter
     {
         /// <summary>
+        /// Initialize a new instance of the <see cref="Emitter"/> class.
+        /// </summary>
+        public Emitter()
+        {
+            CompilationProfile = CompilationProfile.Minimal;
+        }
+
+        /// <summary>
+        /// Initialize a new instance of the <see cref="Emitter"/> class.
+        /// </summary>
+        /// <param name="compilationProfile">The error level to use when returning errors.</param>
+        public Emitter(CompilationProfile compilationProfile)
+        {
+            CompilationProfile = compilationProfile;
+        }
+
+        /// <summary>
+        /// The error level to use when returning errors.
+        /// </summary>
+        public CompilationProfile CompilationProfile { get; }
+
+        /// <summary>
         /// Emit a lambda expression from a program node.
         /// </summary>
         /// <param name="programNode">The program node to emit from.</param>
@@ -71,6 +93,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
             }
 
             // Initialize the error list and store its variable in the list of program-scoped variables.
+            if (CompilationProfile == CompilationProfile.Verbose)
             {
                 expressions.Add(EmitErrorListInitialization(symbolRegistry.ErrorList));
 
@@ -78,6 +101,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
             }
 
             // Initialize the skip list and store its variable in the list of program-scoped variables.
+            if (CompilationProfile == CompilationProfile.Verbose)
             {
                 expressions.Add(EmitSkipListInitialization(symbolRegistry.SkipList, executionPlan));
 
@@ -182,7 +206,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 executionGroupExpressions.Add(executionGroupExpression);
             }
 
-            var outputBuilder = CodeGen.ProgramReturn(programNode, symbolRegistry);
+            var outputBuilder = CodeGen.ProgramReturn(programNode, symbolRegistry, CompilationProfile);
 
             var executionGroupChain = CodeGen.ExecutionGroupChain(executionGroupExpressions, outputBuilder);
 
@@ -268,6 +292,10 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             var internalSymbol = symbolTable.Resolve(executionStep.DeclarationNode.Name);
 
+            var executionStepContext = CompilationProfile != CompilationProfile.Minimal
+                ? executionStep.ExecutionStepContext
+                : null;
+
             // If the execution step is asynchronous, create a handler (a callback that runs once the returned task is resolved).
             // This handler's code depends on whether or not it is exported.
             // Once this handler exists, create the actual execution step that runs the handler once it finishes evaluating.
@@ -283,9 +311,10 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 return CodeGen.ExecutionStepAsync(
                     internalExpression,
                     handler,
-                    executionStep.ExecutionStepContext,
+                    executionStepContext,
                     symbolRegistry.ErrorList.Variable,
-                    symbolRegistry.SkipList.Variable);
+                    symbolRegistry.SkipList.Variable,
+                    CompilationProfile);
             }
 
             // If the execution step is synchronous, do the inverse of the above.
@@ -294,9 +323,10 @@ namespace Cimpress.Cimbol.Compiler.Emit
             // Then, depending on if the variable is exported or not, wrap the evaluator in a handler that assigns the result correctly.
             var evaluator = CodeGen.ExecutionStepSyncEvaluation(
                 internalExpression,
-                executionStep.ExecutionStepContext,
+                executionStepContext,
                 symbolRegistry.ErrorList.Variable,
-                symbolRegistry.SkipList.Variable);
+                symbolRegistry.SkipList.Variable,
+                CompilationProfile);
 
             return isExported
                 ? CodeGen.ExecutionStepSyncExported(
@@ -504,7 +534,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
             var symbol = symbolTable.Resolve(identifierNode.Identifier);
 
             return symbol == null
-                ? CodeGen.Error(CimbolRuntimeException.UnresolvedIdentifier(null, identifierNode.Identifier))
+                ? CodeGen.Error(CimbolRuntimeException.UnresolvedIdentifier(identifierNode.Identifier))
                 : symbol.Variable;
         }
 

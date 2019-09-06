@@ -27,25 +27,25 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
-            throw CimbolRuntimeException.AccessError(null);
+            throw CimbolRuntimeException.AccessError();
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-            throw CimbolRuntimeException.CastBooleanError(null, typeof(ListValue));
+            throw CimbolRuntimeException.CastBooleanError(typeof(ListValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-            throw CimbolRuntimeException.CastNumberError(null, typeof(ListValue));
+            throw CimbolRuntimeException.CastNumberError(typeof(ListValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
         public StringValue CastString()
         {
-            throw CimbolRuntimeException.CastStringError(null, typeof(ListValue));
+            throw CimbolRuntimeException.CastStringError(typeof(ListValue));
         }
 
         /// <inheritdoc cref="ILocalValue.Invoke"/>
@@ -57,7 +57,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
-            throw CimbolRuntimeException.InvocationError(null);
+            throw CimbolRuntimeException.InvocationError();
         }
     }
 }

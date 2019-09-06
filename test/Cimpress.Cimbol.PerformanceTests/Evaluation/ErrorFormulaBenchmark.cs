@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using Cimpress.Cimbol.Runtime.Types;
 
 namespace Cimpress.Cimbol.PerformanceTests.Evaluation
 {
@@ -33,7 +31,7 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
                 module.AddFormula(formulaName, j < FailureCount ? failExpression : successExpression);
             }
 
-            _executable = program.Compile();
+            _executable = program.Compile(CompilationProfile.Verbose);
         }
 
         [Benchmark]
@@ -42,16 +40,9 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
             return await _executable.Call();
         }
 
-        public IEnumerable<int> FailureCounts()
+        public int[] FailureCounts()
         {
-            for (var i = 0; i < MaxErrors;)
-            {
-                yield return i;
-
-                i = i == 0 ? 1 : i * 2;
-            }
-
-            yield return MaxErrors;
+            return new[] { 0, 1, 2, 4, 8, 16, 32, 48, 64 };
         }
     }
 }

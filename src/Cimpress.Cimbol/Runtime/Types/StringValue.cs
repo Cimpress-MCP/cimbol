@@ -25,13 +25,13 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
-            throw CimbolRuntimeException.AccessError(null);
+            throw CimbolRuntimeException.AccessError();
         }
 
         /// <inheritdoc cref="ILocalValue.CastBoolean"/>
         public BooleanValue CastBoolean()
         {
-            throw CimbolRuntimeException.CastBooleanError(null, typeof(StringValue));
+            throw CimbolRuntimeException.CastBooleanError(typeof(StringValue));
         }
 
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
@@ -42,7 +42,7 @@ namespace Cimpress.Cimbol.Runtime.Types
                 return new NumberValue(result);
             }
 
-            throw CimbolRuntimeException.NotANumberError(null, Value);
+            throw CimbolRuntimeException.NotANumberError(Value);
         }
 
         /// <inheritdoc cref="ILocalValue.CastString"/>
@@ -70,7 +70,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Invoke"/>
         public ILocalValue Invoke(params ILocalValue[] arguments)
         {
-            throw CimbolRuntimeException.InvocationError(null);
+            throw CimbolRuntimeException.InvocationError();
         }
     }
 }

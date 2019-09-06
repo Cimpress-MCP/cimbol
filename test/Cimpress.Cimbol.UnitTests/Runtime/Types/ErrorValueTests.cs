@@ -61,7 +61,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
         public void ShouldNot_BeEqual_When_ComparedToErrorValue()
         {
             var value = new ErrorValue(null);
-            var otherValue = new ErrorValue(CimbolRuntimeException.AccessError("Formula"));
+            var otherValue = new ErrorValue(CimbolRuntimeException.AccessError());
 
             var result = value.EqualTo(otherValue);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
@@ -91,21 +92,40 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <param name="executionStepContext">The context of the execution step.</param>
         /// <param name="errorList">The list of errors encountered while running the program.</param>
         /// <param name="skipList">The list of execution steps to skip the evaluation of.</param>
+        /// <param name="compilationProfile">The level of error reporting to use.</param>
         /// <returns>An expression that evaluates an asynchronous execution step.</returns>
         internal static Expression ExecutionStepAsync(
             Expression step,
             LambdaExpression resultCallback,
             ExecutionStepContext executionStepContext,
             ParameterExpression errorList,
-            ParameterExpression skipList)
+            ParameterExpression skipList,
+            CompilationProfile compilationProfile)
         {
-            return Expression.Call(
-                EvaluationFunctions.EvaluateAsynchronousInfo,
-                Expression.Constant(executionStepContext),
-                errorList,
-                skipList,
-                Expression.Lambda(step),
-                resultCallback);
+            switch (compilationProfile)
+            {
+                case CompilationProfile.Minimal:
+                    return Expression.Call(EvaluationFunctions.EvaluateAsynchronousInfo, step, resultCallback);
+
+                case CompilationProfile.Trace:
+                    return Expression.Call(
+                        EvaluationFunctions.EvaluateAsynchronousTraceInfo,
+                        Expression.Constant(executionStepContext, typeof(ExecutionStepContext)),
+                        Expression.Lambda(step),
+                        resultCallback);
+
+                case CompilationProfile.Verbose:
+                    return Expression.Call(
+                        EvaluationFunctions.EvaluateAsynchronousVerboseInfo,
+                        Expression.Constant(executionStepContext),
+                        errorList,
+                        skipList,
+                        Expression.Lambda(step),
+                        resultCallback);
+
+                default:
+                    throw new CimbolInternalException("Unrecognized compilation profile.");
+            }
         }
 
         /// <summary>
@@ -186,19 +206,37 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <param name="executionStepContext">The context of the execution step.</param>
         /// <param name="errorList">The list of errors encountered while running the program.</param>
         /// <param name="skipList">The list of execution steps to skip the evaluation of.</param>
+        /// <param name="compilationProfile">The level of error reporting to use.</param>
         /// <returns>An expression that evaluates a synchronous execution step.</returns>
         internal static Expression ExecutionStepSyncEvaluation(
             Expression step,
             ExecutionStepContext executionStepContext,
             ParameterExpression errorList,
-            ParameterExpression skipList)
+            ParameterExpression skipList,
+            CompilationProfile compilationProfile)
         {
-            return Expression.Call(
-                EvaluationFunctions.EvaluateSynchronousInfo,
-                Expression.Constant(executionStepContext),
-                errorList,
-                skipList,
-                Expression.Lambda(step));
+            switch (compilationProfile)
+            {
+                case CompilationProfile.Minimal:
+                    return step;
+
+                case CompilationProfile.Trace:
+                    return Expression.Call(
+                        EvaluationFunctions.EvaluateSynchronousTraceInfo,
+                        Expression.Constant(executionStepContext),
+                        Expression.Lambda(step));
+
+                case CompilationProfile.Verbose:
+                    return Expression.Call(
+                        EvaluationFunctions.EvaluateSynchronousVerboseInfo,
+                        Expression.Constant(executionStepContext),
+                        errorList,
+                        skipList,
+                        Expression.Lambda(step));
+
+                default:
+                    throw new CimbolInternalException("Unrecognized compilation profile.");
+            }
         }
     }
 }
