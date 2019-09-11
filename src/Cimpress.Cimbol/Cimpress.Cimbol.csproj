@@ -9,6 +9,11 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <CodeAnalysisRuleSet>../../Cimpress.Cimbol.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
