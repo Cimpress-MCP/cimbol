@@ -29,6 +29,12 @@ namespace Cimpress.Cimbol.Runtime.Functions
             typeof(RuntimeFunctions).GetMethod("Concatenate", BindingFlags.NonPublic | BindingFlags.Static);
 
         /// <summary>
+        /// The cached <see cref="MethodInfo"/> for the default function.
+        /// </summary>
+        internal static MethodInfo DefaultInfo { get; } =
+            typeof(RuntimeFunctions).GetMethod("Default", BindingFlags.NonPublic | BindingFlags.Static);
+
+        /// <summary>
         /// The cached <see cref="MethodInfo"/> for the divide function.
         /// </summary>
         internal static MethodInfo MathDivideInfo { get; } =
@@ -149,6 +155,37 @@ namespace Cimpress.Cimbol.Runtime.Functions
         internal static StringValue Concatenate(StringValue leftValue, StringValue rightValue)
         {
             return new StringValue(leftValue.Value + rightValue.Value);
+        }
+
+        /// <summary>
+        /// Default a value to another value if it does not exist.
+        /// </summary>
+        /// <param name="baseValue">The value to check.</param>
+        /// <param name="fallbackValue">The value to use if the prior value is invalid.</param>
+        /// <param name="path">The path of members to access.</param>
+        /// <returns>Returns the value if it exists, and the fallback value otherwise.</returns>
+        internal static ILocalValue Default(ILocalValue baseValue, ILocalValue fallbackValue, string[] path)
+        {
+            if (baseValue == null)
+            {
+                return fallbackValue;
+            }
+
+            var currentValue = baseValue;
+
+            foreach (var identifier in path)
+            {
+                if (currentValue != null && currentValue is ObjectValue currentObjectValue)
+                {
+                    currentObjectValue.Value.TryGetValue(identifier, out currentValue);
+                }
+                else
+                {
+                    return fallbackValue;
+                }
+            }
+
+            return currentValue ?? fallbackValue;
         }
 
         /// <summary>

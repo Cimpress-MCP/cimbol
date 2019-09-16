@@ -120,11 +120,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var symbolTable = new SymbolTable();
             symbolTable.Define("x", typeof(BooleanValue));
 
-            var expression = _emitter.EmitExpression(node, symbolTable) as ParameterExpression;
+            var result = _emitter.EmitExpression(node, symbolTable);
 
-            Assert.That(expression, Is.Not.Null);
-            Assert.That(expression, Is.InstanceOf(typeof(ParameterExpression)));
-            Assert.That(expression.Type, Is.EqualTo(typeof(BooleanValue)));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Type, Is.EqualTo(typeof(BooleanValue)));
         }
 
         [Test]

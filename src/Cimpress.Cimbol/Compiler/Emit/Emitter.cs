@@ -414,6 +414,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 case BlockNode blockNode:
                     return EmitBlockNode(blockNode, symbolTable);
 
+                case DefaultNode defaultNode:
+                    return EmitDefaultNode(defaultNode, symbolTable);
+
                 case IdentifierNode identifierNode:
                     return EmitIdentifierNode(identifierNode, symbolTable);
 
@@ -524,6 +527,19 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
+        /// Emit an expression from a default node.
+        /// </summary>
+        /// <param name="defaultNode">The syntax tree node to emit from.</param>
+        /// <param name="symbolTable">The symbol table for the current scope.</param>
+        /// <returns>The result of compiling the syntax tree to an expression tree.</returns>
+        internal Expression EmitDefaultNode(DefaultNode defaultNode, SymbolTable symbolTable)
+        {
+            var fallbackExpression = EmitExpression(defaultNode.Fallback, symbolTable);
+            var symbol = symbolTable.Resolve(defaultNode.Path.First());
+            return CodeGen.Default(symbol?.Variable, fallbackExpression, defaultNode.Path);
+        }
+
+        /// <summary>
         /// Emit an expression from an identifier node.
         /// </summary>
         /// <param name="identifierNode">The syntax tree node to emit from.</param>
@@ -532,10 +548,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
         internal Expression EmitIdentifierNode(IdentifierNode identifierNode, SymbolTable symbolTable)
         {
             var symbol = symbolTable.Resolve(identifierNode.Identifier);
-
-            return symbol == null
-                ? CodeGen.Error(CimbolRuntimeException.UnresolvedIdentifier(identifierNode.Identifier))
-                : symbol.Variable;
+            return CodeGen.Identifier(symbol, identifierNode.Identifier);
         }
 
         /// <summary>

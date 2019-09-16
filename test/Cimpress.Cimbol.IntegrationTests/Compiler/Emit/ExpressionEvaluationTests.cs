@@ -33,6 +33,8 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
                     new object[] { "((2 ^ 3) ^ 4)", 4096m },
                     new object[] { "81 ^ (1 / 2)", 9m },
                     new object[] { "2 / (0.125)", 16m },
+                    new object[] { "default(x, 1)", 1m },
+                    new object[] { "default(x.y, 1)", 1m },
                 };
 
                 var environments = new[]

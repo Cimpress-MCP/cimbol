@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
@@ -22,6 +23,84 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         public void Should_HaveNonNullMethodInfos_When_Accessed(MethodInfo constructorInfo)
         {
             Assert.That(constructorInfo, Is.Not.Null);
+        }
+
+        [Test]
+        public void Should_DefaultValue_When_ValueIsNull()
+        {
+            var fallbackValue = new NumberValue(1);
+            var path = Array.Empty<string>();
+
+            var result = RuntimeFunctions.Default(null, fallbackValue, path);
+
+            Assert.That(result, Is.SameAs(fallbackValue));
+        }
+
+        [Test]
+        public void Should_DefaultValue_When_NotAnObject()
+        {
+            var baseValue = new NumberValue(2);
+            var fallbackValue = new NumberValue(1);
+            var path = new[] { "x" };
+
+            var result = RuntimeFunctions.Default(baseValue, fallbackValue, path);
+
+            Assert.That(result, Is.SameAs(fallbackValue));
+        }
+
+        [Test]
+        public void Should_DefaultValue_When_PathDoesNotMatch()
+        {
+            var baseValueInner = new Dictionary<string, ILocalValue>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "x", new StringValue("x") },
+            };
+            var baseValue = new ObjectValue(baseValueInner);
+            var fallbackValue = new NumberValue(1);
+            var path = new[] { "y" };
+
+            var result = RuntimeFunctions.Default(baseValue, fallbackValue, path);
+
+            Assert.That(result, Is.SameAs(fallbackValue));
+        }
+
+        [Test]
+        public void ShouldNot_DefaultValue_When_PathOfLengthOneMatches()
+        {
+            var baseValueInner = new NumberValue(1);
+            var baseValue = MockNestedObject(new[] { "x" }, baseValueInner);
+            var fallbackValue = new NumberValue(2);
+            var path = new[] { "x" };
+
+            var result = RuntimeFunctions.Default(baseValue, fallbackValue, path);
+
+            Assert.That(result, Is.SameAs(baseValueInner));
+        }
+
+        [Test]
+        public void ShouldNot_DefaultValue_When_PathOfLengthTwoMatches()
+        {
+            var baseValueInner = new NumberValue(1);
+            var baseValue = MockNestedObject(new[] { "x", "y" }, baseValueInner);
+            var fallbackValue = new NumberValue(2);
+            var path = new[] { "x", "y" };
+
+            var result = RuntimeFunctions.Default(baseValue, fallbackValue, path);
+
+            Assert.That(result, Is.SameAs(baseValueInner));
+        }
+
+        [Test]
+        public void ShouldNot_DefaultValue_When_PathMatchesPartOfObject()
+        {
+            var baseValueInner = MockNestedObject(new[] { "z" }, new NumberValue(1));
+            var baseValue = MockNestedObject(new[] { "x", "y" }, baseValueInner);
+            var fallbackValue = new NumberValue(2);
+            var path = new[] { "x", "y" };
+
+            var result = RuntimeFunctions.Default(baseValue, fallbackValue, path);
+
+            Assert.That(result, Is.SameAs(baseValueInner));
         }
 
         [Test]
@@ -322,6 +401,23 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             Assert.That(result, Is.EqualTo(expected));
         }
 
+        private static ILocalValue MockNestedObject(string[] path, ILocalValue value)
+        {
+            var current = value;
+
+            foreach (var name in path.Reverse())
+            {
+                var inner = new Dictionary<string, ILocalValue>(StringComparer.OrdinalIgnoreCase)
+                {
+                    { name, current },
+                };
+
+                current = new ObjectValue(inner);
+            }
+
+            return current;
+        }
+
         private static IEnumerable<TestCaseData> ConstructorInfoTestCases()
         {
             yield return new TestCaseData(LocalValueFunctions.ListValueConstructorInfo);
@@ -342,6 +438,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             yield return new TestCaseData(RuntimeFunctions.CompareGreaterThanOrEqualInfo);
             yield return new TestCaseData(RuntimeFunctions.CompareLessThanInfo);
             yield return new TestCaseData(RuntimeFunctions.CompareLessThanOrEqualInfo);
+            yield return new TestCaseData(RuntimeFunctions.DefaultInfo);
             yield return new TestCaseData(RuntimeFunctions.EqualToInfo);
             yield return new TestCaseData(RuntimeFunctions.IfTrueInfo);
             yield return new TestCaseData(LocalValueFunctions.InvokeInfo);

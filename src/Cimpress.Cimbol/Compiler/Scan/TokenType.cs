@@ -126,6 +126,11 @@
         AwaitKeyword,
 
         /// <summary>
+        /// The token type for the "default" keyword.
+        /// </summary>
+        DefaultKeyword,
+        
+        /// <summary>
         /// The token type for the "false" keyword.
         /// </summary>
         FalseKeyword,

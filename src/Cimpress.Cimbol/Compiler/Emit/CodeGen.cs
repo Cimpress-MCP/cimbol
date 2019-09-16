@@ -96,13 +96,45 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
+        /// Generate the expression tree for defaulting a potentially missing value.
+        /// </summary>
+        /// <param name="value">The expression that evaluates to the root of the path to test.</param>
+        /// <param name="fallbackValue">The fallback expression if the path is not valid.</param>
+        /// <param name="path">The path to check for validity.</param>
+        /// <returns>An expression that returns a defaulted value.</returns>
+        internal static Expression Default(
+            ParameterExpression value,
+            Expression fallbackValue,
+            IReadOnlyCollection<string> path)
+        {
+            var objectPath = path.Skip(1).ToArray();
+            return value == null
+                ? fallbackValue
+                : Expression.Call(RuntimeFunctions.DefaultInfo, value, fallbackValue, Expression.Constant(objectPath));
+        }
+
+        /// <summary>
         /// Generate the expression tree for throwing an error.
         /// </summary>
         /// <param name="error">The error to throw.</param>
+        /// <param name="errorType">The type of the expression that can throw.</param>
         /// <returns>An expression that throws an error.</returns>
-        internal static Expression Error(CimbolRuntimeException error)
+        internal static Expression Error(CimbolRuntimeException error, Type errorType = null)
         {
-            return Expression.Throw(Expression.Constant(error), typeof(ILocalValue));
+            return Expression.Throw(Expression.Constant(error), errorType ?? typeof(ILocalValue));
+        }
+
+        /// <summary>
+        /// Generate the expression tree for accessing the value of an identifier.
+        /// </summary>
+        /// <param name="symbol">The symbol to resolve.</param>
+        /// <param name="identifierName">The name of the identifier.</param>
+        /// <returns>An expression that accesses the value of an identifier.</returns>
+        internal static Expression Identifier(Symbol symbol, string identifierName)
+        {
+            var errorType = symbol?.Variable.Type ?? typeof(ILocalValue);
+            var error = Error(CimbolRuntimeException.UnresolvedIdentifier(identifierName), errorType);
+            return symbol == null ? error : Expression.Coalesce(symbol.Variable, error);
         }
 
         /// <summary>

@@ -89,7 +89,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
 
             if (current.Type != tokenType)
             {
-                var exception = errorMessage != null
+                throw errorMessage != null
                     ? new CimbolCompilationException(errorMessage, FormulaName, current.Start, current.End)
                     : CimbolCompilationException.TokenMismatchError(
                         FormulaName,
@@ -97,8 +97,6 @@ namespace Cimpress.Cimbol.Compiler.Parse
                         current.End,
                         tokenType,
                         current.Type);
-
-                throw exception;
             }
 
             _tokenStream.Next();
@@ -120,6 +118,23 @@ namespace Cimpress.Cimbol.Compiler.Parse
             _tokenStream.Next();
 
             return current;
+        }
+
+        private void Reject(TokenType tokenType, string errorMessage = null)
+        {
+            var current = _tokenStream.Lookahead(0);
+
+            if (current.Type == tokenType)
+            {
+                throw errorMessage != null
+                    ? new CimbolCompilationException(errorMessage, FormulaName, current.Start, current.End)
+                    : CimbolCompilationException.TokenMismatchError(
+                        FormulaName,
+                        current.Start,
+                        current.End,
+                        tokenType,
+                        current.Type);
+            }
         }
     }
 }

@@ -30,6 +30,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
                 case "AWAIT":
                     return _context.Consume(TokenType.AwaitKeyword);
 
+                case "DEFAULT":
+                    return _context.Consume(TokenType.DefaultKeyword);
+
                 case "FALSE":
                     return _context.Consume(TokenType.FalseKeyword);
 

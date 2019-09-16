@@ -90,6 +90,30 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 }
             });
 
+            treeWalker.OnExit<DefaultNode>(defaultNode =>
+            {
+                if (currentFormula == null || currentModule == null)
+                {
+                    throw new CimbolInternalException("An error occurred while generating the dependency tree.");
+                }
+
+                if (!dependencyTable.TryGetValue(currentFormula, out var dependencies))
+                {
+                    dependencies = new HashSet<IDeclarationNode>();
+                    dependencyTable[currentFormula] = dependencies;
+                }
+
+                if (currentModule.TryGetFormula(defaultNode.Path.First(), out var formula))
+                {
+                    dependencies.Add(formula);
+                }
+
+                if (currentModule.TryGetImport(defaultNode.Path.First(), out var import))
+                {
+                    dependencies.Add(import);
+                }
+            });
+
             treeWalker.OnExit<IdentifierNode>(identifierNode =>
             {
                 if (currentFormula == null || currentModule == null)

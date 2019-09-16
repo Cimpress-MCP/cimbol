@@ -15,12 +15,165 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
                 new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)));
-
             var parser = new Parser("formula", tokenStream);
 
             var result = parser.Invoke();
+
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<IdentifierNode>(result);
+        }
+
+        [Test]
+        public void Should_ParseDefaultNode_When_GivenSingleIdentifier()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("default", TokenType.DefaultKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token("x", TokenType.Identifier, position, position),
+                new Token(",", TokenType.Comma, position, position),
+                new Token("1", TokenType.NumberLiteral, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = parser.Invoke();
+
+            Assert.That(result, Is.InstanceOf<DefaultNode>());
+            var defaultNodeResult = result as DefaultNode;
+            Assert.That(defaultNodeResult, Is.Not.Null);
+            Assert.That(defaultNodeResult.Fallback, Is.InstanceOf<LiteralNode>());
+            Assert.That(defaultNodeResult.IsAsynchronous, Is.False);
+            Assert.That(defaultNodeResult.Path, Is.EqualTo(new[] { "x" }));
+        }
+
+        [Test]
+        public void Should_ParseDefaultNode_When_GivenMultipleIdentifiers()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("default", TokenType.DefaultKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token("x", TokenType.Identifier, position, position),
+                new Token(".", TokenType.Period, position, position),
+                new Token("y", TokenType.Identifier, position, position),
+                new Token(".", TokenType.Period, position, position),
+                new Token("z", TokenType.Identifier, position, position),
+                new Token(",", TokenType.Comma, position, position),
+                new Token("1", TokenType.NumberLiteral, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = parser.Invoke();
+
+            Assert.That(result, Is.InstanceOf<DefaultNode>());
+            var defaultNodeResult = result as DefaultNode;
+            Assert.That(defaultNodeResult, Is.Not.Null);
+            Assert.That(defaultNodeResult.Fallback, Is.InstanceOf<LiteralNode>());
+            Assert.That(defaultNodeResult.IsAsynchronous, Is.False);
+            Assert.That(defaultNodeResult.Path, Is.EqualTo(new[] { "x", "y", "z" }));
+        }
+
+        [Test]
+        public void ShouldNot_ParseDefaultNode_When_GivenNoArguments()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("default", TokenType.DefaultKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = Assert.Throws<CimbolCompilationException>(() => parser.Invoke());
+
+            Assert.That(result.Formula, Is.EqualTo("formula"));
+        }
+
+        [Test]
+        public void ShouldNot_ParseDefaultNode_When_GivenOneArgument()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("default", TokenType.DefaultKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token("x", TokenType.Identifier, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = Assert.Throws<CimbolCompilationException>(() => parser.Invoke());
+
+            Assert.That(result.Formula, Is.EqualTo("formula"));
+        }
+
+        [Test]
+        public void ShouldNot_ParseDefaultNode_When_GivenThreeArguments()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("default", TokenType.DefaultKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token("x", TokenType.Identifier, position, position),
+                new Token(",", TokenType.Comma, position, position),
+                new Token("y", TokenType.Identifier, position, position),
+                new Token(",", TokenType.Comma, position, position),
+                new Token("z", TokenType.Identifier, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = Assert.Throws<CimbolCompilationException>(() => parser.Invoke());
+
+            Assert.That(result.Formula, Is.EqualTo("formula"));
+        }
+
+        [Test]
+        public void ShouldNot_ParseDefaultNode_When_FirstArgumentIsNotIdentifierChain()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("default", TokenType.DefaultKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token("1", TokenType.NumberLiteral, position, position),
+                new Token(",", TokenType.Comma, position, position),
+                new Token("2", TokenType.NumberLiteral, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = Assert.Throws<CimbolCompilationException>(() => parser.Invoke());
+
+            Assert.That(result.Formula, Is.EqualTo("formula"));
+        }
+
+        [Test]
+        public void ShouldNot_ParseDefaultNode_When_FirstArgumentIsMissing()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("default", TokenType.DefaultKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token(",", TokenType.Comma, position, position),
+                new Token("1", TokenType.NumberLiteral, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = Assert.Throws<CimbolCompilationException>(() => parser.Invoke());
+
+            Assert.That(result.Formula, Is.EqualTo("formula"));
+        }
+
+        [Test]
+        public void ShouldNot_ParseDefaultNode_When_SecondArgumentIsMissing()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("default", TokenType.DefaultKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token("x", TokenType.Identifier, position, position),
+                new Token(",", TokenType.Comma, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = Assert.Throws<CimbolCompilationException>(() => parser.Invoke());
+
+            Assert.That(result.Formula, Is.EqualTo("formula"));
         }
 
         [Test]
