@@ -84,5 +84,62 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             Assert.That(resultModule.Value["ResultB"], Has.Property("Value").EqualTo(100));
             Assert.That(resultModule.Value["ResultC"], Has.Property("Value").EqualTo(1));
         }
+
+        [Test]
+        public void Should_CompileAndRun_When_GivenFormulaWithSpaces()
+        {
+            var program = new Program();
+            var module = program.AddModule("Main");
+            module.AddFormula("My Formula", "1");
+            module.AddFormula("Other Formula", "'My Formula' + 1");
+            var executable = program.Compile();
+
+            var result = executable.Call().Result;
+
+            Assert.That(result.Errors, Has.Length.EqualTo(0));
+            Assert.That(result.Modules, Has.Count.EqualTo(1));
+            var resultModule = result.Modules["Main"];
+            Assert.That(resultModule, Is.Not.Null);
+            Assert.That(resultModule.Value["My Formula"], Has.Property("Value").EqualTo(1));
+            Assert.That(resultModule.Value["Other Formula"], Has.Property("Value").EqualTo(2));
+        }
+
+        [Test]
+        public void Should_CompileAndRun_When_GivenObjectWithPropertiesWithSpaces()
+        {
+            var program = new Program();
+            var module = program.AddModule("Main");
+            module.AddFormula("Formula1", "object('Some Key' = 1)");
+            module.AddFormula("Formula2", "Formula1.'Some Key' + 1");
+            var executable = program.Compile();
+
+            var result = executable.Call().Result;
+
+            Assert.That(result.Errors, Has.Length.EqualTo(0));
+            Assert.That(result.Modules, Has.Count.EqualTo(1));
+            var resultModule = result.Modules["Main"];
+            Assert.That(resultModule, Is.Not.Null);
+            Assert.That(resultModule.Value["Formula2"], Has.Property("Value").EqualTo(2));
+        }
+
+        [Test]
+        public void Should_CompileAndRun_When_AccessingExportedValueWithSpaces()
+        {
+            var program = new Program();
+            var module1 = program.AddModule("Other");
+            module1.AddFormula("Formula1 With Spaces", "1");
+            var module2 = program.AddModule("Main");
+            module2.AddReference("Other", module1);
+            module2.AddFormula("Formula1", "Other.'Formula1 With Spaces' + 1");
+            var executable = program.Compile();
+
+            var result = executable.Call().Result;
+
+            Assert.That(result.Errors, Has.Length.EqualTo(0));
+            Assert.That(result.Modules, Has.Count.EqualTo(2));
+            var resultModule = result.Modules["Main"];
+            Assert.That(resultModule, Is.Not.Null);
+            Assert.That(resultModule.Value["Formula1"], Has.Property("Value").EqualTo(2));
+        }
     }
 }

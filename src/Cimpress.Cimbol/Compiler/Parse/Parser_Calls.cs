@@ -1,5 +1,6 @@
 ﻿using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Parse
 {
@@ -104,7 +105,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 {
                     Match(TokenType.Period);
                     var identifier = Match(TokenType.Identifier);
-                    return new AccessNode(inner, identifier.Value);
+                    return new AccessNode(inner, IdentifierSerializer.DeserializeIdentifier(identifier.Value));
                 }
 
                 default:

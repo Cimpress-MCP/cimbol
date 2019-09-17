@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Compiler.Parse
 {
@@ -63,7 +64,7 @@ namespace Cimpress.Cimbol.Compiler.Parse
                     var name = Match(TokenType.Identifier);
                     Match(TokenType.Assign);
                     var argument = Expression();
-                    yield return new NamedArgument(name.Value, argument);
+                    yield return new NamedArgument(IdentifierSerializer.DeserializeIdentifier(name.Value), argument);
                 }
                 else
                 {

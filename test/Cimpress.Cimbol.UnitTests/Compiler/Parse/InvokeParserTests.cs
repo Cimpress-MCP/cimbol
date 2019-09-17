@@ -72,6 +72,36 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
         }
 
         [Test]
+        [TestCase("if", TokenType.IfKeyword)]
+        [TestCase("list", TokenType.ListKeyword)]
+        [TestCase("object", TokenType.ObjectKeyword)]
+        [TestCase("where", TokenType.WhereKeyword)]
+        public void Should_ParseMacroNode_When_GivenMacroWithNamedArgumentsWithSpaces(
+            string macroName,
+            TokenType tokenType)
+        {
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token(macroName, tokenType, new Position(0, 0), new Position(0, 0)),
+                new Token("(", TokenType.LeftParenthesis, new Position(0, 0), new Position(0, 0)),
+                new Token("'a b c'", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
+                new Token("=", TokenType.Assign, new Position(0, 0), new Position(0, 0)),
+                new Token("x", TokenType.Identifier, new Position(0, 0), new Position(0, 0)),
+                new Token(")", TokenType.RightParenthesis, new Position(0, 0), new Position(0, 0)));
+
+            var parser = new Parser("formula", tokenStream);
+
+            var result = parser.Invoke();
+            Assert.That(result, Is.InstanceOf<MacroNode>());
+            var macroResult = result as MacroNode;
+            Assert.That(macroResult, Is.Not.Null);
+            Assert.That(macroResult.Macro, Is.EqualTo(macroName));
+            Assert.That(macroResult.Arguments, Has.Length.EqualTo(1));
+            var argumentResult = macroResult.Arguments[0] as NamedArgument;
+            Assert.That(argumentResult, Is.Not.Null);
+            Assert.That(argumentResult.Name, Is.EqualTo("a b c"));
+        }
+
+        [Test]
         public void Should_ParseAccessNode_When_GivenSingleAccess()
         {
             var tokenStream = ParseTestUtilities.CreateTokenStream(
