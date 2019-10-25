@@ -45,9 +45,9 @@ benchmark:fea:
       - merge_requests
   script:
     - export PATH="$PATH:/root/.dotnet/tools"
-    - dotnet tool install -g BenchmarkDotNet.Tool
+    - dotnet tool install -g BenchmarkDotNet.Tool --version 0.11.5
     - dotnet build test/Cimpress.Cimbol.PerformanceTests/Cimpress.Cimbol.PerformanceTests.csproj -c Release -o $(pwd)/build
-    - dotnet benchmark build/Cimpress.Cimbol.PerformanceTests.dll -f Cimpress.Cimbol.PerformanceTests*
+    - dotnet benchmark build/Cimpress.Cimbol.PerformanceTests.dll -f Cimpress.Cimbol.PerformanceTests* -a artifacts -e briefjson -j medium --join
 
 test:fea:
   <<: *tags-common
@@ -71,7 +71,7 @@ benchmark:prd:
       - master
   script:
     - export PATH="$PATH:/root/.dotnet/tools"
-    - dotnet tool install -g BenchmarkDotNet.Tool
+    - dotnet tool install -g BenchmarkDotNet.Tool --version 0.11.5
     - dotnet build test/Cimpress.Cimbol.PerformanceTests/Cimpress.Cimbol.PerformanceTests.csproj -c Release -o $(pwd)/build
     - mkdir artifacts
     - dotnet benchmark build/Cimpress.Cimbol.PerformanceTests.dll -f Cimpress.Cimbol.PerformanceTests* -a artifacts -e briefjson -j medium --join

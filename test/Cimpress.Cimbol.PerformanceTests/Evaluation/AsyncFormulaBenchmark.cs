@@ -51,7 +51,7 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
 
         public int[] FormulaCounts()
         {
-            return new[] { 4, 8, 16, 32, 48, 64 };
+            return new[] { 16, 32, 48, 64 };
         }
     }
 }

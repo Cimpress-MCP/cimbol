@@ -42,7 +42,7 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
 
         public int[] FailureCounts()
         {
-            return new[] { 0, 1, 2, 4, 8, 16, 32, 48, 64 };
+            return new[] { 16, 32, 48, 64 };
         }
     }
 }
