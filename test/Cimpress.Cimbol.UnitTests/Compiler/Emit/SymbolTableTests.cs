@@ -39,6 +39,30 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         }
 
         [Test]
+        public void Should_DefineSymbolFromReference_When_SymbolNotInSelf()
+        {
+            var original = new Symbol("a", typeof(ILocalValue));
+            var symbolTable = new SymbolTable();
+            symbolTable.Define("y", typeof(ILocalValue));
+
+            var result = symbolTable.Define("x", original);
+
+            Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public void ShouldNot_DefineSymbolFromReference_When_SymbolInSelf()
+        {
+            var original = new Symbol("a", typeof(ILocalValue));
+            var symbolTable = new SymbolTable();
+            symbolTable.Define("x", typeof(ILocalValue));
+
+            var result = symbolTable.Define("x", original);
+
+            Assert.That(result, Is.False);
+        }
+
+        [Test]
         public void Should_RetrieveParameter_When_SymbolInSelf()
         {
             var symbolTable = new SymbolTable();

@@ -26,14 +26,17 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <summary>
         /// Add an existing symbol to the symbol table.
         /// </summary>
-        /// <param name="symbol">The symbol to add to the symbol table.</param>
+        /// <param name="symbolName">The symbol name to define.</param>
+        /// <param name="otherSymbol">The symbol that this symbol is a clone of.</param>
         /// <returns>True if the symbol was defined, false if it could not be defined.</returns>
-        public bool Define(Symbol symbol)
+        public bool Define(string symbolName, Symbol otherSymbol)
         {
-            if (_table.ContainsKey(symbol.Name))
+            if (_table.ContainsKey(symbolName))
             {
                 return false;
             }
+
+            var symbol = new Symbol(symbolName, otherSymbol);
 
             _table[symbol.Name] = symbol;
 

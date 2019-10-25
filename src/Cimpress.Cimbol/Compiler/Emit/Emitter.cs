@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Exceptions;
+using Cimpress.Cimbol.Runtime;
 using Cimpress.Cimbol.Runtime.Functions;
 using Cimpress.Cimbol.Runtime.Types;
 
@@ -52,7 +53,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             var dependencyTable = new DependencyTable(programNode);
 
-            var symbolRegistry = new SymbolRegistry(programNode);
+            var symbolRegistry = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable);
 
             var executionPlan = new ExecutionPlan(declarationHierarchy, dependencyTable, symbolRegistry);
 
@@ -85,7 +86,10 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 var symbolTable = symbolRegistry.GetModuleScope(moduleNode);
                 foreach (var childSymbol in symbolTable.Symbols)
                 {
-                    variables.Add(childSymbol.Variable);
+                    if (!childSymbol.IsReference)
+                    {
+                        variables.Add(childSymbol.Variable);
+                    }
                 }
 
                 var module = EmitModuleInitialization(symbol);
@@ -200,7 +204,6 @@ namespace Cimpress.Cimbol.Compiler.Emit
             {
                 var executionGroupExpression = EmitExecutionGroup(
                     executionGroup,
-                    programNode,
                     symbolRegistry);
 
                 executionGroupExpressions.Add(executionGroupExpression);
@@ -217,12 +220,10 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// Emit an expression that executes an execution group.
         /// </summary>
         /// <param name="executionGroup">The execution group.</param>
-        /// <param name="programNode">The program node that the execution group belongs to.</param>
         /// <param name="symbolRegistry">The symbol registry for the program.</param>
         /// <returns>An expression that executes an execution group.</returns>
         internal LambdaExpression EmitExecutionGroup(
             ExecutionGroup executionGroup,
-            ProgramNode programNode,
             SymbolRegistry symbolRegistry)
         {
             var asynchronousStepExpressions = new List<Expression>(executionGroup.ExecutionSteps.Count);
@@ -231,18 +232,31 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             foreach (var executionStep in executionGroup.ExecutionSteps)
             {
-                var executionStepExpression = EmitExecutionStep(
-                    executionStep,
-                    programNode,
-                    symbolRegistry);
-
-                if (executionStep.IsAsynchronous)
+                if (executionStep.DeclarationNode is FormulaNode formulaNode)
                 {
-                    asynchronousStepExpressions.Add(executionStepExpression);
+                    var executionStepExpression = EmitFormula(
+                        formulaNode,
+                        executionStep.ModuleNode,
+                        symbolRegistry,
+                        executionStep.ExecutionStepContext);
+
+                    if (executionStep.IsAsynchronous)
+                    {
+                        asynchronousStepExpressions.Add(executionStepExpression);
+                    }
+                    else
+                    {
+                        synchronousStepExpressions.Add(executionStepExpression);
+                    }
+                }
+                else if (executionStep.DeclarationNode is ImportNode)
+                {
+                    // Import nodes should emit no code.
+                    // The mapping of import node to import value is performed when the symbol registry is constructed.
                 }
                 else
                 {
-                    synchronousStepExpressions.Add(executionStepExpression);
+                    throw new CimbolInternalException("Unrecognized declaration node type.");
                 }
             }
 
@@ -257,44 +271,25 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// Emit an expression from an execution step.
         /// </summary>
         /// <param name="executionStep">The execution step being emitted.</param>
-        /// <param name="programNode">The program that the execution step belongs to.</param>
+        /// <param name="moduleNode">The program that the execution step belongs to.</param>
         /// <param name="symbolRegistry">The symbol registry for the program.</param>
+        /// <param name="executionStepContext">The context for the execution step that the formula node belongs to.</param>
         /// <returns>An expression that executes an execution step.</returns>
-        internal Expression EmitExecutionStep(
-            ExecutionStep executionStep,
-            ProgramNode programNode,
-            SymbolRegistry symbolRegistry)
+        internal Expression EmitFormula(
+            FormulaNode executionStep,
+            ModuleNode moduleNode,
+            SymbolRegistry symbolRegistry,
+            ExecutionStepContext executionStepContext)
         {
-            bool isExported;
+            var symbolTable = symbolRegistry.GetModuleScope(moduleNode);
 
-            Expression internalExpression;
+            var exportSymbol = symbolRegistry.Modules.Resolve(moduleNode.Name);
 
-            var symbolTable = symbolRegistry.GetModuleScope(executionStep.ModuleNode);
+            var internalExpression = EmitExpression(executionStep.Body, symbolTable);
 
-            var exportSymbol = symbolRegistry.Modules.Resolve(executionStep.ModuleNode.Name);
+            var isExported = executionStep.IsExported;
 
-            if (executionStep.DeclarationNode is FormulaNode formulaNode)
-            {
-                internalExpression = EmitFormula(formulaNode, symbolTable);
-
-                isExported = formulaNode.IsExported;
-            }
-            else if (executionStep.DeclarationNode is ImportNode importNode)
-            {
-                internalExpression = EmitImport(importNode, programNode, symbolRegistry);
-
-                isExported = false;
-            }
-            else
-            {
-                throw new CimbolInternalException("Unrecognized declaration node type.");
-            }
-
-            var internalSymbol = symbolTable.Resolve(executionStep.DeclarationNode.Name);
-
-            var executionStepContext = CompilationProfile != CompilationProfile.Minimal
-                ? executionStep.ExecutionStepContext
-                : null;
+            var internalSymbol = symbolTable.Resolve(executionStep.Name);
 
             // If the execution step is asynchronous, create a handler (a callback that runs once the returned task is resolved).
             // This handler's code depends on whether or not it is exported.
@@ -304,7 +299,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 var handler = isExported
                     ? CodeGen.ExecutionStepAsyncHandlerExported(
                         internalSymbol.Variable,
-                        executionStep.DeclarationNode.Name,
+                        executionStep.Name,
                         exportSymbol.Variable)
                     : CodeGen.ExecutionStepAsyncHandler(internalSymbol.Variable);
 
@@ -332,22 +327,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 ? CodeGen.ExecutionStepSyncExported(
                     evaluator,
                     internalSymbol.Variable,
-                    executionStep.DeclarationNode.Name,
+                    executionStep.Name,
                     exportSymbol.Variable)
                 : CodeGen.ExecutionStepSync(evaluator, internalSymbol.Variable);
-        }
-
-        /// <summary>
-        /// Emit an expression from a formula node.
-        /// </summary>
-        /// <param name="formulaNode">The formula node to emit from.</param>
-        /// <param name="symbolTable">The symbol table for the current scope.</param>
-        /// <returns>An expression that encompasses evaluating and assigning a formula.</returns>
-        internal Expression EmitFormula(
-            FormulaNode formulaNode,
-            SymbolTable symbolTable)
-        {
-            return EmitExpression(formulaNode.Body, symbolTable);
         }
 
         /// <summary>

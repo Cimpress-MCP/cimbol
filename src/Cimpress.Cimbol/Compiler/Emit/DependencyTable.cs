@@ -66,6 +66,19 @@ namespace Cimpress.Cimbol.Compiler.Emit
             return _dependencyGraph.MinimalPartialOrder();
         }
 
+        /// <summary>
+        /// Determines the topological sort of the given declarations.
+        /// A successful topological sort will have every declaration node positioned in the collection such that none of
+        /// that node's dependents come before it and none of that node's dependencies come after it.
+        /// </summary>
+        /// <returns>
+        /// A list of nodes that have been sorted based on a partial ordering.
+        /// </returns>
+        public IReadOnlyCollection<IDeclarationNode> TopologicalSort()
+        {
+            return _dependencyGraph.TopologicalSort();
+        }
+
         private static Graph<IDeclarationNode> BuildDependencyGraph(ProgramNode programNode)
         {
             var dependencyTable = new Dictionary<IDeclarationNode, HashSet<IDeclarationNode>>();

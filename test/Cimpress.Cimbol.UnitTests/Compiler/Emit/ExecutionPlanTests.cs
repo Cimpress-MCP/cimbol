@@ -26,8 +26,9 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ArgumentNode>(),
                 Enumerable.Empty<ConstantNode>(),
                 Enumerable.Empty<ModuleNode>());
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
             var dependencyTable = new DependencyTable(programNode);
-            var symbolRegistry = new SymbolRegistry(programNode);
+            var symbolRegistry = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable);
 
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -43,7 +44,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ConstantNode>(),
                 Enumerable.Empty<ModuleNode>());
             var declarationHierarchy = new DeclarationHierarchy(programNode);
-            var symbolRegistry = new SymbolRegistry(programNode);
+            var dependencyTable = new DependencyTable(programNode);
+            var symbolRegistry = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable);
 
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -135,7 +137,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 new[] { moduleNode });
             var declarationHierarchy = new DeclarationHierarchy(programNode);
             var dependencyTable = new DependencyTable(programNode);
-            var symbolRegistry = new SymbolRegistry(programNode);
+            var symbolRegistry = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable);
             var executionPlan = new ExecutionPlan(declarationHierarchy, dependencyTable, symbolRegistry);
 
             var result = executionPlan.ExecutionGroups.ToArray();

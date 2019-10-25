@@ -17,8 +17,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 new[] { argumentDeclarationNode },
                 Enumerable.Empty<ConstantNode>(),
                 Enumerable.Empty<ModuleNode>());
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+            var dependencyTable = new DependencyTable(programNode);
 
-            var result = new SymbolRegistry(programNode);
+            var result = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Arguments.Symbols, Has.Count.EqualTo(1));
@@ -36,8 +38,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ArgumentNode>(),
                 new[] { constantDeclarationNode },
                 Enumerable.Empty<ModuleNode>());
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+            var dependencyTable = new DependencyTable(programNode);
 
-            var result = new SymbolRegistry(programNode);
+            var result = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Arguments.Symbols, Is.Empty);
@@ -58,8 +62,10 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ArgumentNode>(),
                 Enumerable.Empty<ConstantNode>(),
                 new[] { moduleDeclarationNode });
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+            var dependencyTable = new DependencyTable(programNode);
 
-            var result = new SymbolRegistry(programNode);
+            var result = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Arguments.Symbols, Is.Empty);
@@ -67,7 +73,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             Assert.That(result.Modules.Symbols, Has.Count.EqualTo(1));
             Assert.That(result.Modules.Resolve("x"), Is.Not.Null);
             Assert.That(result.Scopes, Has.Count.EqualTo(1));
-            Assert.That(result.Scopes, Contains.Key(moduleDeclarationNode));
+            Assert.That(result.Scopes, Contains.Key(moduleDeclarationNode.Name));
         }
 
         [Test]
@@ -82,8 +88,11 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 Enumerable.Empty<ArgumentNode>(),
                 Enumerable.Empty<ConstantNode>(),
                 new[] { moduleDeclarationNode });
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+            var dependencyTable = new DependencyTable(programNode);
 
-            var result = new SymbolRegistry(programNode).Scopes[moduleDeclarationNode];
+            var result = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable)
+                .Scopes[moduleDeclarationNode.Name];
 
             Assert.That(result, Is.Not.Null);
             var resultSymbol = result.Resolve("x");
@@ -99,12 +108,16 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 "x",
                 new[] { importDeclarationNode },
                 Enumerable.Empty<FormulaNode>());
+            var constantNode = new ConstantNode("y", BooleanValue.True);
             var programNode = new ProgramNode(
                 Enumerable.Empty<ArgumentNode>(),
-                Enumerable.Empty<ConstantNode>(),
+                new[] { constantNode },
                 new[] { moduleDeclarationNode });
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+            var dependencyTable = new DependencyTable(programNode);
 
-            var result = new SymbolRegistry(programNode).Scopes[moduleDeclarationNode];
+            var result = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable)
+                .Scopes[moduleDeclarationNode.Name];
 
             Assert.That(result, Is.Not.Null);
             var resultSymbol = result.Resolve("x");
