@@ -31,6 +31,11 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <param name="otherSymbol">The symbol that this symbol is a clone of.</param>
         public Symbol(string name, Symbol otherSymbol)
         {
+            if (otherSymbol == null)
+            {
+                throw new ArgumentNullException(nameof(otherSymbol));
+            }
+
             IsReference = true;
 
             Name = name;

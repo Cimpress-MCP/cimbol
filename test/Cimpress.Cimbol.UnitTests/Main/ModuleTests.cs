@@ -117,7 +117,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var resource = program.AddArgument("argument");
             var module = program.AddModule("module");
-            Assert.DoesNotThrow(() => module.AddReference("argument reference", resource));
+            Assert.DoesNotThrow(() => module.AddImport("argument reference", resource));
         }
 
         [Test]
@@ -126,7 +126,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var resource = program.AddConstant("constant", new NumberValue(5));
             var module = program.AddModule("module");
-            Assert.DoesNotThrow(() => module.AddReference("constant reference", resource));
+            Assert.DoesNotThrow(() => module.AddImport("constant reference", resource));
         }
 
         [Test]
@@ -135,7 +135,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var resource = program.AddModule("other module");
             var module = program.AddModule("module");
-            Assert.DoesNotThrow(() => module.AddReference("module reference", resource));
+            Assert.DoesNotThrow(() => module.AddImport("module reference", resource));
         }
 
         [Test]
@@ -145,7 +145,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var moduleA = program.AddModule("module a");
             var moduleB = program.AddModule("module b");
             var resource = moduleB.AddFormula("formula", "1 + 2");
-            Assert.DoesNotThrow(() => moduleA.AddReference("output", resource));
+            Assert.DoesNotThrow(() => moduleA.AddImport("output", resource));
         }
 
         [Test]
@@ -153,7 +153,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
         {
             var program = new Program();
             var module = program.AddModule("module");
-            Assert.Throws<ArgumentNullException>(() => module.AddReference("resource", null));
+            Assert.Throws<ArgumentNullException>(() => module.AddImport("resource", null));
         }
 
         [Test]
@@ -162,7 +162,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var resource = program.AddArgument("argument");
             var module = program.AddModule("module");
-            Assert.Throws<ArgumentNullException>(() => module.AddReference(null, resource));
+            Assert.Throws<ArgumentNullException>(() => module.AddImport(null, resource));
         }
 
         [Test]
@@ -170,7 +170,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
         {
             var program = new Program();
             var module = program.AddModule("module");
-            Assert.Throws<ArgumentException>(() => module.AddReference("x", module));
+            Assert.Throws<ArgumentException>(() => module.AddImport("x", module));
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var resource = programA.AddArgument("argument");
             var programB = new Program();
             var module = programB.AddModule("module");
-            Assert.Throws<ArgumentException>(() => module.AddReference("resource", resource));
+            Assert.Throws<ArgumentException>(() => module.AddImport("resource", resource));
         }
 
         [Test]
@@ -190,8 +190,8 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var resourceA = program.AddArgument("argument a");
             var resourceB = program.AddArgument("argument b");
             var module = program.AddModule("module");
-            module.AddReference("argument", resourceA);
-            Assert.Throws<ArgumentException>(() => module.AddReference("argument", resourceB));
+            module.AddImport("argument", resourceA);
+            Assert.Throws<ArgumentException>(() => module.AddImport("argument", resourceB));
         }
 
         [Test]
@@ -200,7 +200,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var module = program.AddModule("module");
             var resource = module.AddFormula("formula", "1 + 2");
-            Assert.Throws<ArgumentException>(() => module.AddReference("output", resource));
+            Assert.Throws<ArgumentException>(() => module.AddImport("output", resource));
         }
 
         [Test]
@@ -210,7 +210,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var moduleA = program.AddModule("module a");
             var moduleB = program.AddModule("module b");
             var resource = moduleB.AddFormula("formula", "1 + 2", FormulaFlags.Private);
-            Assert.Throws<ArgumentException>(() => moduleA.AddReference("output", resource));
+            Assert.Throws<ArgumentException>(() => moduleA.AddImport("output", resource));
         }
 
         [Test]
@@ -219,7 +219,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var resource = program.AddArgument("argument");
             var module = program.AddModule("module");
-            module.AddReference("formula", resource);
+            module.AddImport("formula", resource);
             Assert.Throws<ArgumentException>(() => module.AddFormula("formula", "1 + 2"));
         }
 
@@ -230,7 +230,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var resource = program.AddArgument("argument");
             var module = program.AddModule("module");
             module.AddFormula("formula", "1 + 2");
-            Assert.Throws<ArgumentException>(() => module.AddReference("formula", resource));
+            Assert.Throws<ArgumentException>(() => module.AddImport("formula", resource));
         }
 
         [Test]
@@ -250,7 +250,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var resource = program.AddArgument("argument");
             var module = program.AddModule("module");
-            module.AddReference("argument", resource);
+            module.AddImport("argument", resource);
 
             var result = module.ToSyntaxTree();
 
@@ -267,7 +267,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var resource = program.AddConstant("constant", BooleanValue.True);
             var module = program.AddModule("module");
-            module.AddReference("constant", resource);
+            module.AddImport("constant", resource);
 
             var result = module.ToSyntaxTree();
 
@@ -285,7 +285,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var otherModule = program.AddModule("other module");
             var resource = otherModule.AddFormula("formula", "x");
             var module = program.AddModule("module");
-            module.AddReference("formula", resource);
+            module.AddImport("formula", resource);
 
             var result = module.ToSyntaxTree();
 
@@ -302,7 +302,7 @@ namespace Cimpress.Cimbol.UnitTests.Main
             var program = new Program();
             var resource = program.AddModule("other module");
             var module = program.AddModule("module");
-            module.AddReference("other module", resource);
+            module.AddImport("other module", resource);
 
             var result = module.ToSyntaxTree();
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
@@ -26,13 +27,13 @@ namespace Cimpress.Cimbol.Compiler.Emit
             ExecutionStepType type,
             IEnumerable<ExecutionStep> dependents)
         {
-            DeclarationNode = declarationNode;
+            DeclarationNode = declarationNode ?? throw new ArgumentNullException(nameof(declarationNode));
 
             Dependents = dependents.ToImmutableArray();
 
             Id = id;
 
-            ModuleNode = moduleNode;
+            ModuleNode = moduleNode ?? throw new ArgumentNullException(nameof(moduleNode));
 
             Type = type;
 

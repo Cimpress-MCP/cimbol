@@ -11,6 +11,7 @@ using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
 {
+    [TestFixture]
     public class EmitterTests
     {
         private Emitter _emitter;
@@ -583,6 +584,38 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             var node = new UnaryOpNode((UnaryOpType)(-1), new LiteralNode(value1));
 
             Assert.Throws<CimbolInternalException>(() => _emitter.EmitExpression(node, _symbolTable));
+        }
+
+        [Test]
+        public void Should_EmitImport_When_ImportIsExported()
+        {
+            var importNode = new ImportNode("Import01", new[] { "Argument01" }, ImportType.Argument, true);
+            var moduleNode = new ModuleNode("Module01", new[] { importNode }, Array.Empty<FormulaNode>());
+            var argumentNode = new ArgumentNode("Argument01");
+            var programNode = new ProgramNode(new[] { argumentNode }, Array.Empty<ConstantNode>(), new[] { moduleNode });
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+            var dependencyTable = new DependencyTable(programNode);
+            var symbolRegistry = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable);
+
+            var result = _emitter.EmitImport(importNode, moduleNode, symbolRegistry);
+
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public void ShouldNot_EmitImport_When_ImportIsNotExported()
+        {
+            var importNode = new ImportNode("Import01", new[] { "Argument01" }, ImportType.Argument, false);
+            var moduleNode = new ModuleNode("Module01", new[] { importNode }, Array.Empty<FormulaNode>());
+            var argumentNode = new ArgumentNode("Argument01");
+            var programNode = new ProgramNode(new[] { argumentNode }, Array.Empty<ConstantNode>(), new[] { moduleNode });
+            var declarationHierarchy = new DeclarationHierarchy(programNode);
+            var dependencyTable = new DependencyTable(programNode);
+            var symbolRegistry = new SymbolRegistry(programNode, declarationHierarchy, dependencyTable);
+
+            var result = _emitter.EmitImport(importNode, moduleNode, symbolRegistry);
+
+            Assert.That(result, Is.Null);
         }
 
         private static IEnumerable<TestCaseData> BinaryOpNodeTestCases()

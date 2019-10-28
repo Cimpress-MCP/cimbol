@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using Cimpress.Cimbol.Compiler.Emit;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
@@ -8,6 +9,12 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
     [TestFixture]
     public class SymbolTests
     {
+        [Test]
+        public void Should_ThrowArgumentNullException_When_ConstructedWithNullParentSymbol()
+        {
+            Assert.Throws<ArgumentNullException>(() => new Symbol("Symbol01", (Symbol)null));
+        }
+
         [Test]
         public void Should_InitializeParameterExpression_When_ConstructedWithType()
         {

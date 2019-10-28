@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
-using Cimpress.Cimbol.Exceptions;
 
 namespace Cimpress.Cimbol
 {
@@ -13,7 +12,7 @@ namespace Cimpress.Cimbol
     {
         private readonly IDictionary<string, Formula> _formulas;
 
-        private readonly IDictionary<string, IResource> _references;
+        private readonly IDictionary<string, Import> _imports;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Module"/> class.
@@ -28,7 +27,7 @@ namespace Cimpress.Cimbol
 
             _formulas = new Dictionary<string, Formula>(StringComparer.OrdinalIgnoreCase);
 
-            _references = new Dictionary<string, IResource>(StringComparer.OrdinalIgnoreCase);
+            _imports = new Dictionary<string, Import>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -62,7 +61,7 @@ namespace Cimpress.Cimbol
                 throw new ArgumentNullException(nameof(formulaValue));
             }
 
-            if (_formulas.ContainsKey(formulaName) || _references.ContainsKey(formulaName))
+            if (_formulas.ContainsKey(formulaName) || _imports.ContainsKey(formulaName))
             {
                 // Disallow adding duplicate references to a module.
                 throw new ArgumentException("Duplicate formula name added to module.", nameof(formulaName));
@@ -72,50 +71,53 @@ namespace Cimpress.Cimbol
 
             _formulas[formulaName] = formula;
 
-            _references[formulaName] = formula;
-
             return formula;
         }
 
         /// <summary>
         /// Add a reference to another module to the module.
         /// </summary>
-        /// <param name="referenceName">The name to reference the module contents by.</param>
-        /// <param name="resource">The resource to reference.</param>
-        public void AddReference(string referenceName, IResource resource)
+        /// <param name="importName">The name to reference the module contents by.</param>
+        /// <param name="importResource">The imported resource to reference.</param>
+        /// <param name="isExported">Whether or not the import should be re-exported.</param>
+        public void AddImport(string importName, IResource importResource, bool isExported = false)
         {
-            if (referenceName == null)
+            if (importName == null)
             {
                 // Reference names must not be null.
-                throw new ArgumentNullException(nameof(referenceName));
+                throw new ArgumentNullException(nameof(importName));
             }
 
-            if (resource == null)
+            if (importResource == null)
             {
                 // Resources cannot be null.
-                throw new ArgumentNullException(nameof(resource));
+                throw new ArgumentNullException(nameof(importResource));
             }
 
-            if (!ReferenceEquals(Program, resource.Program))
+            var import = new Import(this, importName, importResource, isExported);
+
+            if (!ReferenceEquals(Program, import.Value.Program))
             {
                 // Disallow adding duplicate references to a module.
-                throw new ArgumentException("Duplicate reference name added to module.", nameof(referenceName));
+                throw new ArgumentException(
+                    "Imported resources must belong to the same program as the importing module.",
+                    nameof(importResource));
             }
 
-            if (ReferenceEquals(this, resource))
+            if (ReferenceEquals(this, import.Value))
             {
                 // Disallow adding a self-reference to a module within that module.
-                throw new ArgumentException("Cannot add a module as a reference to itself.", nameof(resource));
+                throw new ArgumentException("Cannot add a module as a reference to itself.", nameof(importResource));
             }
 
-            if (resource is Formula formula)
+            if (import.Value is Formula formula)
             {
                 if (ReferenceEquals(this, formula.Module))
                 {
                     // Disallow adding a reference to a formula within the module that owns the formula.
                     throw new ArgumentException(
                         "Cannot add a reference to a formula within the module that owns the formula.",
-                        nameof(resource));
+                        nameof(importResource));
                 }
 
                 if (!formula.IsReferenceable)
@@ -123,19 +125,17 @@ namespace Cimpress.Cimbol
                     // Disallow adding a reference to a formula when that formula is not referenceable.
                     throw new ArgumentException(
                         "Cannot add a reference to a formula that is not referenceable.",
-                        nameof(resource));
+                        nameof(importResource));
                 }
             }
 
-            if (_references.ContainsKey(referenceName))
+            if (_formulas.ContainsKey(importName) || _imports.ContainsKey(import.Name))
             {
                 // Disallow adding duplicate references to a module.
-                throw new ArgumentException(
-                    "Cannot add a duplicate reference to a resource within a module.",
-                    nameof(resource));
+                throw new ArgumentException("Duplicate reference name added to module.", nameof(importName));
             }
 
-            _references[referenceName] = resource;
+            _imports[import.Name] = import;
         }
 
         /// <summary>
@@ -155,67 +155,11 @@ namespace Cimpress.Cimbol
         /// <returns>An abstract syntax tree.</returns>
         internal ModuleNode ToSyntaxTree()
         {
-            var imports = new List<ImportNode>();
-
-            foreach (var referenceEntry in _references)
-            {
-                if (_formulas.ContainsKey(referenceEntry.Key))
-                {
-                    // Skip over formulas, they are handled later.
-                    continue;
-                }
-
-                var importPath = GetImportPath(referenceEntry.Value);
-                var importType = GetImportType(referenceEntry.Value);
-
-                imports.Add(new ImportNode(referenceEntry.Key, importPath, importType));
-            }
+            var imports = _imports.Values.Select(import => import.ToSyntaxTree());
 
             var formulas = _formulas.Values.Select(formula => formula.ToSyntaxTree());
 
             return new ModuleNode(Name, imports, formulas);
-        }
-
-        private static IEnumerable<string> GetImportPath(IResource resource)
-        {
-            switch (resource)
-            {
-                case Argument argument:
-                    return new[] { argument.Name };
-
-                case Constant constant:
-                    return new[] { constant.Name };
-
-                case Formula formula:
-                    return new[] { formula.Module.Name, formula.Name };
-
-                case Module module:
-                    return new[] { module.Name };
-
-                default:
-                    throw new CimbolInternalException("Unrecognized resource type.");
-            }
-        }
-
-        private static ImportType GetImportType(IResource resource)
-        {
-            switch (resource)
-            {
-                case Argument _:
-                    return ImportType.Argument;
-
-                case Constant _:
-                    return ImportType.Constant;
-
-                case Formula _:
-                    return ImportType.Formula;
-
-                case Module _:
-                    return ImportType.Module;
-
-                default:
-                    throw new CimbolInternalException("Unrecognized resource type.");
-            }
         }
     }
 }

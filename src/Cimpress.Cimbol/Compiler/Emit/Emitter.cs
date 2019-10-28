@@ -249,10 +249,14 @@ namespace Cimpress.Cimbol.Compiler.Emit
                         synchronousStepExpressions.Add(executionStepExpression);
                     }
                 }
-                else if (executionStep.DeclarationNode is ImportNode)
+                else if (executionStep.DeclarationNode is ImportNode importNode)
                 {
-                    // Import nodes should emit no code.
-                    // The mapping of import node to import value is performed when the symbol registry is constructed.
+                    var executionStepExpression = EmitImport(importNode, executionStep.ModuleNode, symbolRegistry);
+
+                    if (executionStepExpression != null)
+                    {
+                        synchronousStepExpressions.Add(executionStepExpression);
+                    }
                 }
                 else
                 {
@@ -270,13 +274,13 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// <summary>
         /// Emit an expression from an execution step.
         /// </summary>
-        /// <param name="executionStep">The execution step being emitted.</param>
+        /// <param name="formulaNode">The execution step being emitted.</param>
         /// <param name="moduleNode">The program that the execution step belongs to.</param>
         /// <param name="symbolRegistry">The symbol registry for the program.</param>
         /// <param name="executionStepContext">The context for the execution step that the formula node belongs to.</param>
         /// <returns>An expression that executes an execution step.</returns>
         internal Expression EmitFormula(
-            FormulaNode executionStep,
+            FormulaNode formulaNode,
             ModuleNode moduleNode,
             SymbolRegistry symbolRegistry,
             ExecutionStepContext executionStepContext)
@@ -285,21 +289,21 @@ namespace Cimpress.Cimbol.Compiler.Emit
 
             var exportSymbol = symbolRegistry.Modules.Resolve(moduleNode.Name);
 
-            var internalExpression = EmitExpression(executionStep.Body, symbolTable);
+            var internalExpression = EmitExpression(formulaNode.Body, symbolTable);
 
-            var isExported = executionStep.IsExported;
+            var isExported = formulaNode.IsExported;
 
-            var internalSymbol = symbolTable.Resolve(executionStep.Name);
+            var internalSymbol = symbolTable.Resolve(formulaNode.Name);
 
             // If the execution step is asynchronous, create a handler (a callback that runs once the returned task is resolved).
             // This handler's code depends on whether or not it is exported.
             // Once this handler exists, create the actual execution step that runs the handler once it finishes evaluating.
-            if (executionStep.IsAsynchronous)
+            if (formulaNode.IsAsynchronous)
             {
                 var handler = isExported
                     ? CodeGen.ExecutionStepAsyncHandlerExported(
                         internalSymbol.Variable,
-                        executionStep.Name,
+                        formulaNode.Name,
                         exportSymbol.Variable)
                     : CodeGen.ExecutionStepAsyncHandler(internalSymbol.Variable);
 
@@ -327,7 +331,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 ? CodeGen.ExecutionStepSyncExported(
                     evaluator,
                     internalSymbol.Variable,
-                    executionStep.Name,
+                    formulaNode.Name,
                     exportSymbol.Variable)
                 : CodeGen.ExecutionStepSync(evaluator, internalSymbol.Variable);
         }
@@ -336,40 +340,26 @@ namespace Cimpress.Cimbol.Compiler.Emit
         /// Emit an expression from an import declaration node.
         /// </summary>
         /// <param name="importNode">The import declaration node to emit from.</param>
-        /// <param name="programNode">The parent program node of the import declaration node.</param>
+        /// <param name="moduleNode">The program that the import step belongs to.</param>
         /// <param name="symbolRegistry">The symbol registry for the program.</param>
         /// <returns>An expression that performs an import.</returns>
         internal Expression EmitImport(
             ImportNode importNode,
-            ProgramNode programNode,
+            ModuleNode moduleNode,
             SymbolRegistry symbolRegistry)
         {
-            var firstName = importNode.ImportPath.ElementAtOrDefault(0);
-            var secondName = importNode.ImportPath.ElementAtOrDefault(1);
-
-            switch (importNode.ImportType)
+            if (!importNode.IsExported)
             {
-                case ImportType.Argument:
-                    return symbolRegistry.Arguments.Resolve(firstName).Variable;
-
-                case ImportType.Constant:
-                    return symbolRegistry.Constants.Resolve(firstName).Variable;
-
-                case ImportType.Formula:
-                {
-                    var moduleNode = programNode.GetModule(firstName);
-
-                    var externalSymbolTable = symbolRegistry.GetModuleScope(moduleNode);
-
-                    return externalSymbolTable.Resolve(secondName).Variable;
-                }
-
-                case ImportType.Module:
-                    return symbolRegistry.Modules.Resolve(firstName).Variable;
-
-                default:
-                    throw new CimbolInternalException("Unrecognized import type.");
+                return null;
             }
+
+            var symbolTable = symbolRegistry.GetModuleScope(moduleNode);
+
+            var exportSymbol = symbolRegistry.Modules.Resolve(moduleNode.Name);
+
+            var internalSymbol = symbolTable.Resolve(importNode.Name);
+
+            return CodeGen.ExecutionStepExport(internalSymbol.Variable, importNode.Name, exportSymbol.Variable);
         }
 
         /// <summary>

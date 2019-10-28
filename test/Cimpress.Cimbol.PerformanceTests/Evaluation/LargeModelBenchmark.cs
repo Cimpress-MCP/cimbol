@@ -50,61 +50,61 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
             var constant10 = program.AddConstant("Math", MakeMathModule());
 
             var module01 = program.AddModule("Lookup01");
-            module01.AddReference("Lookup01Function", constant01);
+            module01.AddImport("Lookup01Function", constant01);
             var lookup01 = module01.AddFormula("Lookup01", "await Lookup01Function()");
 
             var module02 = program.AddModule("Lookup02");
-            module02.AddReference("Lookup02Function", constant02);
+            module02.AddImport("Lookup02Function", constant02);
             var lookup02 = module02.AddFormula("Lookup02", "await Lookup02Function()");
 
             var module03 = program.AddModule("Lookup03");
-            module03.AddReference("Lookup03Function", constant03);
+            module03.AddImport("Lookup03Function", constant03);
             var lookup03 = module03.AddFormula("Lookup03", "await Lookup03Function()");
 
             var module04 = program.AddModule("Lookup04");
-            module04.AddReference("Lookup04Function", constant04);
+            module04.AddImport("Lookup04Function", constant04);
             var lookup04 = module04.AddFormula("Lookup04", "await Lookup04Function()");
 
             var module05 = program.AddModule("Lookup05");
-            module05.AddReference("Lookup05Function", constant05);
+            module05.AddImport("Lookup05Function", constant05);
             var lookup05 = module05.AddFormula("Lookup05", "await Lookup05Function()");
 
             var module06 = program.AddModule("Lookup06");
-            module06.AddReference("Lookup06Function", constant06);
+            module06.AddImport("Lookup06Function", constant06);
             var lookup06 = module06.AddFormula("Lookup06", "await Lookup06Function()");
 
             var module07 = program.AddModule("Lookup07");
-            module07.AddReference("Lookup07Function", constant07);
+            module07.AddImport("Lookup07Function", constant07);
             var lookup07 = module07.AddFormula("Lookup07", "await Lookup07Function()");
 
             var module08 = program.AddModule("Lookup08");
-            module08.AddReference("Lookup08Function", constant08);
+            module08.AddImport("Lookup08Function", constant08);
             var lookup08 = module08.AddFormula("Lookup08", "await Lookup08Function()");
 
             var module09 = program.AddModule("Lookup09");
-            module09.AddReference("Lookup09Function", constant09);
+            module09.AddImport("Lookup09Function", constant09);
             var lookup09 = module09.AddFormula("Lookup09", "await Lookup09Function()");
 
             var module10 = program.AddModule("OptionGroup01");
-            module10.AddReference("Argument01", argument01);
+            module10.AddImport("Argument01", argument01);
             module10.AddFormula("Option01", "Argument01");
 
             var module11 = program.AddModule("OptionGroup02");
-            module11.AddReference("Argument02", argument02);
-            module11.AddReference("Argument03", argument03);
-            module11.AddReference("Argument04", argument04);
-            module11.AddReference("Argument05", argument05);
-            module11.AddReference("Argument06", argument06);
-            module11.AddReference("Argument07", argument07);
-            module11.AddReference("Argument08", argument08);
-            module11.AddReference("Argument09", argument09);
-            module11.AddReference("Argument10", argument10);
-            module11.AddReference("Argument11", argument11);
-            module11.AddReference("Argument12", argument12);
-            module11.AddReference("Argument13", argument13);
-            module11.AddReference("Argument14", argument14);
-            module11.AddReference("Argument15", argument15);
-            module11.AddReference("Argument16", argument16);
+            module11.AddImport("Argument02", argument02);
+            module11.AddImport("Argument03", argument03);
+            module11.AddImport("Argument04", argument04);
+            module11.AddImport("Argument05", argument05);
+            module11.AddImport("Argument06", argument06);
+            module11.AddImport("Argument07", argument07);
+            module11.AddImport("Argument08", argument08);
+            module11.AddImport("Argument09", argument09);
+            module11.AddImport("Argument10", argument10);
+            module11.AddImport("Argument11", argument11);
+            module11.AddImport("Argument12", argument12);
+            module11.AddImport("Argument13", argument13);
+            module11.AddImport("Argument14", argument14);
+            module11.AddImport("Argument15", argument15);
+            module11.AddImport("Argument16", argument16);
             module11.AddFormula("Option02", "Argument02");
             module11.AddFormula("Option03", "Argument03");
             module11.AddFormula("Option04", "Argument04");
@@ -122,18 +122,18 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
             module11.AddFormula("Option16", "Argument16");
 
             var module = program.AddModule("Main");
-            module.AddReference("Lookup01", lookup01);
-            module.AddReference("Lookup02", lookup02);
-            module.AddReference("Lookup03", lookup03);
-            module.AddReference("Lookup04", lookup04);
-            module.AddReference("Lookup05", lookup05);
-            module.AddReference("Lookup06", lookup06);
-            module.AddReference("Lookup07", lookup07);
-            module.AddReference("Lookup08", lookup08);
-            module.AddReference("Lookup09", lookup09);
-            module.AddReference("OptionGroup01", module10);
-            module.AddReference("OptionGroup02", module11);
-            module.AddReference("Math", constant10);
+            module.AddImport("Lookup01", lookup01);
+            module.AddImport("Lookup02", lookup02);
+            module.AddImport("Lookup03", lookup03);
+            module.AddImport("Lookup04", lookup04);
+            module.AddImport("Lookup05", lookup05);
+            module.AddImport("Lookup06", lookup06);
+            module.AddImport("Lookup07", lookup07);
+            module.AddImport("Lookup08", lookup08);
+            module.AddImport("Lookup09", lookup09);
+            module.AddImport("OptionGroup01", module10);
+            module.AddImport("OptionGroup02", module11);
+            module.AddImport("Math", constant10);
             module.AddFormula(
                 "Formula001",
                 "where(case = OptionGroup02.Option10 == \"Value159\" and Lookup01.LookupField01, do = Lookup01.LookupField02 * OptionGroup02.Option13, case =  OptionGroup02.Option10 == \"Value159\" and Lookup01.LookupField01 == false, do = Math.Min(Formula002, Formula003) * 2.5, else = Math.Min(Formula002, Formula003))");

@@ -166,6 +166,25 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
+        /// Generate the expression tree for re-exporting a symbol.
+        /// </summary>
+        /// <param name="stepVariable">The variable containing the value to re-export.</param>
+        /// <param name="stepName">The name of the execution step.</param>
+        /// <param name="moduleVariable">The variable for the module to export the result to.</param>
+        /// <returns>An expression that evaluates, persists, and exports a synchronous execution step.</returns>
+        internal static Expression ExecutionStepExport(
+            ParameterExpression stepVariable,
+            string stepName,
+            ParameterExpression moduleVariable)
+        {
+            return Expression.Call(
+                EvaluationFunctions.ExportValueInfo,
+                stepVariable,
+                Expression.Constant(stepName),
+                moduleVariable);
+        }
+
+        /// <summary>
         /// Generate the expression tree for evaluating and persisting the result of a synchronous execution step.
         /// </summary>
         /// <param name="step">The execution step's expression.</param>

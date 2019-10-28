@@ -39,7 +39,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var program = new Program();
             var argument = program.AddArgument("Argument1");
             var module = program.AddModule("Main");
-            module.AddReference("Argument1", argument);
+            module.AddImport("Argument1", argument);
             module.AddFormula("Formula1", "default(Argument1, 1)");
             var executable = program.Compile(compilationProfile);
 
@@ -63,7 +63,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var functionValue = new FunctionValue((Func<NumberValue>)Function);
             var constant = program.AddConstant("Constant1", functionValue);
             var module = program.AddModule("Main");
-            module.AddReference("Constant1", constant);
+            module.AddImport("Constant1", constant);
             module.AddFormula("Formula1", "Constant1()");
             module.AddFormula("Formula2", "default(Formula1, 1)");
             var executable = program.Compile(compilationProfile);

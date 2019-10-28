@@ -31,7 +31,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
                 "ConstantA",
                 new FunctionValue((Func<NumberValue, PromiseValue>)SomeFunction));
             var module = program.AddModule("Main");
-            module.AddReference("ConstantA", constantA);
+            module.AddImport("ConstantA", constantA);
             module.AddFormula("ResultA", "await ConstantA(2)");
             var executable = program.Compile(compilationProfile);
 
@@ -65,7 +65,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
                 "ConstantA",
                 new FunctionValue((Func<NumberValue, PromiseValue>)SomeFunction));
             var module = program.AddModule("Main");
-            module.AddReference("ConstantA", constantA);
+            module.AddImport("ConstantA", constantA);
             module.AddFormula("ResultA", "await ConstantA(2)");
             module.AddFormula("ResultB", "await ConstantA(ResultA + 1)");
             module.AddFormula("ResultC", "ResultA + ResultB");
@@ -99,7 +99,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var constantValue1 = new FunctionValue((Func<NumberValue, PromiseValue>)AsyncFunction);
             var constant1 = program.AddConstant("AsyncFunction", constantValue1);
             var module = program.AddModule("main");
-            module.AddReference("AsyncFunction", constant1);
+            module.AddImport("AsyncFunction", constant1);
             module.AddFormula("ResultA", "await AsyncFunction(2)");
             module.AddFormula("ResultB", "await AsyncFunction(4)");
             module.AddFormula("ResultC", "await AsyncFunction(ResultA + ResultB)");

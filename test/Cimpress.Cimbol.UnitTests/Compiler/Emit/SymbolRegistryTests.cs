@@ -103,7 +103,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_CreateSymbolTableInRegistryWithSymbol_When_GivenProgramNodeWithModuleWithImport()
         {
-            var importDeclarationNode = new ImportNode("x", new[] { "y" }, ImportType.Constant);
+            var importDeclarationNode = new ImportNode("x", new[] { "y" }, ImportType.Constant, false);
             var moduleDeclarationNode = new ModuleNode(
                 "x",
                 new[] { importDeclarationNode },

@@ -26,7 +26,7 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
 
             var module = program.AddModule("Main");
 
-            module.AddReference("Constant1", constant);
+            module.AddImport("Constant1", constant);
 
             for (var i = 0; i < FormulaCount; ++i)
             {

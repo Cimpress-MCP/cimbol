@@ -39,9 +39,9 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var argumentB = program.AddArgument("ArgumentB");
             var argumentC = program.AddArgument("ArgumentC");
             var module = program.AddModule("Main");
-            module.AddReference("ArgumentA", argumentA);
-            module.AddReference("ArgumentB", argumentB);
-            module.AddReference("ArgumentC", argumentC);
+            module.AddImport("ArgumentA", argumentA);
+            module.AddImport("ArgumentB", argumentB);
+            module.AddImport("ArgumentC", argumentC);
             module.AddFormula("ResultA", "ArgumentA");
             module.AddFormula("ResultB", "ArgumentB * 10");
             module.AddFormula("ResultC", "ArgumentC % 4");
@@ -66,9 +66,9 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var constantB = program.AddConstant("ConstantB", new NumberValue(10));
             var constantC = program.AddConstant("ConstantC", new NumberValue(17));
             var module = program.AddModule("Main");
-            module.AddReference("ConstantA", constantA);
-            module.AddReference("ConstantB", constantB);
-            module.AddReference("ConstantC", constantC);
+            module.AddImport("ConstantA", constantA);
+            module.AddImport("ConstantB", constantB);
+            module.AddImport("ConstantC", constantC);
             module.AddFormula("ResultA", "ConstantA");
             module.AddFormula("ResultB", "ConstantB * 10");
             module.AddFormula("ResultC", "ConstantC % 4");
@@ -129,7 +129,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var module1 = program.AddModule("Other");
             module1.AddFormula("Formula1 With Spaces", "1");
             var module2 = program.AddModule("Main");
-            module2.AddReference("Other", module1);
+            module2.AddImport("Other", module1);
             module2.AddFormula("Formula1", "Other.'Formula1 With Spaces' + 1");
             var executable = program.Compile();
 

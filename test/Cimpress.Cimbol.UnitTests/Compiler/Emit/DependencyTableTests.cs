@@ -92,7 +92,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_BuildDependencyTable_When_GivenDependentFormulaImport()
         {
-            var importNode1 = new ImportNode("x", new[] { "a", "b" }, ImportType.Formula);
+            var importNode1 = new ImportNode("x", new[] { "a", "b" }, ImportType.Formula, false);
             var formulaNode1 = new FormulaNode("y", new IdentifierNode("x"), false);
             var formulaNode2 = new FormulaNode("b", new LiteralNode(BooleanValue.True), false);
             var moduleNode1 = new ModuleNode("x", new[] { importNode1 }, new[] { formulaNode1 });
@@ -119,7 +119,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_BuildDependencyTable_When_GivenDependentModuleImport()
         {
-            var importNode1 = new ImportNode("x", new[] { "a" }, ImportType.Module);
+            var importNode1 = new ImportNode("x", new[] { "a" }, ImportType.Module, false);
             var formulaNode1 = new FormulaNode("y", new IdentifierNode("x"), false);
             var formulaNode2 = new FormulaNode("b", new LiteralNode(BooleanValue.True), true);
             var moduleNode1 = new ModuleNode("x", new[] { importNode1 }, new[] { formulaNode1 });
@@ -165,7 +165,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_BuildDependencyTable_When_GivenUnresolvedModuleInFormulaImport()
         {
-            var importNode1 = new ImportNode("x", new[] { "a", "b" }, ImportType.Formula);
+            var importNode1 = new ImportNode("x", new[] { "a", "b" }, ImportType.Formula, false);
             var moduleNode1 = new ModuleNode(
                 "x",
                 new[] { importNode1 },
@@ -184,7 +184,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_BuildDependencyTable_When_GivenUnresolvedFormulaInFormulaImport()
         {
-            var importNode1 = new ImportNode("x", new[] { "a", "b" }, ImportType.Formula);
+            var importNode1 = new ImportNode("x", new[] { "a", "b" }, ImportType.Formula, false);
             var moduleNode1 = new ModuleNode(
                 "x",
                 new[] { importNode1 },
@@ -207,7 +207,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void Should_BuildDependencyTable_When_GivenUnresolvedModuleImport()
         {
-            var importNode1 = new ImportNode("x", new[] { "a" }, ImportType.Module);
+            var importNode1 = new ImportNode("x", new[] { "a" }, ImportType.Module, false);
             var moduleNode = new ModuleNode(
                 "x",
                 new[] { importNode1 },
@@ -226,8 +226,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_BuildDependencyTable_When_GivenTwoUnexportedCyclicModuleImports()
         {
-            var importNode1 = new ImportNode("b", new[] { "x" }, ImportType.Module);
-            var importNode2 = new ImportNode("y", new[] { "a" }, ImportType.Module);
+            var importNode1 = new ImportNode("b", new[] { "x" }, ImportType.Module, false);
+            var importNode2 = new ImportNode("y", new[] { "a" }, ImportType.Module, false);
             var formulaNode1 = new FormulaNode("c", new IdentifierNode("b"), false);
             var formulaNode2 = new FormulaNode("z", new IdentifierNode("y"), false);
             var moduleNode1 = new ModuleNode("a", new[] { importNode1 }, new[] { formulaNode1 });
@@ -280,8 +280,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_BuildDependencyTable_When_GivenTwoCyclicFormulaImports()
         {
-            var importNode1 = new ImportNode("b", new[] { "x", "z" }, ImportType.Formula);
-            var importNode2 = new ImportNode("y", new[] { "a", "c" }, ImportType.Formula);
+            var importNode1 = new ImportNode("b", new[] { "x", "z" }, ImportType.Formula, false);
+            var importNode2 = new ImportNode("y", new[] { "a", "c" }, ImportType.Formula, false);
             var formulaNode1 = new FormulaNode("c", new IdentifierNode("b"), false);
             var formulaNode2 = new FormulaNode("z", new IdentifierNode("y"), false);
             var moduleNode1 = new ModuleNode("a", new[] { importNode1 }, new[] { formulaNode1 });
@@ -297,8 +297,8 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_BuildDependencyTable_When_GivenTwoCyclicModuleImports()
         {
-            var importNode1 = new ImportNode("b", new[] { "x" }, ImportType.Module);
-            var importNode2 = new ImportNode("y", new[] { "a" }, ImportType.Module);
+            var importNode1 = new ImportNode("b", new[] { "x" }, ImportType.Module, false);
+            var importNode2 = new ImportNode("y", new[] { "a" }, ImportType.Module, false);
             var formulaNode1 = new FormulaNode("c", new IdentifierNode("b"), true);
             var formulaNode2 = new FormulaNode("z", new IdentifierNode("y"), true);
             var moduleNode1 = new ModuleNode("a", new[] { importNode1 }, new[] { formulaNode1 });
@@ -314,7 +314,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_BuildDependencyTable_When_GivenFormulaImportWithWrongPathLength()
         {
-            var importNode1 = new ImportNode("x", new[] { "a" }, ImportType.Formula);
+            var importNode1 = new ImportNode("x", new[] { "a" }, ImportType.Formula, false);
             var moduleNode1 = new ModuleNode(
                 "x",
                 new[] { importNode1 },
@@ -330,7 +330,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         [Test]
         public void ShouldNot_BuildDependencyTable_When_GivenModuleImportWithWrongPathLength()
         {
-            var importNode1 = new ImportNode("x", new[] { "a", "b" }, ImportType.Module);
+            var importNode1 = new ImportNode("x", new[] { "a", "b" }, ImportType.Module, false);
             var moduleNode1 = new ModuleNode(
                 "x",
                 new[] { importNode1 },

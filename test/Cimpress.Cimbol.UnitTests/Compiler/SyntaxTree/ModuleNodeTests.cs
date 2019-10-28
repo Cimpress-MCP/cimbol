@@ -22,7 +22,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildren()
         {
-            var child1 = new ImportNode("a", new[] { "b" }, ImportType.Formula);
+            var child1 = new ImportNode("a", new[] { "b" }, ImportType.Formula, false);
             var child2 = new FormulaNode("a", new LiteralNode(null), true);
             var node = new ModuleNode("a", new[] { child1 }, new[] { child2 });
 
@@ -33,7 +33,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_ReturnChildrenInOrder_When_IteratingChildrenReverse()
         {
-            var child1 = new ImportNode("a", new[] { "b" }, ImportType.Formula);
+            var child1 = new ImportNode("a", new[] { "b" }, ImportType.Formula, false);
             var child2 = new FormulaNode("a", new LiteralNode(null), true);
             var node = new ModuleNode("a", new[] { child1 }, new[] { child2 });
 
@@ -68,7 +68,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void Should_RetrieveImportDeclaration_When_ImportDeclarationExists()
         {
-            var import = new ImportNode("x", Enumerable.Empty<string>(), ImportType.Constant);
+            var import = new ImportNode("x", Enumerable.Empty<string>(), ImportType.Constant, false);
             var module = new ModuleNode("y", new[] { import }, Enumerable.Empty<FormulaNode>());
 
             var result = module.TryGetImport("x", out var resultImport);
@@ -81,7 +81,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.SyntaxTree
         [Test]
         public void ShouldNot_RetrieveImportDeclaration_When_ImportDeclarationDoesNotExist()
         {
-            var import = new ImportNode("x", Enumerable.Empty<string>(), ImportType.Constant);
+            var import = new ImportNode("x", Enumerable.Empty<string>(), ImportType.Constant, false);
             var module = new ModuleNode("y", new[] { import }, Enumerable.Empty<FormulaNode>());
 
             var result = module.TryGetImport("z", out _);

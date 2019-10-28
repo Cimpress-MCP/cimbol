@@ -2,6 +2,7 @@
 using System.Linq;
 using Cimpress.Cimbol.Compiler.Emit;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
+using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
 
 namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
@@ -9,6 +10,32 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
     [TestFixture]
     public class ExecutionStepTests
     {
+        [Test]
+        public void Should_ThrowArgumentNullException_When_ConstructedWithNullDeclarationNode()
+        {
+            var moduleNode = new ModuleNode("Module01", Array.Empty<ImportNode>(), Array.Empty<FormulaNode>());
+
+            Assert.Throws<ArgumentNullException>(() => new ExecutionStep(
+                0,
+                moduleNode,
+                null,
+                ExecutionStepType.Synchronous,
+                Array.Empty<ExecutionStep>()));
+        }
+
+        [Test]
+        public void Should_ThrowArgumentNullException_When_ConstructedWithNullModuleNode()
+        {
+            var declarationNode = new FormulaNode("Formula01", new LiteralNode(BooleanValue.True), false);
+
+            Assert.Throws<ArgumentNullException>(() => new ExecutionStep(
+                0,
+                null,
+                declarationNode,
+                ExecutionStepType.Synchronous,
+                Array.Empty<ExecutionStep>()));
+        }
+
         [Test]
         public void Should_Initialize_When_GivenValidParameters()
         {
