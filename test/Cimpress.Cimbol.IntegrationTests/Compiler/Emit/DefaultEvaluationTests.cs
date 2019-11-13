@@ -60,7 +60,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             }
 
             var program = new Program();
-            var functionValue = new FunctionValue((Func<NumberValue>)Function);
+            var functionValue = new FunctionValue(new[] { (Func<NumberValue>)Function });
             var constant = program.AddConstant("Constant1", functionValue);
             var module = program.AddModule("Main");
             module.AddImport("Constant1", constant);

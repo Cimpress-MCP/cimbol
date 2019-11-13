@@ -38,15 +38,15 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
             var argument15 = program.AddArgument("Argument15");
             var argument16 = program.AddArgument("Argument16");
 
-            var constant01 = program.AddConstant("Constant01", new FunctionValue((Func<PromiseValue>)Lookup01Function));
-            var constant02 = program.AddConstant("Constant02", new FunctionValue((Func<PromiseValue>)Lookup02Function));
-            var constant03 = program.AddConstant("Constant03", new FunctionValue((Func<PromiseValue>)Lookup03Function));
-            var constant04 = program.AddConstant("Constant04", new FunctionValue((Func<PromiseValue>)Lookup04Function));
-            var constant05 = program.AddConstant("Constant05", new FunctionValue((Func<PromiseValue>)Lookup05Function));
-            var constant06 = program.AddConstant("Constant06", new FunctionValue((Func<PromiseValue>)Lookup06Function));
-            var constant07 = program.AddConstant("Constant07", new FunctionValue((Func<PromiseValue>)Lookup07Function));
-            var constant08 = program.AddConstant("Constant08", new FunctionValue((Func<PromiseValue>)Lookup08Function));
-            var constant09 = program.AddConstant("Constant09", new FunctionValue((Func<PromiseValue>)Lookup09Function));
+            var constant01 = program.AddConstant("Constant01", new FunctionValue(new[] { (Func<PromiseValue>)Lookup01Function }));
+            var constant02 = program.AddConstant("Constant02", new FunctionValue(new[] { (Func<PromiseValue>)Lookup02Function }));
+            var constant03 = program.AddConstant("Constant03", new FunctionValue(new[] { (Func<PromiseValue>)Lookup03Function }));
+            var constant04 = program.AddConstant("Constant04", new FunctionValue(new[] { (Func<PromiseValue>)Lookup04Function }));
+            var constant05 = program.AddConstant("Constant05", new FunctionValue(new[] { (Func<PromiseValue>)Lookup05Function }));
+            var constant06 = program.AddConstant("Constant06", new FunctionValue(new[] { (Func<PromiseValue>)Lookup06Function }));
+            var constant07 = program.AddConstant("Constant07", new FunctionValue(new[] { (Func<PromiseValue>)Lookup07Function }));
+            var constant08 = program.AddConstant("Constant08", new FunctionValue(new[] { (Func<PromiseValue>)Lookup08Function }));
+            var constant09 = program.AddConstant("Constant09", new FunctionValue(new[] { (Func<PromiseValue>)Lookup09Function }));
             var constant10 = program.AddConstant("Math", MakeMathModule());
 
             var module01 = program.AddModule("Lookup01");
@@ -933,8 +933,8 @@ namespace Cimpress.Cimbol.PerformanceTests.Evaluation
         {
             var objectValueContents = new Dictionary<string, ILocalValue>(StringComparer.OrdinalIgnoreCase)
             {
-                { "Ceil", new FunctionValue((Func<NumberValue, NumberValue>)CeilFunction) },
-                { "Min", new FunctionValue((Func<NumberValue, NumberValue, NumberValue>)MinFunction) },
+                { "Ceil", new FunctionValue(new[] { (Func<NumberValue, NumberValue>)CeilFunction }) },
+                { "Min", new FunctionValue(new[] { (Func<NumberValue, NumberValue, NumberValue>)MinFunction }) },
             };
 
             return new ObjectValue(objectValueContents);

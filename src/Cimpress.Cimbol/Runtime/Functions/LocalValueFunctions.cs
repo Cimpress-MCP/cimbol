@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
@@ -63,5 +64,10 @@ namespace Cimpress.Cimbol.Runtime.Functions
         /// </summary>
         internal static MethodInfo ObjectAssignInfo { get; } =
             typeof(ObjectValue).GetMethod("Assign", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        /// <summary>
+        /// The cached <see cref="PropertyInfo"/> for the <see cref="Array.Length"/> property for <see cref="ILocalValue"/> arrays.
+        /// </summary>
+        internal static PropertyInfo ArrayLengthInfo { get; } = typeof(ILocalValue[]).GetProperty("Length");
     }
 }

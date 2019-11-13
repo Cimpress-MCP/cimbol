@@ -10,20 +10,34 @@ namespace Cimpress.Cimbol.PerformanceTests.Runtime.Types
 
         private FunctionValue _identityFunction;
 
+        private FunctionValue _variadicFunction;
+
         private NumberValue _testNumber1;
 
         private NumberValue _testNumber2;
 
+        private NumberValue _testNumber3;
+
         [GlobalSetup]
         public void GlobalSetup()
         {
-            _arithmeticFunction = new FunctionValue((Func<NumberValue, NumberValue, NumberValue>)ArithmeticFunction);
+            _arithmeticFunction = new FunctionValue(new[] { (Func<NumberValue, NumberValue, NumberValue>)ArithmeticFunction });
 
-            _identityFunction = new FunctionValue((Func<NumberValue, NumberValue>)IdentityFunction);
+            _identityFunction = new FunctionValue(new[] { (Func<NumberValue, NumberValue>)IdentityFunction });
+
+            _variadicFunction = new FunctionValue(new[] { (Func<NumberValue[], NumberValue>)VariadicFunction });
 
             _testNumber1 = new NumberValue(3);
 
             _testNumber2 = new NumberValue(5);
+
+            _testNumber3 = new NumberValue(7);
+        }
+
+        [Benchmark]
+        public ILocalValue Benchmark_ArithmeticFunctionInvocation()
+        {
+            return _arithmeticFunction.Invoke(_testNumber1, _testNumber2);
         }
 
         [Benchmark]
@@ -33,9 +47,9 @@ namespace Cimpress.Cimbol.PerformanceTests.Runtime.Types
         }
 
         [Benchmark]
-        public ILocalValue Benchmark_ArithmeticFunctionInvocation()
+        public ILocalValue Benchmark_VariadicFunctionInvocation()
         {
-            return _arithmeticFunction.Invoke(_testNumber1, _testNumber2);
+            return _variadicFunction.Invoke(_testNumber1, _testNumber2, _testNumber3);
         }
 
         private static NumberValue ArithmeticFunction(NumberValue number1, NumberValue number2)
@@ -46,6 +60,11 @@ namespace Cimpress.Cimbol.PerformanceTests.Runtime.Types
         private static NumberValue IdentityFunction(NumberValue number)
         {
             return number;
+        }
+
+        private static NumberValue VariadicFunction(NumberValue[] numberValues)
+        {
+            return numberValues[0];
         }
     }
 }

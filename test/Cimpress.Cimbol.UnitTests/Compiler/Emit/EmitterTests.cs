@@ -148,7 +148,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 return new NumberValue(3);
             }
 
-            var value = new FunctionValue((Func<NumberValue>)MyTestFunction);
+            var value = new FunctionValue(new[] { (Func<NumberValue>)MyTestFunction });
             var node = new InvokeNode(new LiteralNode(value), Array.Empty<PositionalArgument>());
 
             var expression = _emitter.EmitExpression(node, _symbolTable) as MethodCallExpression;
@@ -167,7 +167,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 return argument1;
             }
 
-            var value = new FunctionValue((Func<NumberValue, NumberValue>)MyTestFunction);
+            var value = new FunctionValue(new[] { (Func<NumberValue, NumberValue>)MyTestFunction });
             var arguments = new[]
             {
                 new PositionalArgument(new LiteralNode(new NumberValue(5))),
@@ -190,7 +190,7 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
                 return new NumberValue(argument1.Value + argument2.Value);
             }
 
-            var value = new FunctionValue((Func<NumberValue, NumberValue, NumberValue>)MyTestFunction);
+            var value = new FunctionValue(new[] { (Func<NumberValue, NumberValue, NumberValue>)MyTestFunction });
             var arguments = new[]
             {
                 new PositionalArgument(new LiteralNode(new NumberValue(2))),

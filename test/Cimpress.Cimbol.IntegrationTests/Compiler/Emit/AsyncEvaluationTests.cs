@@ -29,7 +29,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var program = new Program();
             var constantA = program.AddConstant(
                 "ConstantA",
-                new FunctionValue((Func<NumberValue, PromiseValue>)SomeFunction));
+                new FunctionValue(new[] { (Func<NumberValue, PromiseValue>)SomeFunction }));
             var module = program.AddModule("Main");
             module.AddImport("ConstantA", constantA);
             module.AddFormula("ResultA", "await ConstantA(2)");
@@ -63,7 +63,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             var program = new Program();
             var constantA = program.AddConstant(
                 "ConstantA",
-                new FunctionValue((Func<NumberValue, PromiseValue>)SomeFunction));
+                new FunctionValue(new[] { (Func<NumberValue, PromiseValue>)SomeFunction }));
             var module = program.AddModule("Main");
             module.AddImport("ConstantA", constantA);
             module.AddFormula("ResultA", "await ConstantA(2)");
@@ -96,7 +96,7 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             }
 
             var program = new Program();
-            var constantValue1 = new FunctionValue((Func<NumberValue, PromiseValue>)AsyncFunction);
+            var constantValue1 = new FunctionValue(new[] { (Func<NumberValue, PromiseValue>)AsyncFunction });
             var constant1 = program.AddConstant("AsyncFunction", constantValue1);
             var module = program.AddModule("main");
             module.AddImport("AsyncFunction", constant1);
