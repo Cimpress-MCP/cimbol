@@ -191,6 +191,21 @@ namespace Cimpress.Cimbol.Exceptions
         }
 
         /// <summary>
+        /// Builds an instance of <see cref="CimbolRuntimeException"/> with a message about an argument being out of range.
+        /// </summary>
+        /// <param name="argumentName">The argument that was out of range.</param>
+        /// <param name="errorMessage">The details about what was out of range.</param>
+        /// <returns>An instance of the <see cref="CimbolRuntimeException"/> class with a pre-populated error message.</returns>
+        internal static CimbolRuntimeException DomainException(string argumentName, string errorMessage)
+        {
+            const string message = "Argument {0} must be {1}.";
+
+            var formattedMessage = string.Format(CultureInfo.InvariantCulture, message, argumentName, errorMessage);
+
+            return new CimbolRuntimeException(formattedMessage);
+        }
+
+        /// <summary>
         /// Builds a <see cref="CimbolRuntimeException"/> class with a message about no condition being met in an if-expression.
         /// </summary>
         /// <returns>An instance of the <see cref="CimbolRuntimeException"/> class with a pre-populated error message.</returns>
