@@ -401,6 +401,48 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             Assert.That(result, Is.EqualTo(expected));
         }
 
+        [Test]
+        public void Should_ReturnTrue_When_ObjectExists()
+        {
+            var baseValueInner = new Dictionary<string, ILocalValue>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "x", new StringValue("x") },
+            };
+            var baseValue = new ObjectValue(baseValueInner);
+
+            var path = new[] { "x" };
+
+            var result = RuntimeFunctions.Exists(baseValue, path);
+
+            Assert.That(result, Is.EqualTo(BooleanValue.True));
+        }
+
+        [Test]
+        public void Should_ReturnFalse_When_ObjectDoesNotExist()
+        {
+            var baseValueInner = new Dictionary<string, ILocalValue>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "x", new StringValue("x") },
+            };
+            var baseValue = new ObjectValue(baseValueInner);
+
+            var path = new[] { "y" };
+
+            var result = RuntimeFunctions.Exists(baseValue, path);
+
+            Assert.That(result, Is.EqualTo(BooleanValue.False));
+        }
+
+        [Test]
+        public void Should_ReturnFalse_WhenObjectIsNull()
+        {
+            var path = Array.Empty<string>();
+
+            var result = RuntimeFunctions.Exists(null, path);
+
+            Assert.That(result, Is.EqualTo(BooleanValue.False));
+        }
+
         private static ILocalValue MockNestedObject(string[] path, ILocalValue value)
         {
             var current = value;
@@ -439,6 +481,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
             yield return new TestCaseData(RuntimeFunctions.CompareLessThanInfo);
             yield return new TestCaseData(RuntimeFunctions.CompareLessThanOrEqualInfo);
             yield return new TestCaseData(RuntimeFunctions.DefaultInfo);
+            yield return new TestCaseData(RuntimeFunctions.ExistsInfo);
             yield return new TestCaseData(RuntimeFunctions.EqualToInfo);
             yield return new TestCaseData(RuntimeFunctions.IfTrueInfo);
             yield return new TestCaseData(LocalValueFunctions.InvokeInfo);

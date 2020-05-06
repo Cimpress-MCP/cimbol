@@ -125,6 +125,21 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
+        /// Generate the expression tree for checking if an object exists.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="path">The path.</param>
+        /// <returns>An expression that returns a boolean value indicating whether an object exists.</returns>
+        internal static Expression Exists(ParameterExpression value, IReadOnlyCollection<string> path)
+        {
+            var objectPath = path.Skip(1).ToArray();
+
+            return value == null
+                ? Expression.Constant(BooleanValue.False)
+                : Expression.Call(RuntimeFunctions.ExistsInfo, value, Expression.Constant(objectPath)) as Expression;
+        }
+
+        /// <summary>
         /// Generate the expression tree for accessing the value of an identifier.
         /// </summary>
         /// <param name="symbol">The symbol to resolve.</param>

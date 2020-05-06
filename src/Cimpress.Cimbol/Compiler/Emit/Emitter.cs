@@ -389,6 +389,9 @@ namespace Cimpress.Cimbol.Compiler.Emit
                 case DefaultNode defaultNode:
                     return EmitDefaultNode(defaultNode, symbolTable);
 
+                case ExistsNode existsNode:
+                    return EmitExistsNode(existsNode, symbolTable);
+
                 case IdentifierNode identifierNode:
                     return EmitIdentifierNode(identifierNode, symbolTable);
 
@@ -509,6 +512,18 @@ namespace Cimpress.Cimbol.Compiler.Emit
             var fallbackExpression = EmitExpression(defaultNode.Fallback, symbolTable);
             var symbol = symbolTable.Resolve(defaultNode.Path.First());
             return CodeGen.Default(symbol?.Variable, fallbackExpression, defaultNode.Path);
+        }
+
+        /// <summary>
+        /// Emits an expression from an exists node.
+        /// </summary>
+        /// <param name="existsNode">The syntax tree node to emit from.</param>
+        /// <param name="symbolTable">The symbol table for the current scope.</param>
+        /// <returns>The result of compiling the syntax tree to an expression tree.</returns>
+        internal Expression EmitExistsNode(ExistsNode existsNode, SymbolTable symbolTable)
+        {
+            var symbol = symbolTable.Resolve(existsNode.Path.First());
+            return CodeGen.Exists(symbol?.Variable, existsNode.Path);
         }
 
         /// <summary>

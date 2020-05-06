@@ -36,6 +36,9 @@ namespace Cimpress.Cimbol.Compiler.Scan
                 case "FALSE":
                     return _context.Consume(TokenType.FalseKeyword);
 
+                case "EXISTS":
+                    return _context.Consume(TokenType.ExistsKeyword);
+
                 case "IF":
                     return _context.Consume(TokenType.IfKeyword);
 

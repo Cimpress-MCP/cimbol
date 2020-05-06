@@ -618,6 +618,31 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             Assert.That(result, Is.Null);
         }
 
+        [Test]
+        public void Should_EmitBooleanValue_When_GivenExistsNodeAndObjectExists()
+        {
+            var node = new ExistsNode(new List<string> { "x" });
+            var symbolTable = new SymbolTable();
+            symbolTable.Define("x", typeof(ObjectValue));
+
+            var result = _emitter.EmitExpression(node, symbolTable);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Type, Is.EqualTo(typeof(BooleanValue)));
+        }
+
+        [Test]
+        public void Should_EmitBooleanValue_When_GivenExistsNodeAndObjectDoesNotExist()
+        {
+            var node = new ExistsNode(new List<string> { "x" });
+            var symbolTable = new SymbolTable();
+
+            var result = _emitter.EmitExpression(node, symbolTable);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Type, Is.EqualTo(typeof(BooleanValue)));
+        }
+
         private static IEnumerable<TestCaseData> BinaryOpNodeTestCases()
         {
             yield return new TestCaseData(BinaryOpType.Add, RuntimeFunctions.MathAddInfo, typeof(NumberValue));

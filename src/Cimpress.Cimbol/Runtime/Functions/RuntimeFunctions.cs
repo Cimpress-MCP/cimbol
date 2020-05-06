@@ -35,6 +35,12 @@ namespace Cimpress.Cimbol.Runtime.Functions
             typeof(RuntimeFunctions).GetMethod("Default", BindingFlags.NonPublic | BindingFlags.Static);
 
         /// <summary>
+        /// The cached <see cref="MethodInfo"/> for the exists function.
+        /// </summary>
+        internal static MethodInfo ExistsInfo { get; } =
+            typeof(RuntimeFunctions).GetMethod("Exists", BindingFlags.NonPublic | BindingFlags.Static);
+
+        /// <summary>
         /// The cached <see cref="MethodInfo"/> for the divide function.
         /// </summary>
         internal static MethodInfo MathDivideInfo { get; } =
@@ -213,6 +219,31 @@ namespace Cimpress.Cimbol.Runtime.Functions
         internal static BooleanValue EqualTo(ILocalValue leftValue, ILocalValue rightValue)
         {
             return leftValue.EqualTo(rightValue) ? BooleanValue.True : BooleanValue.False;
+        }
+
+        /// <summary>
+        /// Check whether a given value exists.
+        /// </summary>
+        /// <param name="baseValue">The base value.</param>
+        /// <param name="path">The path.</param>
+        /// <returns>A boolean indicating whether or not the value exists.</returns>
+        internal static BooleanValue Exists(ILocalValue baseValue, string[] path)
+        {
+            var currentValue = baseValue;
+
+            foreach (var identifier in path)
+            {
+                if (currentValue != null && currentValue is ObjectValue currentObjectValue)
+                {
+                    currentObjectValue.Value.TryGetValue(identifier, out currentValue);
+                }
+                else
+                {
+                    return BooleanValue.False;
+                }
+            }
+
+            return currentValue != null ? BooleanValue.True : BooleanValue.False;
         }
 
         /// <summary>

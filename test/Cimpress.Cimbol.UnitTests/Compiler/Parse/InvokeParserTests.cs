@@ -445,5 +445,83 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Parse
 
             Assert.Throws<CimbolCompilationException>(() => parser.Invoke());
         }
+
+        [Test]
+        public void Should_ParseExistsNode_When_GivenSingleIdentifier()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("exists", TokenType.ExistsKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token("x", TokenType.Identifier, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = parser.Invoke();
+
+            Assert.That(result, Is.InstanceOf<ExistsNode>());
+            var existsNodeResult = result as ExistsNode;
+            Assert.That(existsNodeResult, Is.Not.Null);
+            Assert.That(existsNodeResult.IsAsynchronous, Is.False);
+            Assert.That(existsNodeResult.Path, Is.EqualTo(new[] { "x" }));
+        }
+
+        [Test]
+        public void Should_ParseExistsNode_When_GivenMultipleIdentifiers()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("exists", TokenType.ExistsKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token("x", TokenType.Identifier, position, position),
+                new Token(".", TokenType.Period, position, position),
+                new Token("y", TokenType.Identifier, position, position),
+                new Token(".", TokenType.Period, position, position),
+                new Token("z", TokenType.Identifier, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = parser.Invoke();
+
+            Assert.That(result, Is.InstanceOf<ExistsNode>());
+            var existsNodeResult = result as ExistsNode;
+            Assert.That(existsNodeResult, Is.Not.Null);
+            Assert.That(existsNodeResult.IsAsynchronous, Is.False);
+            Assert.That(existsNodeResult.Path, Is.EqualTo(new[] { "x", "y", "z" }));
+        }
+
+        [Test]
+        public void ShouldNot_ParseExistsNode_When_GivenNoArguments()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("exists", TokenType.ExistsKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = Assert.Throws<CimbolCompilationException>(() => parser.Invoke());
+
+            Assert.That(result.Formula, Is.EqualTo("formula"));
+        }
+
+        [Test]
+        public void ShouldNot_ParseExistsNode_When_GivenMoreThenOneArgument()
+        {
+            var position = new Position(0, 0);
+            var tokenStream = ParseTestUtilities.CreateTokenStream(
+                new Token("exists", TokenType.ExistsKeyword, position, position),
+                new Token("(", TokenType.LeftParenthesis, position, position),
+                new Token("x", TokenType.Identifier, position, position),
+                new Token(",", TokenType.Comma, position, position),
+                new Token("y", TokenType.Identifier, position, position),
+                new Token(")", TokenType.RightParenthesis, position, position));
+            var parser = new Parser("formula", tokenStream);
+
+            var result = Assert.Throws<CimbolCompilationException>(() => parser.Invoke());
+
+            Assert.That(result.Formula, Is.EqualTo("formula"));
+            Assert.That(result.Message, Is.EqualTo("The exists function takes one argument."));
+        }
     }
 }

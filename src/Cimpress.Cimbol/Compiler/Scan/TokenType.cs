@@ -174,5 +174,10 @@
         /// The token type for the end of the file.
         /// </summary>
         EndOfFile,
+
+        /// <summary>
+        /// The token type for the "exists" keyword.
+        /// </summary>
+        ExistsKeyword,
     }
 }

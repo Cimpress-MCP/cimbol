@@ -15,6 +15,10 @@ namespace Cimpress.Cimbol.Compiler.Parse
 
         private const string Default_IdentifierArgument = "The default function's first argument must be a name.";
 
+        private const string Exists_ArgumentCount = "The exists function takes one argument.";
+
+        private const string Exists_IdentifierArgument = "The exists function's first argument must be a name.";
+
         /// <summary>
         /// Parse a series of <see cref="Token"/> objects into either a function invocation or member access.
         /// </summary>
@@ -29,6 +33,12 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 // Invoke -> "default" "(" Identifier ("." Identifier)+ "," Expression ")" InvokePart*
                 case TokenType.DefaultKeyword:
                     head = Default();
+                    break;
+
+                // Product rule for an exists expression
+                // Invoke -> "exists" "(" Identifier ("." Identifier)* ")" InvokePart*
+                case TokenType.ExistsKeyword:
+                    head = Exists();
                     break;
 
                 // Production rule for an if expression.
@@ -126,6 +136,43 @@ namespace Cimpress.Cimbol.Compiler.Parse
             Match(TokenType.RightParenthesis, Default_ArgumentCount);
 
             return new DefaultNode(path, fallback);
+        }
+
+        private IExpressionNode Exists()
+        {
+            // A default expression needs to start with a default keyword.
+            Match(TokenType.ExistsKeyword);
+
+            // Parse the opening parenthesis.
+            Match(TokenType.LeftParenthesis);
+
+            // Reject when no arguments have been provided.
+            Reject(TokenType.RightParenthesis, Exists_ArgumentCount);
+
+            // Parse the first argument.
+            var path = new List<string>();
+
+            // Parse the required first identifier of the first argument.
+            {
+                var identifier = Match(TokenType.Identifier, Exists_IdentifierArgument);
+
+                path.Add(identifier.Value);
+            }
+
+            // Parse every following member access that is a part of the first argument.
+            while (Lookahead(0) != TokenType.Comma && Lookahead(0) != TokenType.RightParenthesis)
+            {
+                Match(TokenType.Period);
+
+                var identifier = Match(TokenType.Identifier);
+
+                path.Add(identifier.Value);
+            }
+
+            // Parse the closing parenthesis, rejecting with an error about argument count if not found.
+            Match(TokenType.RightParenthesis, Exists_ArgumentCount);
+
+            return new ExistsNode(path);
         }
 
         private IExpressionNode If()
