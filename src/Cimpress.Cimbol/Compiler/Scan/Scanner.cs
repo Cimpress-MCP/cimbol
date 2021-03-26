@@ -33,14 +33,14 @@ namespace Cimpress.Cimbol.Compiler.Scan
         /// <returns>The next <see cref="Token"/> in the stream.</returns>
         public Token Next()
         {
-            if (_context.EndOfFile)
-            {
-                return _context.ConsumeEndOfFile();
-            }
-
             if (IsWhitespace(_context.Peek()))
             {
                 IgnoreWhitespace();
+            }
+
+            if (_context.EndOfFile)
+            {
+                return _context.ConsumeEndOfFile();
             }
 
             switch (_context.Peek())
