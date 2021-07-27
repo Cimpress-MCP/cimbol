@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
@@ -129,6 +130,32 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
             module.AddImport("Constant1", constant);
             module.AddFormula("Formula2", "Constant1)");
             module.AddFormula("Formula1", "exists(Formula2.Member1)");
+
+            var executable = program.Compile(compilationProfile);
+
+            var result = await executable.Call();
+
+            Assert.That(result.Modules["Main"].Value["Formula1"], Has.Property("Value").EqualTo(false));
+        }
+
+        [Test]
+        [TestCase(CompilationProfile.Minimal)]
+        [TestCase(CompilationProfile.Trace)]
+        [TestCase(CompilationProfile.Verbose)]
+        public async Task Should_ReturnFalse_When_ObjectMemberIsNull(CompilationProfile compilationProfile)
+        {
+            NumberValue Function()
+            {
+                return null;
+            }
+
+            var program = new Program();
+            var objectValue = new ObjectValue(new Dictionary<string, ILocalValue> { { "member", null } });
+            var constant = program.AddConstant("something", objectValue);
+
+            var module = program.AddModule("Main");
+            module.AddImport("something", constant);
+            module.AddFormula("Formula1", "exists(something.member)");
 
             var executable = program.Compile(compilationProfile);
 

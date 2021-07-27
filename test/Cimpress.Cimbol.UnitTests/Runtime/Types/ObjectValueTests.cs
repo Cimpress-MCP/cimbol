@@ -10,7 +10,7 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
     public class ObjectValueTests
     {
         [Test]
-        public void Should_ThrowException_When_AccessingAnElement()
+        public void Should_Not_ThrowException_When_AccessingAnElement()
         {
             var innerDictionary = new Dictionary<string, ILocalValue> { ["x"] = new BooleanValue(true) };
             var objectValue = new ObjectValue(innerDictionary);
@@ -62,6 +62,14 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Types
             var objectContents = new Dictionary<string, ILocalValue>();
             var objectValue = new ObjectValue(objectContents);
             Assert.That(objectContents, Is.SameAs(objectValue.Value));
+        }
+
+        [Test]
+        public void Should_ThrowException_When_AccessingANullElement()
+        {
+            var innerDictionary = new Dictionary<string, ILocalValue> { ["x"] = null };
+            var objectValue = new ObjectValue(innerDictionary);
+            Assert.Throws<CimbolRuntimeException>(() => objectValue.Access("x"));
         }
     }
 }

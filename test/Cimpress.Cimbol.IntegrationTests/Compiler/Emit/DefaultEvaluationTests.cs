@@ -172,6 +172,28 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
                 Assert.That(result.Modules, Has.Count.EqualTo(0));
             }
         }
+        
+        [Test]
+        [TestCase(CompilationProfile.Minimal)]
+        [TestCase(CompilationProfile.Trace)]
+        [TestCase(CompilationProfile.Verbose)]
+        public void Should_Default_When_IdentifierIsNull(CompilationProfile compilationProfile)
+        {
+            var program = new Program();
+            var module = program.AddModule("Main");
+            
+            var objectValue = new ObjectValue(new Dictionary<string, ILocalValue> { { "member", null } });
+            var constant = program.AddConstant("something", objectValue);
+            
+            module.AddImport("something", constant);
+            module.AddFormula("Formula1", "default(something.member, 1)");
+            
+            var executable = program.Compile(compilationProfile);
+
+            var result = executable.Call().Result;
+
+            Assert.That(result.Modules["Main"].Value["Formula1"], Has.Property("Value").EqualTo(1));
+        }
 
         private static ILocalValue MockNestedObject(string[] path, ILocalValue value)
         {

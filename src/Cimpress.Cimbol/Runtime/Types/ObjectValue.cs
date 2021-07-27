@@ -25,7 +25,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.Access"/>
         public ILocalValue Access(string key)
         {
-            if (Value.TryGetValue(key, out var value))
+            if (Value.TryGetValue(key, out var value) && value != null)
             {
                 return value;
             }
