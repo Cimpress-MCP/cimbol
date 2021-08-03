@@ -76,6 +76,29 @@ namespace Cimpress.Cimbol.Compiler.Emit
         }
 
         /// <summary>
+        /// Generate the expression tree for a binary logical AND operation that short-circuits.
+        /// This can't be implemented like all of the other binary operations because the short-circuiting behavior.
+        /// Passing an expression into a function forces it to evaluate, which foregoes the benefits of boolean short-circuiting.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>An expression that performs the logical AND on the left and right operands.</returns>
+        internal static Expression AndAlso(Expression left, Expression right)
+        {
+            var castFunction = LocalValueFunctions.CastBooleanInfo;
+
+            var leftExpression = left.Type == typeof(BooleanValue) ? left : Expression.Call(left, castFunction);
+
+            var rightExpression = right.Type == typeof(BooleanValue) ? right : Expression.Call(right, castFunction);
+            
+            var andExpression = Expression.AndAlso(
+                Expression.Property(leftExpression, LocalValueFunctions.BooleanValueInfo),
+                Expression.Property(rightExpression, LocalValueFunctions.BooleanValueInfo));
+
+            return Expression.New(LocalValueFunctions.BooleanValueConstructorInfo, andExpression);
+        }
+
+        /// <summary>
         /// Generate the expression tree for a block of expressions.
         /// </summary>
         /// <param name="expressions">The list of expressions to include in the block.</param>
@@ -240,6 +263,29 @@ namespace Cimpress.Cimbol.Compiler.Emit
             var dictionary = Expression.ListInit(init, elements);
 
             return Expression.New(LocalValueFunctions.ObjectValueConstructorInfo, dictionary);
+        }
+
+        /// <summary>
+        /// Generate the expression tree for a binary logical OR operation that short-circuits.
+        /// This can't be implemented like all of the other binary operations because the short-circuiting behavior.
+        /// Passing an expression into a function forces it to evaluate, which foregoes the benefits of boolean short-circuiting.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>An expression that performs the logical OR on the left and right operands.</returns>
+        internal static Expression OrElse(Expression left, Expression right)
+        {
+            var castFunction = LocalValueFunctions.CastBooleanInfo;
+
+            var leftExpression = left.Type == typeof(BooleanValue) ? left : Expression.Call(left, castFunction);
+
+            var rightExpression = right.Type == typeof(BooleanValue) ? right : Expression.Call(right, castFunction);
+            
+            var orExpression = Expression.OrElse(
+                Expression.Property(leftExpression, LocalValueFunctions.BooleanValueInfo),
+                Expression.Property(rightExpression, LocalValueFunctions.BooleanValueInfo));
+
+            return Expression.New(LocalValueFunctions.BooleanValueConstructorInfo, orExpression);
         }
 
         /// <summary>

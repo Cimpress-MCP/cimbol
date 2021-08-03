@@ -443,7 +443,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     return CodeGen.BinaryOp(RuntimeFunctions.MathAddInfo, left, right, typeof(NumberValue));
 
                 case BinaryOpType.And:
-                    return CodeGen.BinaryOp(RuntimeFunctions.BooleanAndInfo, left, right, typeof(BooleanValue));
+                    return CodeGen.AndAlso(left, right);
 
                 case BinaryOpType.Concatenate:
                     return CodeGen.BinaryOp(RuntimeFunctions.StringConcatenateInfo, left, right, typeof(StringValue));
@@ -473,7 +473,7 @@ namespace Cimpress.Cimbol.Compiler.Emit
                     return CodeGen.BinaryOp(RuntimeFunctions.NotEqualToInfo, left, right);
 
                 case BinaryOpType.Or:
-                    return CodeGen.BinaryOp(RuntimeFunctions.BooleanOrInfo, left, right, typeof(BooleanValue));
+                    return CodeGen.OrElse(left, right);
 
                 case BinaryOpType.Power:
                     return CodeGen.BinaryOp(RuntimeFunctions.MathPowerInfo, left, right, typeof(NumberValue));

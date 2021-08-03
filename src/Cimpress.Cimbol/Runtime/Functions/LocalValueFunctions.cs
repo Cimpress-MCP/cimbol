@@ -18,6 +18,12 @@ namespace Cimpress.Cimbol.Runtime.Functions
             .GetConstructor(new[] { typeof(Dictionary<string, ObjectValue>), typeof(List<CimbolRuntimeException>) });
 
         /// <summary>
+        /// The cached <see cref="ConstructorInfo"/> for the constructor for a <see cref="BooleanValue"/>.
+        /// </summary>
+        internal static ConstructorInfo BooleanValueConstructorInfo { get; } =
+            typeof(BooleanValue).GetConstructor(new[] { typeof(bool) });
+        
+        /// <summary>
         /// The cached <see cref="ConstructorInfo"/> for the constructor for a <see cref="ListValue"/>.
         /// </summary>
         internal static ConstructorInfo ListValueConstructorInfo { get; } =
@@ -69,5 +75,10 @@ namespace Cimpress.Cimbol.Runtime.Functions
         /// The cached <see cref="PropertyInfo"/> for the <see cref="Array.Length"/> property for <see cref="ILocalValue"/> arrays.
         /// </summary>
         internal static PropertyInfo ArrayLengthInfo { get; } = typeof(ILocalValue[]).GetProperty("Length");
+
+        /// <summary>
+        /// The cached <see cref="PropertyInfo"/> for the <see cref="BooleanValue.Value"/> property for the <see cref="BooleanValue"/> class.
+        /// </summary>
+        internal static PropertyInfo BooleanValueInfo { get; } = typeof(BooleanValue).GetProperty("Value");
     }
 }

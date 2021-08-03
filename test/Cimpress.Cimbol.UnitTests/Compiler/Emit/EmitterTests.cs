@@ -77,6 +77,36 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         }
 
         [Test]
+        public void Should_EmitNewExpression_When_GivenAndNode()
+        {
+            var value1 = new NumberValue(2);
+            var value2 = new NumberValue(3);
+            var node = new BinaryOpNode(BinaryOpType.And, new LiteralNode(value1), new LiteralNode(value2));
+
+            var expression = _emitter.EmitExpression(node, _symbolTable) as NewExpression;
+
+            Assert.That(expression, Is.Not.Null);
+            Assert.That(expression.Constructor, Is.EqualTo(LocalValueFunctions.BooleanValueConstructorInfo));
+            Assert.That(expression, Is.InstanceOf(typeof(NewExpression)));
+            Assert.That(expression.Type, Is.EqualTo(typeof(BooleanValue)));
+        }
+
+        [Test]
+        public void Should_EmitNewExpression_When_GivenOrNode()
+        {
+            var value1 = new NumberValue(2);
+            var value2 = new NumberValue(3);
+            var node = new BinaryOpNode(BinaryOpType.Or, new LiteralNode(value1), new LiteralNode(value2));
+
+            var expression = _emitter.EmitExpression(node, _symbolTable) as NewExpression;
+
+            Assert.That(expression, Is.Not.Null);
+            Assert.That(expression.Constructor, Is.EqualTo(LocalValueFunctions.BooleanValueConstructorInfo));
+            Assert.That(expression, Is.InstanceOf(typeof(NewExpression)));
+            Assert.That(expression.Type, Is.EqualTo(typeof(BooleanValue)));
+        }
+
+        [Test]
         public void ShouldNot_EmitMethodCallExpression_When_GivenInvalidBinaryOpType()
         {
             var value1 = new NumberValue(2);
@@ -646,7 +676,6 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
         private static IEnumerable<TestCaseData> BinaryOpNodeTestCases()
         {
             yield return new TestCaseData(BinaryOpType.Add, RuntimeFunctions.MathAddInfo, typeof(NumberValue));
-            yield return new TestCaseData(BinaryOpType.And, RuntimeFunctions.BooleanAndInfo, typeof(BooleanValue));
             yield return new TestCaseData(BinaryOpType.Concatenate, RuntimeFunctions.StringConcatenateInfo, typeof(StringValue));
             yield return new TestCaseData(BinaryOpType.Divide, RuntimeFunctions.MathDivideInfo, typeof(NumberValue));
             yield return new TestCaseData(BinaryOpType.Equal, RuntimeFunctions.EqualToInfo, typeof(BooleanValue));
@@ -656,7 +685,6 @@ namespace Cimpress.Cimbol.UnitTests.Compiler.Emit
             yield return new TestCaseData(BinaryOpType.LessThanOrEqual, RuntimeFunctions.CompareLessThanOrEqualInfo, typeof(BooleanValue));
             yield return new TestCaseData(BinaryOpType.Multiply, RuntimeFunctions.MathMultiplyInfo, typeof(NumberValue));
             yield return new TestCaseData(BinaryOpType.NotEqual, RuntimeFunctions.NotEqualToInfo, typeof(BooleanValue));
-            yield return new TestCaseData(BinaryOpType.Or, RuntimeFunctions.BooleanOrInfo, typeof(BooleanValue));
             yield return new TestCaseData(BinaryOpType.Power, RuntimeFunctions.MathPowerInfo, typeof(NumberValue));
             yield return new TestCaseData(BinaryOpType.Remainder, RuntimeFunctions.MathRemainderInfo, typeof(NumberValue));
             yield return new TestCaseData(BinaryOpType.Subtract, RuntimeFunctions.MathSubtractInfo, typeof(NumberValue));
