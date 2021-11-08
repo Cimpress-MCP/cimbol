@@ -9,6 +9,11 @@ namespace Cimpress.Cimbol.Utilities
     public static class NumberSerializer
     {
         /// <summary>
+        /// The format to use for deserializing numbers.
+        /// </summary>
+        public const NumberStyles NumberStyle = NumberStyles.Float;
+        
+        /// <summary>
         /// Deserialize a string containing a number into a number value.
         /// </summary>
         /// <param name="source">A string container a number.</param>
@@ -41,7 +46,7 @@ namespace Cimpress.Cimbol.Utilities
         /// <returns>True if the deserialization was success and false otherwise.</returns>
         public static bool TryDeserializeNumber(string source, out decimal result)
         {
-            return decimal.TryParse(source, out result);
+            return decimal.TryParse(source, NumberStyle, CultureInfo.InvariantCulture,  out result);
         }
     }
 }

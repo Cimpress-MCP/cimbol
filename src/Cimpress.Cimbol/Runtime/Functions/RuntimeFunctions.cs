@@ -2,6 +2,7 @@
 using System.Reflection;
 using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Types;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Runtime.Functions
 {
@@ -308,7 +309,7 @@ namespace Cimpress.Cimbol.Runtime.Functions
         /// <returns>The result of checking if the left number and right string are equal.</returns>
         internal static bool InnerEqualTo(NumberValue leftValue, StringValue rightValue)
         {
-            if (!decimal.TryParse(rightValue.Value, out var result))
+            if (!NumberSerializer.TryDeserializeNumber(rightValue.Value, out var result))
             {
                 return false;
             }

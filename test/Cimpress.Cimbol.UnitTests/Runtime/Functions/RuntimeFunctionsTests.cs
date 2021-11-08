@@ -373,6 +373,8 @@ namespace Cimpress.Cimbol.UnitTests.Runtime.Functions
         [TestCase(1, "2", false)]
         [TestCase(1, "1.0", true)]
         [TestCase(1, "2.0", false)]
+        [TestCase(1, "1.0e0", true)]
+        [TestCase(1, "2.0e0", false)]
         [TestCase(1, "cat", false)]
         public void Should_GetEquality_When_DoingInnerEqualToOnNumberAndString(decimal left, string right, bool expected)
         {

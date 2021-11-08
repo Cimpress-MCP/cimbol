@@ -1,5 +1,6 @@
 ﻿using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Functions;
+using Cimpress.Cimbol.Utilities;
 
 namespace Cimpress.Cimbol.Runtime.Types
 {
@@ -37,7 +38,7 @@ namespace Cimpress.Cimbol.Runtime.Types
         /// <inheritdoc cref="ILocalValue.CastNumber"/>
         public NumberValue CastNumber()
         {
-            if (decimal.TryParse(Value, out var result))
+            if (NumberSerializer.TryDeserializeNumber(Value, out var result))
             {
                 return new NumberValue(result);
             }
