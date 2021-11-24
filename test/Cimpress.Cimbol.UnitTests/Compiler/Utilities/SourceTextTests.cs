@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright 2021 Cimpress plc.
+// Licensed under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+using System;
 using Cimpress.Cimbol.Compiler.Source;
 using Cimpress.Cimbol.Exceptions;
 using NUnit.Framework;

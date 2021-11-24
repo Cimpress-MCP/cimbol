@@ -1,4 +1,8 @@
-﻿using Cimpress.Cimbol.Compiler.SyntaxTree;
+﻿// Copyright 2021 Cimpress plc.
+// Licensed under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Utilities;
 using NUnit.Framework;
 

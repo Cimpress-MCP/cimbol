@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿// Copyright 2021 Cimpress plc.
+// Licensed under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+using System.Linq;
 using Cimpress.Cimbol.Compiler.SyntaxTree;
 using Cimpress.Cimbol.Runtime.Types;
 using NUnit.Framework;
