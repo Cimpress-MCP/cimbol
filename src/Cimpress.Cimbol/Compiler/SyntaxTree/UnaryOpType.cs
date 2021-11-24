@@ -1,4 +1,8 @@
-﻿namespace Cimpress.Cimbol.Compiler.SyntaxTree
+﻿// Copyright 2021 Cimpress plc.
+// Licensed under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+namespace Cimpress.Cimbol.Compiler.SyntaxTree
 {
     /// <summary>
     /// The possible unary operation types.

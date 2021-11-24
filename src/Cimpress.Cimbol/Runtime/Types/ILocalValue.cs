@@ -1,4 +1,8 @@
-﻿namespace Cimpress.Cimbol.Runtime.Types
+﻿// Copyright 2021 Cimpress plc.
+// Licensed under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+namespace Cimpress.Cimbol.Runtime.Types
 {
     /// <summary>
     /// The interface for all value containers.

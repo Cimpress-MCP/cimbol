@@ -1,4 +1,8 @@
-﻿using Cimpress.Cimbol.Exceptions;
+﻿// Copyright 2021 Cimpress plc.
+// Licensed under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+using Cimpress.Cimbol.Exceptions;
 using Cimpress.Cimbol.Runtime.Functions;
 
 namespace Cimpress.Cimbol.Runtime.Types

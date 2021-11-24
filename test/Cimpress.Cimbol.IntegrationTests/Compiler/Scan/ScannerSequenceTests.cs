@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿// Copyright 2021 Cimpress plc.
+// Licensed under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+using System.Collections;
 using System.Collections.Generic;
 using Cimpress.Cimbol.Compiler.Scan;
 using Cimpress.Cimbol.Compiler.Source;

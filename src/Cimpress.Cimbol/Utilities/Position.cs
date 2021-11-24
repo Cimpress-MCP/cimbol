@@ -1,4 +1,8 @@
-﻿namespace Cimpress.Cimbol.Utilities
+﻿// Copyright 2021 Cimpress plc.
+// Licensed under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+namespace Cimpress.Cimbol.Utilities
 {
     /// <summary>
     /// A position within a <see cref="SourceText"/> instance.
