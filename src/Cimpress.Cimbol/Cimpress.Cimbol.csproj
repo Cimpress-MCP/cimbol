@@ -3,15 +3,15 @@
   <PropertyGroup>
     <PackageId>Cimpress.Cimbol</PackageId>
     <Description>TBD</Description>
-    <Version>2.0.3</Version>
+    <Version>3.0.0</Version>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Anthony Salani;Cimpress</Authors>
     <Company>Cimpress</Company>
-    <LangVersion>9</LangVersion>
+    <LangVersion>11</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RootNamespace>Cimpress.Cimbol</RootNamespace>
     <IncludeSymbols>true</IncludeSymbols>
@@ -24,11 +24,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="7.0.0" />
   </ItemGroup>
 
 </Project>
