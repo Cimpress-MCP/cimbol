@@ -58,6 +58,30 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Scan
                         TokenType.NumberLiteral,
                         TokenType.RightParenthesis,
                         TokenType.EndOfFile));
+
+                yield return new TestCaseData(
+                    "exists(formula1.'Size Price')",
+                    Tokens(
+                        TokenType.ExistsKeyword,
+                        TokenType.LeftParenthesis,
+                        TokenType.Identifier,
+                        TokenType.Period,
+                        TokenType.Identifier,
+                        TokenType.RightParenthesis,
+                        TokenType.EndOfFile));
+                
+                yield return new TestCaseData(
+                    "default(formula1.'Size Price', \"none\")",
+                    Tokens(
+                        TokenType.DefaultKeyword,
+                        TokenType.LeftParenthesis,
+                        TokenType.Identifier,
+                        TokenType.Period,
+                        TokenType.Identifier,
+                        TokenType.Comma,
+                        TokenType.StringLiteral,
+                        TokenType.RightParenthesis,
+                        TokenType.EndOfFile));
             }
         }
 
