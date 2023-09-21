@@ -1,4 +1,4 @@
-﻿name: Cimbol package
+﻿name: Test and build Cimbol
 
 on: [push]
 
