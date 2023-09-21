@@ -167,5 +167,47 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
 
             Assert.That(result.Modules["Main"].Value["Formula1"], Has.Property("Value").EqualTo(false));
         }
+        
+        [Test]
+        [TestCase(CompilationProfile.Minimal)]
+        [TestCase(CompilationProfile.Trace)]
+        [TestCase(CompilationProfile.Verbose)]
+        public async Task Should_ReturnTrue_When_ObjectMemberNameContainsWhitespace(CompilationProfile compilationProfile)
+        {
+            var program = new Program();
+            var objectValue = new ObjectValue(new Dictionary<string, ILocalValue> { { "member name", new StringValue("1") } });
+            var constant = program.AddConstant("something", objectValue);
+
+            var module = program.AddModule("Main");
+            module.AddImport("something", constant);
+            module.AddFormula("Formula1", "exists(something.'member name')");
+
+            var executable = program.Compile(compilationProfile);
+
+            var result = await executable.Call();
+
+            Assert.That(result.Modules["Main"].Value["Formula1"], Has.Property("Value").EqualTo(true));
+        }
+        
+        [Test]
+        [TestCase(CompilationProfile.Minimal)]
+        [TestCase(CompilationProfile.Trace)]
+        [TestCase(CompilationProfile.Verbose)]
+        public async Task Should_ReturnTrue_When_ImportNameContainsWhitespace(CompilationProfile compilationProfile)
+        {
+            var program = new Program();
+            var objectValue = new ObjectValue(new Dictionary<string, ILocalValue> { { "member name", new StringValue("1") } });
+            var constant = program.AddConstant("something with spaces", objectValue);
+
+            var module = program.AddModule("Main");
+            module.AddImport("something with spaces", constant);
+            module.AddFormula("Formula1", "exists('something with spaces'.'member name')");
+
+            var executable = program.Compile(compilationProfile);
+
+            var result = await executable.Call();
+
+            Assert.That(result.Modules["Main"].Value["Formula1"], Has.Property("Value").EqualTo(true));
+        }
     }
 }

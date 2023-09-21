@@ -198,6 +198,50 @@ namespace Cimpress.Cimbol.IntegrationTests.Compiler.Emit
 
             Assert.That(result.Modules["Main"].Value["Formula1"], Has.Property("Value").EqualTo(1));
         }
+        
+        [Test]
+        [TestCase(CompilationProfile.Minimal)]
+        [TestCase(CompilationProfile.Trace)]
+        [TestCase(CompilationProfile.Verbose)]
+        public void Should_ReturnValue_When_MemberExistsAndContainsWhitespace(CompilationProfile compilationProfile)
+        {
+            var program = new Program();
+            var module = program.AddModule("Main");
+            
+            var objectValue = new ObjectValue(new Dictionary<string, ILocalValue> { { "member name", new NumberValue(5) } });
+            var constant = program.AddConstant("something", objectValue);
+            
+            module.AddImport("something", constant);
+            module.AddFormula("Formula1", "default(something.'member name', 1)");
+            
+            var executable = program.Compile(compilationProfile);
+
+            var result = executable.Call().Result;
+
+            Assert.That(result.Modules["Main"].Value["Formula1"], Has.Property("Value").EqualTo(5));
+        }
+        
+        [Test]
+        [TestCase(CompilationProfile.Minimal)]
+        [TestCase(CompilationProfile.Trace)]
+        [TestCase(CompilationProfile.Verbose)]
+        public void Should_ReturnValue_When_IdentifierExistsAndContainsWhitespace(CompilationProfile compilationProfile)
+        {
+            var program = new Program();
+            var module = program.AddModule("Main");
+            
+            var objectValue = new ObjectValue(new Dictionary<string, ILocalValue> { { "member name", new NumberValue(5) } });
+            var constant = program.AddConstant("something with spaces", objectValue);
+            
+            module.AddImport("something with spaces", constant);
+            module.AddFormula("Formula1", "default('something with spaces'.'member name', 1)");
+            
+            var executable = program.Compile(compilationProfile);
+
+            var result = executable.Call().Result;
+
+            Assert.That(result.Modules["Main"].Value["Formula1"], Has.Property("Value").EqualTo(5));
+        }
 
         private static ILocalValue MockNestedObject(string[] path, ILocalValue value)
         {
