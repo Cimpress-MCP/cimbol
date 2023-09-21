@@ -1,4 +1,4 @@
-﻿name: Test and build Cimbol
+﻿name: Build and test Cimbol
 
 on: [push]
 
