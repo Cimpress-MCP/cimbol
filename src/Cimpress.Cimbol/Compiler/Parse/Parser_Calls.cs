@@ -114,8 +114,10 @@ namespace Cimpress.Cimbol.Compiler.Parse
             // Parse the required first identifier of the first argument.
             {
                 var identifier = Match(TokenType.Identifier, Default_IdentifierArgument);
-
-                path.Add(identifier.Value);
+                
+                var deserializedIdentifier = IdentifierSerializer.DeserializeIdentifier(identifier.Value);
+                
+                path.Add(deserializedIdentifier);
             }
 
             // Parse every following member access that is a part of the first argument.
@@ -125,7 +127,9 @@ namespace Cimpress.Cimbol.Compiler.Parse
 
                 var identifier = Match(TokenType.Identifier);
 
-                path.Add(identifier.Value);
+                var deserializedIdentifier = IdentifierSerializer.DeserializeIdentifier(identifier.Value);
+                
+                path.Add(deserializedIdentifier);
             }
 
             // Reject when only one argument has been provided.
@@ -159,8 +163,10 @@ namespace Cimpress.Cimbol.Compiler.Parse
             // Parse the required first identifier of the first argument.
             {
                 var identifier = Match(TokenType.Identifier, Exists_IdentifierArgument);
-
-                path.Add(identifier.Value);
+                
+                var deserializedIdentifier = IdentifierSerializer.DeserializeIdentifier(identifier.Value);
+                
+                path.Add(deserializedIdentifier);
             }
 
             // Parse every following member access that is a part of the first argument.
@@ -169,8 +175,10 @@ namespace Cimpress.Cimbol.Compiler.Parse
                 Match(TokenType.Period);
 
                 var identifier = Match(TokenType.Identifier);
-
-                path.Add(identifier.Value);
+                
+                var deserializedIdentifier = IdentifierSerializer.DeserializeIdentifier(identifier.Value);
+                
+                path.Add(deserializedIdentifier);
             }
 
             // Parse the closing parenthesis, rejecting with an error about argument count if not found.
