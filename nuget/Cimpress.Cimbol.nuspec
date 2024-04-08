@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Cimpress.Cimbol</id>
+    <version>$version$</version>
+    <title>Cimpress.Cimbol</title>
+    <owners>Alchemy Squad</owners>
+    <authors>Alchemy Squad</authors>
+    <description>Cimbol</description>
+    <tags>
+    Squad:Alchemy,
+    BU:Cimpress Technology,
+    CostCenter:103380,
+    OwnerEmail:AlchemySquad@cimpress.com
+    </tags>
+  </metadata>
+</package>
