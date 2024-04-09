@@ -8,6 +8,12 @@
     <Authors>Anthony Salani;Cimpress</Authors>
     <Company>Cimpress</Company>
     <LangVersion>9</LangVersion>
+    <PackageTags>
+      BU:CimpressTechnology,
+      Squad:Alchemy,
+      CostCenter:103380,
+      OwnerEmail:AlchemySquad@cimpress.com
+    </PackageTags>
   </PropertyGroup>
 
   <PropertyGroup>
